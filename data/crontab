@@ -1,0 +1,49 @@
+#
+# expect macos
+#
+SHELL=/opt/local/bin/bash
+MAILTO=hasegawa
+PATH=/opt/local/sbin:/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+# Use english language
+LANG=en_US.UTF-8
+LANGUAGE=en_US:en
+
+YOKWE_FINANCE=/Users/hasegawa/git/yokwe-finance
+CRON_LOG=/Users/hasegawa/git/yokwe-finance/tmp/cron.log
+
+
+##
+## MAINTENANCE
+##
+
+# CLEAR SAVE FILE
+#m   h     dom mon dow   command
+02   1     *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="maintain save file"   log-start maintain-save-file   log-stop ) 1>>$CRON_LOG 2>&1
+
+# SAVE FILE AND CLEAR LOG FILE
+#m   h     dom mon dow   command
+59   23    *   *   6     cd $YOKWE_FINANCE; ( make LOG_TITLE="maintain log file"   log-start save-all maintain-log-file log-stop ) 1>>$CRON_LOG 2>&1
+
+# SAVE FILE
+#m   h     dom mon dow   command
+05   5     *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="save file"  log-start save-all log-stop ) 1>>$CRON_LOG 2>&1
+50   13    *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="save file"  log-start save-all log-stop ) 1>>$CRON_LOG 2>&1
+05   21    *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="save file"  log-start save-all log-stop ) 1>>$CRON_LOG 2>&1
+
+
+##
+## UPDATE DATA and FX
+##
+
+# UPDATE DATA JP
+#m   h     dom mon dow   command
+05   3     *   *   1-5   cd $YOKWE_FINANCE; ( make LOG_TITLE="update data jp"  log-start update-data-jp log-stop ) 1>>$CRON_LOG 2>&1
+
+# UPDATE DATA US
+#m   h     dom mon dow   command
+45   12    *   *   2-6   cd $YOKWE_FINANCE; ( make LOG_TITLE="update data us"  log-start update-data-us log-stop ) 1>>$CRON_LOG 2>&1
+
+# UPDATE FX
+#m   h     dom mon dow   command
+05   9-16  *   *   1-5   cd $YOKWE_FINANCE; ( make LOG_TITLE="update fx"  log-start update-fx log-stop ) 1>>$CRON_LOG 2>&1
+

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ====================================================================== -->
+<!-- Ant build file (http://ant.apache.org/) for Ant 1.6.2 or above.        -->
+<!-- ====================================================================== -->
+
+<project name="yokwe-finance" default="package" basedir=".">
+	<import file="maven-build.xml" />
+
+	<property name="logback.conf" value="data/logback.xml" />
+
+	<path id="target.jar">
+		<pathelement location="${maven.build.dir}/${maven.build.finalName}.jar" />
+	</path>
+	<path id="libreoffice.lib">
+		<pathelement location="${libreoffice.lib.dir}" />
+		<pathelement location="${libreoffice.app.dir}" />
+	</path>
+	
+	
+	<target name="T001">
+		<java module="yokwe.finance/yokwe.finance.T001" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- finance data -->
+	<target name="generate-makefile">
+		<java module="yokwe.finance/yokwe.finance.data.GenerateMakefile" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="generate-dot">
+		<java module="yokwe.finance/yokwe.finance.data.GenerateDot" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider bats -->
+	<target name="bats-update-stock-code-name">
+		<java module="yokwe.finance/yokwe.finance.data.provider.bats.UpdateStockCodeName" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider jista -->
+	<target name="jita-update-fund-div-price">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jita.UpdateFundDivPrice" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jita-update-fund-info">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jita.UpdateFundInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jita-update-nisa-info">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jita.UpdateNISAInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider jpx -->
+	<target name="jpx-update-etf">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateETF" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-etn">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateETN" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-infra">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateInfra" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-kessan-json">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateKessanJSON" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-reit">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateREIT" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-stock-code-name">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockCodeName" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-stock-detail-json">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockDetailJSON" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-stock-div">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockDiv" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-stock-intra-price">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockIntraPrice" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-stock-list">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockList" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-stock-price-ohlcv">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockPriceOHLCV" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jpx-update-stock-value">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockValue" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider jreit -->
+	<target name="jreit-update-jreit-div">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jreit.UpdateJREITDiv" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="jreit-update-jreit-info">
+		<java module="yokwe.finance/yokwe.finance.data.provider.jreit.UpdateJREITInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider mizuho -->
+	<target name="mizuho-update-fx-rate">
+		<java module="yokwe.finance/yokwe.finance.data.provider.mizuho.UpdateFXRate" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider nasdaq -->
+	<target name="nasdaq-update-stock-code-name">
+		<java module="yokwe.finance/yokwe.finance.data.provider.nasdaq.UpdateStockCodeName" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider nyse -->
+	<target name="nyse-update-stock-code-name">
+		<java module="yokwe.finance/yokwe.finance.data.provider.nyse.UpdateStockCodeName" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider rakuten -->
+	<target name="rakuten-update-trading-fund-jp">
+		<java module="yokwe.finance/yokwe.finance.data.provider.rakuten.UpdateTradingFundJP" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="rakuten-update-trading-stock-us">
+		<java module="yokwe.finance/yokwe.finance.data.provider.rakuten.UpdateTradingStockUS" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+	<!-- provider yahoo -->
+	<target name="yahoo-update-company-info-jp">
+		<java module="yokwe.finance/yokwe.finance.data.provider.yahoo.UpdateCompanyInfoJP" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="yahoo-update-company-info-us">
+		<java module="yokwe.finance/yokwe.finance.data.provider.yahoo.UpdateCompanyInfoUS" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+
+	<!-- stock-jp -->
+	<target name="stock-jp-update-stock-div">
+		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockDiv" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="stock-jp-update-stock-info">
+		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="stock-jp-update-stock-price">
+		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockPrice" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+
+	<!-- stock-us -->
+	<target name="stock-us-update-stock-code-name">
+		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockCodeName" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="stock-us-update-stock-div">
+		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockDiv" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="stock-us-update-stock-info">
+		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="stock-us-update-stock-info-all">
+		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockInfoAll" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	<target name="stock-us-update-stock-price-ohlcv">
+		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockPriceOHLCV" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+
+	<!-- report stock jp -->
+	<target name="stock-jp-update-report">
+		<java module="yokwe.finance/yokwe.finance.report.stock.jp.UpdateReport" fork="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+
+	<!-- report stock us -->
+	<target name="stock-us-update-report">
+		<java module="yokwe.finance/yokwe.finance.report.stock.us.UpdateReport" fork="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
+		</java>
+	</target>
+	
+</project>
