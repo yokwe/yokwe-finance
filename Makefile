@@ -54,21 +54,9 @@ maintain-save-file: check-finance-path
 
 maintain-log-file: check-finance-path
 	@date +'%F %T TAR START'
-	touch ../yokwe-util/tmp/yokwe-util.log
-	touch ../yokwe-finance/tmp/yokwe-finance.log
-	
-	cp -p ../yokwe-util/tmp/yokwe-util.log             tmp
-	cp -p ../yokwe-finance/tmp/yokwe-finance-data.log  tmp
-	
-	echo -n >../yokwe-util/tmp/yokwe-util.log
-	echo -n >../yokwe-finance/tmp/yokwe-finance.log
-	
 	tar cfz $(FINANCE_PATH)/save/log_$$(date +%Y%m%d).taz tmp/*.log
 	@date +'%F %T TAR STOP'
-	rm tmp/cron.log
-	rm tmp/yokwe-util.log
-	rm tmp/yokwe-finance-data.log
-	rm tmp/yokwe-finance-report.log
+	echo -n >tmp/yokwe-finance.log
 	echo -n >tmp/cron.log
 
 save-all: check-finance-path save-data rsync-to-Backup2T
@@ -96,9 +84,6 @@ generate-dot:
 
 tmp/dot/a.pdf: tmp/dot/a.dot
 	dot -Kdot -Tpdf tmp/dot/a.dot >tmp/dot/a.pdf
-
-
-
 
 
 #
