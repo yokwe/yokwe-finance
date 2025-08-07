@@ -18,17 +18,16 @@
 	</path>
 	
 	
+	<!-- finance tools -->
 	<target name="T001">
-		<java module="yokwe.finance/yokwe.finance.T001" fork="true" failonerror="true">
+		<java module="yokwe.finance/yokwe.finance.tool.T001" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
-	
-	<!-- finance data -->
 	<target name="generate-makefile">
-		<java module="yokwe.finance/yokwe.finance.data.GenerateMakefile" fork="true" failonerror="true">
+		<java module="yokwe.finance/yokwe.finance.tool.GenerateMakefile" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
@@ -36,7 +35,7 @@
 		</java>
 	</target>
 	<target name="generate-dot">
-		<java module="yokwe.finance/yokwe.finance.data.GenerateDot" fork="true" failonerror="true">
+		<java module="yokwe.finance/yokwe.finance.tool.GenerateDot" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
