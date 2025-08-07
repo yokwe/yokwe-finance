@@ -121,3 +121,23 @@ update-data-us: kill-soffice update-rakuten update-us-exchange
 
 update-fx:
 	ant mizuho-update-fx-rate
+
+
+#
+# secondary targets
+#
+
+update-jpx:
+	ant jpx-update-stock-list jpx-update-etf jpx-update-etn jpx-update-infra jpx-update-reit
+
+update-jita: kill-soffice
+	ant jita-update-nisa-info jita-update-fund-info
+
+update-us-exchange:
+	ant bats-update-stock-code-name nasdaq-update-stock-code-name nyse-update-stock-code-name
+
+update-rakuten:
+	ant rakuten-update-trading-fund-jp rakuten-update-trading-stock-us
+
+update-mizuho:
+	ant mizuho-update-fx-rate
