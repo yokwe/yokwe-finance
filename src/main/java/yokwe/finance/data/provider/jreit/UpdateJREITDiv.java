@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.StockCodeJP;
 import yokwe.finance.data.type.StockInfoJP;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.FileUtil;
 import yokwe.util.ScrapeUtil;
 import yokwe.util.ScrapeUtil.AsNumber;
@@ -18,7 +19,6 @@ import yokwe.util.ToString;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.HttpUtil;
 import yokwe.util.json.JSON;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateJREITDiv extends UpdateBase {

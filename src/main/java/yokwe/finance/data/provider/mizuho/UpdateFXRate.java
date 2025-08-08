@@ -10,10 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import yokwe.finance.data.type.FXRate;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.CSVUtil;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.HttpUtil;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateList;
 
 public class UpdateFXRate extends UpdateList<Quote> {

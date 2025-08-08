@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import yokwe.finance.data.provider.jpx.StorageJPX;
 import yokwe.finance.data.type.NISAInfo;
 import yokwe.finance.data.type.StockCodeJP;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.FileUtil;
 import yokwe.util.URLUtil;
 import yokwe.util.UnexpectedException;
@@ -16,7 +17,6 @@ import yokwe.util.http.HttpUtil;
 import yokwe.util.libreoffice.LibreOffice;
 import yokwe.util.libreoffice.Sheet;
 import yokwe.util.libreoffice.SpreadSheet;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateSimpleGeneric;
 
 public class UpdateNISAInfo extends UpdateSimpleGeneric<Void> {

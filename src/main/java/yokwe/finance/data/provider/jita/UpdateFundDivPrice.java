@@ -11,6 +11,7 @@ import org.apache.hc.core5.http2.HttpVersionPolicy;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.finance.data.type.FundPriceJP;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.CSVUtil;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.Download;
@@ -19,7 +20,6 @@ import yokwe.util.http.FileTask;
 import yokwe.util.http.HttpUtil;
 import yokwe.util.http.RequesterBuilder;
 import yokwe.util.http.Task;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateComplexTask;
 
 public class UpdateFundDivPrice extends UpdateComplexTask<FundInfoJP> {

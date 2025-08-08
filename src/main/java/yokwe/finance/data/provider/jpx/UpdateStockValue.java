@@ -8,8 +8,8 @@ import java.util.List;
 
 import yokwe.finance.data.type.StockCodeJP;
 import yokwe.finance.data.type.StockValueJP;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.json.JSON;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockValue extends UpdateBase {

@@ -9,11 +9,11 @@ import java.util.List;
 import yokwe.finance.data.type.StockCodeNameUS;
 import yokwe.finance.data.type.StockInfoUS.Market;
 import yokwe.finance.data.type.StockInfoUS.Type;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.CSVUtil;
 import yokwe.util.Storage;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.HttpUtil;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockCodeName extends UpdateBase {

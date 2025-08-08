@@ -14,9 +14,9 @@ import yokwe.finance.data.provider.yahoo.StorageYahoo;
 import yokwe.finance.data.type.StockCodeJP;
 import yokwe.finance.data.type.StockInfoJP;
 import yokwe.finance.data.type.StockInfoJP.Type;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.UnexpectedException;
 import yokwe.util.json.JSON;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockInfo extends UpdateBase {

@@ -7,11 +7,11 @@ import java.util.Map;
 import yokwe.finance.data.type.StockCodeJP;
 import yokwe.finance.data.type.StockInfoJP;
 import yokwe.finance.data.type.StockInfoJP.Type;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.FileUtil;
 import yokwe.util.StringUtil;
 import yokwe.util.UnexpectedException;
 import yokwe.util.json.JSON;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockCodeName extends UpdateBase {

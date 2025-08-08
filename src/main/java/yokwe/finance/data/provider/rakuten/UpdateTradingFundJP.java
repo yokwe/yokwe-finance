@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 import yokwe.finance.data.provider.jita.StorageJITA;
 import yokwe.finance.data.type.TradingFund;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.http.HttpUtil;
 import yokwe.util.json.JSON;
 import yokwe.util.json.JSON.Ignore;
 import yokwe.util.json.JSON.Name;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateTradingFundJP extends UpdateBase {

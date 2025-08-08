@@ -3,7 +3,7 @@ package yokwe.finance.data.stock.jp;
 import yokwe.finance.data.provider.jita.StorageJITA;
 import yokwe.finance.data.provider.jpx.StorageJPX;
 import yokwe.finance.data.provider.jreit.StorageJREIT;
-import yokwe.util.makefile.Makefile;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockDiv extends UpdateBase {

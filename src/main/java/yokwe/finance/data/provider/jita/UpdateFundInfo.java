@@ -12,6 +12,7 @@ import org.apache.hc.core5.http2.HttpVersionPolicy;
 
 import yokwe.finance.data.provider.jpx.StockCodeName;
 import yokwe.finance.data.type.FundInfoJP;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.Download;
 import yokwe.util.http.DownloadSync;
@@ -20,7 +21,6 @@ import yokwe.util.http.RequesterBuilder;
 import yokwe.util.http.StringTask;
 import yokwe.util.http.Task;
 import yokwe.util.json.JSON;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateComplexTask;
 
 public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {

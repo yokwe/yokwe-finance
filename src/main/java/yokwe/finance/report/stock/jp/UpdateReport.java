@@ -10,12 +10,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.report.stats.StockStats;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.MarketHoliday;
 import yokwe.util.StringUtil;
 import yokwe.util.libreoffice.LibreOffice;
 import yokwe.util.libreoffice.Sheet;
 import yokwe.util.libreoffice.SpreadSheet;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateReport extends UpdateBase {

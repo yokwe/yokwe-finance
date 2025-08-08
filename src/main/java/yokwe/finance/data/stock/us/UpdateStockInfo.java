@@ -8,7 +8,7 @@ import yokwe.finance.data.provider.yahoo.StorageYahoo;
 import yokwe.finance.data.type.StockInfoUS;
 import yokwe.finance.data.type.StockInfoUS.Market;
 import yokwe.finance.data.type.StockInfoUS.Type;
-import yokwe.util.makefile.Makefile;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockInfo extends UpdateBase {

@@ -8,10 +8,10 @@ import java.util.stream.Stream;
 
 import yokwe.finance.data.type.CodeName;
 import yokwe.finance.data.type.StockCodeJP;
+import yokwe.finance.tool.Makefile;
 import yokwe.util.ScrapeUtil;
 import yokwe.util.ToString;
 import yokwe.util.http.HttpUtil;
-import yokwe.util.makefile.Makefile;
 import yokwe.util.update.UpdateList;
 
 public class UpdateETN extends UpdateList<CodeName> {
