@@ -49,8 +49,10 @@ public class GenerateDot {
 		var makefileMap = makefileList.stream().collect(Collectors.groupingBy(o -> o.clazz.getPackageName(), TreeMap::new, Collectors.toCollection(ArrayList::new)));
 		logger.info("makeMap   {}", makefileMap.size());
 		
+		var orignalPalette = ColorUtil.Palette.SET3_N12;
+		
 		var groupList = new ArrayList<String>(makefileMap.keySet());
-		var palette = ColorUtil.interpolate(ColorUtil.PAIRED_N12, groupList.size());
+		var palette = ColorUtil.interpolate(orignalPalette, groupList.size());
 		var paletteMap = new TreeMap<String, String>();
 		//                           group   rgb
 		for(int i = 0; i < groupList.size(); i++) {
@@ -67,8 +69,6 @@ public class GenerateDot {
 		g.attr("fontname", "Migu 1M");
 		
 		g.nodeAttr().attr("fontname", "Migu 1M");
-//		g.nodeAttr().attr("colorscheme", "set312");
-		g.nodeAttr().attr("colorscheme", "paired12");
 		g.nodeAttr().attr("style", "filled");
 		
 		
@@ -79,8 +79,9 @@ public class GenerateDot {
 		for(var group: makefileMap.keySet()) {
 			for(var makefile: makefileMap.get(group)) {
 				countAntTask++;
+				var name = makefile.clazz.getSimpleName();
 				var color = paletteMap.get(group);
-				g.node(makefile.antTarget).attr("label", group + "\\n" + makefile.antTarget).attr("shape",  "box").attr("fillcolor", color).attr("peripheries", makefile.inputList.size() == 0 ? "2" : "1");
+				g.node(makefile.antTarget).attr("label", group + "\\n" + name).attr("shape",  "box").attr("fillcolor", color).attr("peripheries", makefile.inputList.size() == 0 ? "2" : "1");
 			}
 		}
 		
