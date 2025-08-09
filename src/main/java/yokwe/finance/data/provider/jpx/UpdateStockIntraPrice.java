@@ -10,8 +10,8 @@ import java.util.List;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 
 import yokwe.finance.data.type.StockCodeJP;
-import yokwe.finance.tool.Makefile;
 import yokwe.util.FileUtil;
+import yokwe.util.Makefile;
 import yokwe.util.ToString;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.Download;

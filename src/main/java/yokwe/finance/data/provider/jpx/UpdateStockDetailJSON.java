@@ -10,7 +10,7 @@ import org.apache.hc.core5.http2.HttpVersionPolicy;
 
 import yokwe.finance.data.type.CodeName;
 import yokwe.finance.data.type.StockCodeJP;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.http.Download;
 import yokwe.util.http.DownloadSync;
 import yokwe.util.http.FileTask;

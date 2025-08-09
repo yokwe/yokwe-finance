@@ -7,7 +7,7 @@ import java.util.List;
 import yokwe.finance.data.type.StockCodeNameUS;
 import yokwe.finance.data.type.StockInfoUS.Market;
 import yokwe.finance.data.type.StockInfoUS.Type;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.http.HttpUtil;
 import yokwe.util.json.JSON;
 import yokwe.util.update.UpdateBase;

@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.report.stats.StockStats;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
 import yokwe.util.StringUtil;
 import yokwe.util.libreoffice.LibreOffice;

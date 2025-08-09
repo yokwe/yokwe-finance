@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import yokwe.util.ClassUtil;
 import yokwe.util.FileUtil;
+import yokwe.util.Makefile;
 
 public class GenerateMakefile {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();

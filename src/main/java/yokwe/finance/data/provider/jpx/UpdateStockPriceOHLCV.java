@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import yokwe.finance.data.type.OHLCV;
 import yokwe.finance.data.type.StockCodeJP;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.UnexpectedException;
 import yokwe.util.json.JSON;
 import yokwe.util.update.UpdateBase;

@@ -18,7 +18,7 @@ import yokwe.finance.data.provider.nasdaq.api.AssetClass;
 import yokwe.finance.data.provider.nasdaq.api.Historical;
 import yokwe.finance.data.type.OHLCV;
 import yokwe.finance.data.type.StockInfoUS;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
 import yokwe.util.http.Download;
 import yokwe.util.http.DownloadSync;

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import yokwe.finance.data.type.DailyValue;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.UnexpectedException;
 import yokwe.util.json.JSON;
 import yokwe.util.update.UpdateBase;

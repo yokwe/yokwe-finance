@@ -1,5 +1,6 @@
 package yokwe.finance.tool;
 
+import yokwe.util.Makefile;
 import yokwe.util.UnexpectedException;
 
 public class Utils {

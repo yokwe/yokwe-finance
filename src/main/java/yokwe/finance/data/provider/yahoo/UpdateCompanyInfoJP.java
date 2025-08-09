@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import yokwe.finance.data.provider.jpx.StorageJPX;
 import yokwe.finance.data.type.CompanyInfo;
 import yokwe.finance.data.type.StockCodeJP;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.Storage;
 import yokwe.util.update.UpdateBase;
 

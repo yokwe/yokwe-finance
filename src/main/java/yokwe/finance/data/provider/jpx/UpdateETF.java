@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import yokwe.finance.data.type.CodeName;
 import yokwe.finance.data.type.StockCodeJP;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.ScrapeUtil;
 import yokwe.util.ToString;
 import yokwe.util.http.HttpUtil;

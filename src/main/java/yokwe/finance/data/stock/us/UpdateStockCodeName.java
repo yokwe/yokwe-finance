@@ -9,7 +9,7 @@ import yokwe.finance.data.provider.nasdaq.StorageNASDAQ;
 import yokwe.finance.data.provider.nyse.StorageNYSE;
 import yokwe.finance.data.provider.rakuten.StorageRakuten;
 import yokwe.finance.data.type.StockCodeNameUS;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockCodeName extends UpdateBase {

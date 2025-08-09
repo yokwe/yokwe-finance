@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import yokwe.finance.data.provider.jita.StorageJITA;
 import yokwe.finance.data.provider.jpx.StorageJPX;
 import yokwe.finance.data.type.DailyValue;
-import yokwe.finance.tool.Makefile;
+import yokwe.util.Makefile;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateStockPrice extends UpdateBase {
