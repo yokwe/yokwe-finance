@@ -1,9 +1,12 @@
 package yokwe.finance.tool;
 
+import static yokwe.finance.tool.Utils.toAntTarget;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -39,26 +42,30 @@ public class GenerateDot {
 		var rootPath = Storage.storage.getFile().getAbsolutePath() + "/";
 		logger.info("rootPath  {}", rootPath);
 		
-		var makefileList = new ArrayList<Makefile>();
-		for(var module: moduleList) {
-			logger.info("moduleName  {}", module.getDescriptor().toNameAndVersion());
-			makefileList.addAll(Makefile.scanModule(module));
+		Map<String, List<Makefile>> makefileMap;
+		{
+			var makefileList = new ArrayList<Makefile>();
+			for(var module: moduleList) {
+				logger.info("moduleName  {}", module.getDescriptor().toNameAndVersion());
+				makefileList.addAll(Makefile.scanModule(module));
+			}
+			logger.info("makeList  {}", makefileList.size());
+			
+			makefileMap = makefileList.stream().collect(Collectors.groupingBy(o -> o.clazz.getPackageName(), TreeMap::new, Collectors.toCollection(ArrayList::new)));
+			logger.info("makeMap   {}", makefileMap.size());
 		}
-		logger.info("makeList  {}", makefileList.size());
 		
-		var makefileMap = makefileList.stream().collect(Collectors.groupingBy(o -> o.clazz.getPackageName(), TreeMap::new, Collectors.toCollection(ArrayList::new)));
-		logger.info("makeMap   {}", makefileMap.size());
-		
-		var orignalPalette = ColorUtil.Palette.SET3_N12;
-		
-		var groupList = new ArrayList<String>(makefileMap.keySet());
-		var palette = ColorUtil.interpolate(orignalPalette, groupList.size());
 		var paletteMap = new TreeMap<String, String>();
 		//                           group   rgb
-		for(int i = 0; i < groupList.size(); i++) {
-			var group = groupList.get(i);
-			var rgb   = palette[i].toString();
-			paletteMap.put(group, rgb);
+		{
+			var orignalPalette = ColorUtil.Palette.SET3_N12;
+			var groupList = new ArrayList<String>(makefileMap.keySet());
+			var palette = ColorUtil.interpolate(orignalPalette, groupList.size());
+			for(int i = 0; i < groupList.size(); i++) {
+				var group = groupList.get(i);
+				var rgb   = palette[i].toString();
+				paletteMap.put(group, rgb);
+			}
 		}
 				
 		var g = new Dot.Digraph("G");
@@ -79,9 +86,10 @@ public class GenerateDot {
 		for(var group: makefileMap.keySet()) {
 			for(var makefile: makefileMap.get(group)) {
 				countAntTask++;
-				var name = makefile.clazz.getSimpleName();
-				var color = paletteMap.get(group);
-				g.node(makefile.antTarget).attr("label", group + "\\n" + name).attr("shape",  "box").attr("fillcolor", color).attr("peripheries", makefile.inputList.size() == 0 ? "2" : "1");
+				var antTarget = toAntTarget(makefile);
+				var name      = makefile.clazz.getSimpleName();
+				var color     = paletteMap.get(group);
+				g.node(antTarget).attr("label", group + "\\n" + name).attr("shape",  "box").attr("fillcolor", color).attr("peripheries", makefile.inputList.size() == 0 ? "2" : "1");
 			}
 		}
 		
@@ -105,15 +113,16 @@ public class GenerateDot {
 		// connect file and task
 		for(var group: makefileMap.keySet()) {
 			for(var makefile: makefileMap.get(group)) {
+				var antTarget = toAntTarget(makefile);
 				for(var e: makefile.inputList) {
 					countEdge++;
 					var path = e.getPath().replace(rootPath, "");
-					g.edge(path, makefile.antTarget);
+					g.edge(path, antTarget);
 				}
 				for(var e: makefile.outputList) {
 					countEdge++;
 					var path = e.getPath().replace(rootPath, "");
-					g.edge(makefile.antTarget, path).attr("style", "bold"); // make bold for output file
+					g.edge(antTarget, path).attr("style", "bold"); // make bold for output file
 				}
 			}
 		}

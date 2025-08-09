@@ -1,5 +1,8 @@
 package yokwe.finance.tool;
 
+import static yokwe.finance.tool.Utils.toAntTarget;
+import static yokwe.finance.tool.Utils.toMakeGroup;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,7 +34,7 @@ public class GenerateMakefile {
 	public static String generate(Module module) {
 		var makefileList = Makefile.scanModule(module);
 
-		var groupNameSet   = makefileList.stream().map(o -> o.makeGroup).collect(Collectors.toCollection(TreeSet::new));
+		var groupNameSet   = makefileList.stream().map(o -> toMakeGroup(o)).collect(Collectors.toCollection(TreeSet::new));
 		var groupUpdateSet = groupNameSet.stream().map(o -> "udate-" + o).collect(Collectors.toCollection(TreeSet::new));
 		
 		var sw = new StringWriter();		
@@ -51,7 +54,7 @@ public class GenerateMakefile {
 			out.println();
 			
 			for(var group: groupNameSet) {
-				var makeList = makefileList.stream().filter(o -> o.makeGroup.equals(group)).toList();
+				var makeList = makefileList.stream().filter(o -> toMakeGroup(o).equals(group)).toList();
 				var outFileSet = new TreeSet<String>();
 				for(var e: makeList) {
 					e.outputList.stream().forEach(o -> outFileSet.add(o.getAbsolutePath()));
@@ -74,7 +77,7 @@ public class GenerateMakefile {
 						out.println(String.join(" ", oList) + ": \\");
 						out.println("\t" + String.join(" \\\n\t", iList));
 					}
-					out.println("\tant " + e.antTarget);
+					out.println("\tant " + toAntTarget(e));
 				}
 				
 				out.println();
