@@ -3,8 +3,8 @@ package yokwe.finance.tool;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import yokwe.util.ClassUtil;
 import yokwe.util.FileUtil;
@@ -29,12 +29,10 @@ public class GenerateMakefile {
 	}
 	
 	public static String generate(Module module) {
-		var list = Makefile.scanModule(module);
+		var makefileList = Makefile.scanModule(module);
 
-		var groupNameSet = new TreeSet<String>();
-		list.stream().forEach(o -> groupNameSet.add(o.group));
-		var groupUpdateSet = new TreeSet<String>();
-		groupNameSet.forEach(o -> groupUpdateSet.add("update-" + o));
+		var groupNameSet   = makefileList.stream().map(o -> o.makeGroup).collect(Collectors.toCollection(TreeSet::new));
+		var groupUpdateSet = groupNameSet.stream().map(o -> "udate-" + o).collect(Collectors.toCollection(TreeSet::new));
 		
 		var sw = new StringWriter();		
 		try (var out = new PrintWriter(sw)) {
@@ -53,10 +51,10 @@ public class GenerateMakefile {
 			out.println();
 			
 			for(var group: groupNameSet) {
-				var makeList = list.stream().filter(o -> o.group.equals(group)).toList();
+				var makeList = makefileList.stream().filter(o -> o.makeGroup.equals(group)).toList();
 				var outFileSet = new TreeSet<String>();
 				for(var e: makeList) {
-					Arrays.stream(e.outputs).forEach(o -> outFileSet.add(o.getAbsolutePath()));
+					e.outputList.stream().forEach(o -> outFileSet.add(o.getAbsolutePath()));
 				}
 				
 				out.println("#");
@@ -67,8 +65,8 @@ public class GenerateMakefile {
 				out.println();
 				
 				for(var e: makeList) {
-					var iList = Arrays.stream(e.inputs).map(o -> o.getAbsolutePath()).toList();
-					var oList = Arrays.stream(e.outputs).map(o -> o.getAbsolutePath()).toList();
+					var iList = e.inputList.stream().map(o -> o.getAbsolutePath()).toList();
+					var oList = e.outputList.stream().map(o -> o.getAbsolutePath()).toList();
 					
 					if (iList.isEmpty()) {
 						out.println(String.join(" ", oList) + ":");
@@ -76,7 +74,7 @@ public class GenerateMakefile {
 						out.println(String.join(" ", oList) + ": \\");
 						out.println("\t" + String.join(" \\\n\t", iList));
 					}
-					out.println("\tant " + e.target);
+					out.println("\tant " + e.antTarget);
 				}
 				
 				out.println();

@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import yokwe.util.ClassUtil;
@@ -12,7 +13,7 @@ import yokwe.util.Storage;
 import yokwe.util.ToString;
 import yokwe.util.UnexpectedException;
 
-public class Makefile {
+public class Makefile implements Comparable<Makefile> {
 	static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static class Builder {
@@ -57,7 +58,7 @@ public class Makefile {
 			return this;
 		}
 		public Makefile build() {
-			return new Makefile(clazz, inputList.toArray(File[]::new), outputList.toArray(File[]::new));
+			return new Makefile(clazz, inputList, outputList);
 		}
 	}
 	
@@ -66,31 +67,28 @@ public class Makefile {
 		return new Builder(callerClass);
 	}
 	
-	public Class<?> clazz;
-	public String   group;
-	public String   target;
-	public File[]   inputs;
-	public File[]   outputs;
+	public final Class<?>   clazz;
+	public final List<File> inputList;
+	public final List<File> outputList;
+	public final String     antTarget;
+	public final String     makeGroup;
 	
-	private Makefile(Class<?> clazz, File[] inputs, File[] outputs) {
-		this.clazz   = clazz;
-		this.inputs  = inputs;
-		this.outputs = outputs;
-		
-		var names = clazz.getCanonicalName().toLowerCase().split("\\.");
-		var name1 = names[names.length - 3];
-		var name2 = names[names.length - 2];
-		var name  = names[names.length - 1];
-		
-		this.group   = (name2.equals("jp") || name2.equals("us")) ? (name1 + "-" + name2) : name2;
-		this.target  = toTarget(group, name);
+	private Makefile(Class<?> clazz, List<File> inputs, List<File> outputs) {
+		this.clazz      = clazz;
+		this.inputList  = inputs;
+		this.outputList = outputs;
+		this.antTarget  = toAntTarget(clazz);
+		this.makeGroup  = toMakeGroup(clazz);
 	}
-	
-	private String toTarget(String group, String name) {
-		var buffer = new StringBuilder(group.length() + name.length() + 10);
-		buffer.append(group);
+	private String toAntTarget(Class<?> clazz) {
+		var names = clazz.getTypeName().toLowerCase().split("\\.");
+		var name3 = names[names.length - 3];
+		var name2 = names[names.length - 2];
+		var name1 = names[names.length - 1];
 		
-		var string = new String(name);
+		var buffer = new StringBuilder((name2.equals("jp") || name2.equals("us")) ? (name3 + "-" + name2) : name2);
+		var string = name1;
+		
 		for(;;) {
 			boolean modified = false;
 			for(var token: tokens) {
@@ -104,8 +102,7 @@ public class Makefile {
 			if (modified) continue;
 			
 			logger.error("Unexpected string");
-			logger.error("  group   {}", group);
-			logger.error("  name    {}", name);
+			logger.error("  clazz   {}", clazz.getTypeName());
 			logger.error("  string  {}", string);
 			throw new UnexpectedException("Unexpected string");
 		}
@@ -117,10 +114,17 @@ public class Makefile {
 		"kessan", "reit", "code", "name", "detail", "json", "list", "ohlcv", "value", "jreit",
 		"trading", "jp", "us", "company", "all", "fx", "rate", "2", "intra", "day", "report",
 	};
+	private static String toMakeGroup(Class<?> clazz) {
+		return clazz.getPackageName().replace("yokwe.finance.", "").replace(".", "-");
+	}
 	
 	@Override
 	public String toString() {
 		return ToString.withFieldName(this);
+	}
+	@Override
+	public int compareTo(Makefile that) {
+		return this.clazz.getTypeName().compareTo(that.clazz.getTypeName());
 	}
 	
 	public static List<Makefile> scanModule(Module module) {
@@ -137,6 +141,7 @@ public class Makefile {
 				}
 			}
 			
+			Collections.sort(list);
 			return list;
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			String exceptionName = e.getClass().getSimpleName();
@@ -151,6 +156,20 @@ public class Makefile {
 			list.addAll(scanModule(module));
 		}
 		
+		Collections.sort(list);
 		return list;
+	}
+	
+	public static void main(String[] args) {
+		logger.info("START");
+		
+		var module = ClassUtil.findModule("yokwe.finance");
+		var list = Makefile.scanModule(module);
+		for(var e: list) {
+			logger.info("XX  {}", e.clazz.getTypeName());
+			logger.info("    {}", e.antTarget);
+		}
+		
+		logger.info("STOP");
 	}
 }
