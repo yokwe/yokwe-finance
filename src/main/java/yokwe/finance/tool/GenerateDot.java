@@ -11,8 +11,9 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import yokwe.util.ClassUtil;
-import yokwe.util.ColorUtil;
+import yokwe.util.ColorPalette;
 import yokwe.util.FileUtil;
+import yokwe.util.Makefile;
 import yokwe.util.Storage;
 import yokwe.util.graphviz.Dot;
 
@@ -58,12 +59,12 @@ public class GenerateDot {
 		var paletteMap = new TreeMap<String, String>();
 		//                           group   rgb
 		{
-			var orignalPalette = ColorUtil.Palette.SET3_N12;
+			var orignalPalette = ColorPalette.SET3_N12;
 			var groupList = new ArrayList<String>(makefileMap.keySet());
-			var palette = ColorUtil.interpolate(orignalPalette, groupList.size());
+			var palette = orignalPalette.interpolate(groupList.size());
 			for(int i = 0; i < groupList.size(); i++) {
 				var group = groupList.get(i);
-				var rgb   = palette[i].toString();
+				var rgb   = palette.toString(i);
 				paletteMap.put(group, rgb);
 			}
 		}
