@@ -100,22 +100,17 @@ full-build:
 #
 # primary targets
 #
-
-kill-soffice:
-	@ps xg > tmp/kill_soffice
-	@awk '/LibreOffice/ && /soffice/ {print; system("killall -v soffice"); exit;}' tmp/kill_soffice
-
-update-all: kill-soffice
+update-all:
 	make -f tmp/update-all.make update-all
 
 update-all-debug:
 	make -f tmp/update-all.make -n update-all
 
 
-update-data-jp: kill-soffice update-jpx update-jita
+update-data-jp: update-jpx update-jita
 	make update-all
 
-update-data-us: kill-soffice update-rakuten update-us-exchange
+update-data-us: update-rakuten update-us-exchange
 	make update-all
 
 
@@ -130,7 +125,7 @@ update-fx:
 update-jpx:
 	ant jpx-update-stock-list jpx-update-etf jpx-update-etn jpx-update-infra jpx-update-reit
 
-update-jita: kill-soffice
+update-jita:
 	ant jita-update-nisa-info jita-update-fund-info
 
 update-us-exchange:
