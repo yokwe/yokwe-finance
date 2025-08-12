@@ -164,10 +164,16 @@ public class UpdateStockPriceOHLCV extends UpdateComplexTask<StockInfoUS> {
 						// expected
 					} else {
 						// not expected
-						logger.warn("Unexpected price");
-						logger.warn("  stock     {}  {}", stockInfo.stockCode, stockInfo.name);
-						logger.warn("  oldPrice  {}", oldPrice);
-						logger.warn("  newPrice  {}", newPrice);
+						if (
+							!oldPrice.open.equals(newPrice.open) ||
+							!oldPrice.high.equals(newPrice.high) ||
+							!oldPrice.low.equals(newPrice.low) ||
+							!oldPrice.close.equals(newPrice.close)) {
+							logger.warn("Unexpected price");
+							logger.warn("  stock     {}  {}", stockInfo.stockCode, stockInfo.name);
+							logger.warn("  oldPrice  {}", oldPrice);
+							logger.warn("  newPrice  {}", newPrice);
+						}
 						// replace with new value
 						map.put(newPrice.date, newPrice);
 					}
