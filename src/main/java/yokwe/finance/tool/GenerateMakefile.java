@@ -36,7 +36,7 @@ public class GenerateMakefile {
 		var makefileList = Makefile.scanModule(module);
 
 		var groupNameSet   = makefileList.stream().map(o -> toMakeGroup(o)).collect(Collectors.toCollection(TreeSet::new));
-		var groupUpdateSet = groupNameSet.stream().map(o -> "udate-" + o).collect(Collectors.toCollection(TreeSet::new));
+		var groupUpdateSet = groupNameSet.stream().map(o -> "update-" + o).collect(Collectors.toCollection(TreeSet::new));
 		
 		var sw = new StringWriter();		
 		try (var out = new PrintWriter(sw)) {
@@ -44,13 +44,14 @@ public class GenerateMakefile {
 			out.println("# module " + module.getDescriptor().toNameAndVersion());
 			out.println("#");
 			out.println();
-			out.println(".PHONY: update-all " + String.join(" ", groupUpdateSet));
+			out.println("TARGETS = " + String.join(" ", groupUpdateSet));
+			out.println();
+			out.println(".PHONY: update-all $(TARGETS)");
 			out.println();
 			out.println("#");
 			out.println("# update-all");
 			out.println("#");
-			out.println("update-all: \\");
-			out.println("\t" + String.join(" \\\n\t", groupUpdateSet));
+			out.println("update-all: $(TARGETS)");
 			out.println();
 			out.println();
 			
@@ -79,6 +80,7 @@ public class GenerateMakefile {
 						out.println("\t" + String.join(" \\\n\t", iList));
 					}
 					out.println("\tant " + toAntTarget(e));
+					out.println();
 				}
 				
 				out.println();
