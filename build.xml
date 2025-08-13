@@ -7,8 +7,6 @@
 <project name="yokwe-finance" default="package" basedir=".">
 	<import file="maven-build.xml" />
 
-	<property name="logback.conf" value="data/logback.xml" />
-
 	<path id="target.jar">
 		<pathelement location="${maven.build.dir}/${maven.build.finalName}.jar" />
 	</path>
@@ -23,7 +21,6 @@
 		<java module="yokwe.finance/yokwe.finance.tool.T001" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="generate-makefile">
@@ -31,7 +28,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="generate-dot">
@@ -39,7 +35,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -49,7 +44,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -59,7 +53,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jita-update-fund-info">
@@ -67,7 +60,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jita-update-nisa-info">
@@ -75,7 +67,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -85,7 +76,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-etn">
@@ -93,7 +83,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-infra">
@@ -101,7 +90,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-kessan-json">
@@ -109,7 +97,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-reit">
@@ -117,7 +104,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-stock-code-name">
@@ -125,7 +111,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-stock-detail-json">
@@ -133,7 +118,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-stock-div">
@@ -141,7 +125,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-stock-intra-price">
@@ -149,7 +132,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-stock-list">
@@ -157,7 +139,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-stock-price-ohlcv">
@@ -165,7 +146,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jpx-update-stock-value">
@@ -173,7 +153,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -183,7 +162,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="jreit-update-jreit-info">
@@ -191,7 +169,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -201,7 +178,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -211,7 +187,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -221,7 +196,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -231,7 +205,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="rakuten-update-trading-stock-us">
@@ -239,7 +212,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
@@ -249,7 +221,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="yahoo-update-company-info-us">
@@ -257,7 +228,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 
@@ -267,7 +237,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="stock-jp-update-stock-info">
@@ -275,7 +244,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="stock-jp-update-stock-price">
@@ -283,7 +251,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 
@@ -293,7 +260,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="stock-us-update-stock-div">
@@ -301,7 +267,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="stock-us-update-stock-info">
@@ -309,7 +274,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="stock-us-update-stock-info-all">
@@ -317,7 +281,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	<target name="stock-us-update-stock-price-ohlcv">
@@ -325,7 +288,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 
@@ -335,7 +297,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 
@@ -345,7 +306,6 @@
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" />
-			<sysproperty key="logback.configurationFile" value="${logback.conf}" />
 		</java>
 	</target>
 	
