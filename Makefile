@@ -126,7 +126,7 @@ update-jpx:
 	ant jpx-update-stock-list jpx-update-etf jpx-update-etn jpx-update-infra jpx-update-reit
 
 update-jita:
-	ant jita-update-nisa-info jita-update-fund-info
+	ant jita-update-fund-info
 
 update-us-exchange:
 	ant bats-update-stock-code-name nasdaq-update-stock-code-name nyse-update-stock-code-name
