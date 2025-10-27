@@ -309,4 +309,13 @@
 		</java>
 	</target>
 	
+	<!-- report stock jp -->
+	<target name="fund-jp-update-report">
+		<java module="yokwe.finance/yokwe.finance.report.fund.jp.UpdateReport" fork="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+		</java>
+	</target>
+
 </project>
