@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 
 import yokwe.finance.data.type.StockCodeJP;
+import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.http.Download;
 import yokwe.util.http.DownloadSync;
@@ -39,7 +40,22 @@ public class UpdateKessanJSON extends UpdateComplexTask<StockCodeName>  {
 	
 	@Override
 	protected List<StockCodeName> getList() {
-		return StorageJPX.StockCodeName.getList();
+		var list = StorageJPX.StockCodeName.getList();
+		// deletes not json file
+		deleteNotJSONFile(list);
+		return list;
+	}
+	private void deleteNotJSONFile(List<StockCodeName> list) {
+		for(var stockCodeName: list) {
+			var file = StorageJPX.KessanJSON.getFile(stockCodeName.stockCode);
+			if (file.length() == 0) continue;
+			if (isJSONFile(file)) continue;
+			FileUtil.delete(file);
+		}
+	}
+	private boolean isJSONFile(File file) {
+		var string = FileUtil.read().file(file);
+		return string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}';
 	}
 	
 	@Override
@@ -121,6 +137,8 @@ public class UpdateKessanJSON extends UpdateComplexTask<StockCodeName>  {
 
 	@Override
 	protected void updateFile(List<StockCodeName> list) {
+		// deletes not json file
+		deleteNotJSONFile(list);
 		// touch file
 		StorageJPX.KessanJSON.touch();
 	}
