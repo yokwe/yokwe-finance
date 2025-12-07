@@ -31,7 +31,8 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.fund.jp.StorageJP.FundInfo,
 					yokwe.finance.data.fund.jp.StorageJP.FundDiv,
 					yokwe.finance.data.fund.jp.StorageJP.FundPrice,
-					yokwe.finance.data.fund.jp.StorageJP.NISAInfo
+					yokwe.finance.data.fund.jp.StorageJP.NISAInfo,
+					yokwe.finance.data.provider.sony.StorageSony.TradingFundJP
 				).
 			output(StorageJP.ReportCSV).
 			build();
@@ -60,6 +61,7 @@ public class UpdateReport extends UpdateBase {
 		var list = new ArrayList<ReportForm>();
 		var nisaInfoMap  = yokwe.finance.data.fund.jp.StorageJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var fundInfoList = yokwe.finance.data.fund.jp.StorageJP.FundInfo.getList();
+		var sonyMap      = yokwe.finance.data.provider.sony.StorageSony.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		
 		int countNoPrice = 0;
 		int count        = 0;
@@ -177,21 +179,21 @@ public class UpdateReport extends UpdateBase {
 				// FUND
 //				report.nikko   = !nikkoMap.containsKey(fund.isinCode)   ? null: nikkoMap.get(fund.isinCode).salesFee;
 //				report.rakuten = !rakutenMap.containsKey(fund.isinCode) ? null: rakutenMap.get(fund.isinCode).salesFee;
-//				report.sony    = !sonyMap.containsKey(fund.isinCode)    ? null: sonyMap.get(fund.isinCode).salesFee;
+				report.sony    = !sonyMap.containsKey(fundInfo.isinCode)? MINUS_ONE: sonyMap.get(fundInfo.isinCode).salesFee;
 //				report.prestia = !prestiaMap.containsKey(fund.isinCode) ? null: prestiaMap.get(fund.isinCode).salesFee;
 //				report.smtb    = !smtbMap.containsKey(fund.isinCode)    ? null: smtbMap.get(fund.isinCode).salesFee;
 				report.nikko   = MINUS_ONE;
 				report.rakuten = MINUS_ONE;
-				report.sony    = MINUS_ONE;
+//				report.sony    = MINUS_ONE;
 				report.prestia = MINUS_ONE;
 				report.smtb    = MINUS_ONE;
 			} else {
 				// ETF
 				report.nikko   = BigDecimal.ZERO;;
 				report.rakuten = BigDecimal.ZERO;;
-				report.sony    = BigDecimal.ZERO;
-				report.prestia = BigDecimal.ZERO;
-				report.smtb    = BigDecimal.ZERO;
+				report.sony    = MINUS_ONE;
+				report.prestia = MINUS_ONE;
+				report.smtb    = MINUS_ONE;
 			}
 			
 			// special case
