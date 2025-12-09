@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.report.stats.StockStats;
+import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
 import yokwe.util.StringUtil;
@@ -29,7 +30,7 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.stock.jp.StorageJP.StockPriceOHLCV,
 					yokwe.finance.data.stock.jp.StorageJP.StockDiv
 				).
-			output(StorageJP.ReportCSV).
+			output(StorageJP.Report).
 			build();
 	
 	public static void main(String[] args) {
@@ -41,7 +42,7 @@ public class UpdateReport extends UpdateBase {
 		var list = getReportList();		
 		generateReport(list);
 		// save
-		save(list, StorageJP.ReportCSV);
+		// generateReport saves file
 	}
 	private List<ReportForm> getReportList() {
 		var dateStop  = MarketHoliday.JP.getLastTradingDate();
@@ -130,14 +131,7 @@ public class UpdateReport extends UpdateBase {
 		return list;
 	}
 	private void generateReport(List<ReportForm> reportList) {
-		String urlReport;
-		{
-			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
-			var file       = StorageJP.Report.getFile(timestamp);
-			
-			urlReport  = StringUtil.toURLString(file);
-		}
-
+		String urlReport = StringUtil.toURLString(StorageJP.Report.getFile());
 		logger.info("urlReport {}", urlReport);
 		logger.info("docLoad   {}", URL_TEMPLATE);
 		try {
@@ -165,6 +159,15 @@ public class UpdateReport extends UpdateBase {
 		} finally {
 			// stop LibreOffice process
 			LibreOffice.terminate();
+		}
+		{
+			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
+			var newName = "report-" + timestamp + ".ods";
+			var destFile = StorageJP.Report.getFile(newName);
+			
+			logger.info("copy {} to {}", StorageJP.Report.getFile(), destFile);
+			
+			FileUtil.copy(StorageJP.Report.getFile(), destFile);
 		}
 	}
 	private static final String URL_TEMPLATE  = StringUtil.toURLString(new File("data/form/STOCK_STATS_JP.ods"));

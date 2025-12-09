@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import yokwe.finance.report.stats.StockStats;
+import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
 import yokwe.util.StringUtil;
@@ -24,7 +25,7 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.stock.us.StorageUS.StockPriceOHLCV,
 					yokwe.finance.data.stock.us.StorageUS.StockDiv
 				).
-			output(StorageUS.ReportCSV).
+			output(StorageUS.Report).
 			build();
 	
 	public static void main(String[] args) {
@@ -36,7 +37,7 @@ public class UpdateReport extends UpdateBase {
 		var list = getReportList();		
 		generateReport(list);
 		// save
-		save(list, StorageUS.ReportCSV);
+		// generateReport saves file
 	}
 	private List<ReportForm> getReportList() {
 		var dateStop  = MarketHoliday.JP.getLastTradingDate();
@@ -113,14 +114,7 @@ public class UpdateReport extends UpdateBase {
 		return list;
 	}
 	private void generateReport(List<ReportForm> reportList) {
-		String urlReport;
-		{
-			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
-			var file       = StorageUS.Report.getFile(timestamp);
-			
-			urlReport  = StringUtil.toURLString(file);
-		}
-
+		String urlReport = StringUtil.toURLString(StorageUS.Report.getFile());
 		logger.info("urlReport {}", urlReport);
 		logger.info("docLoad   {}", URL_TEMPLATE);
 		try {
@@ -148,6 +142,15 @@ public class UpdateReport extends UpdateBase {
 		} finally {
 			// stop LibreOffice process
 			LibreOffice.terminate();
+		}
+		{
+			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
+			var newName = "report-" + timestamp + ".ods";
+			var destFile = StorageUS.Report.getFile(newName);
+			
+			logger.info("copy {} to {}", StorageUS.Report.getFile(), destFile);
+			
+			FileUtil.copy(StorageUS.Report.getFile(), destFile);
 		}
 	}
 	private static final String URL_TEMPLATE  = StringUtil.toURLString(new File("data/form/STOCK_STATS_US.ods"));

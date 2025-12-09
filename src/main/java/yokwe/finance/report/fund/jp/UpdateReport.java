@@ -15,6 +15,7 @@ import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.util.DoubleUtil;
+import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
 import yokwe.util.StringUtil;
@@ -34,7 +35,7 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.fund.jp.StorageJP.NISAInfo,
 					yokwe.finance.data.provider.sony.StorageSony.TradingFundJP
 				).
-			output(StorageJP.ReportCSV).
+			output(StorageJP.Report).
 			build();
 
 	public static void main(String[] args) {
@@ -45,14 +46,13 @@ public class UpdateReport extends UpdateBase {
 	private static final LocalDate  LAST_DATE_OF_LAST_MONTH = LocalDate.now().withDayOfMonth(1).minusDays(1);
 	private static final LocalDate  NO_DATE = LocalDate.of(2099, 12, 31);
 	private static final BigDecimal CONSUMPTION_TAX_RATE    = new BigDecimal("1.1"); // 10 percent
-	private static final BigDecimal MINUS_ONE = BigDecimal.ONE.negate();
 
 	@Override
 	public void update() {
 		var list = getReportList();
 		generateReport(list);
 		// save
-		save(list, StorageJP.ReportCSV);
+		// generateReport saves file
 	}
 	private List<ReportForm> getReportList() {
 		var dateStop  = MarketHoliday.JP.getLastTradingDate();
@@ -112,8 +112,8 @@ public class UpdateReport extends UpdateBase {
 				int nMonth  = 1;
 				int nOffset = 0;
 				
-				report.rsi14   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.rsi(nMonth, nOffset, 14));
-				report.rsi7    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.rsi(nMonth, nOffset, 7));
+				report.rsi14   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rsi(nMonth, nOffset, 14));
+				report.rsi7    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rsi(nMonth, nOffset, 7));
 			}
 			
 			// 1 year
@@ -121,50 +121,50 @@ public class UpdateReport extends UpdateBase {
 				int nMonth  = 12;
 				int nOffset = 0;
 				
-				report.sd1Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div1Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield1Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror1Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
+				report.sd1Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
+				report.div1Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
+				report.yield1Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
+				report.ror1Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
 			}
 			// 3 year
 			{
 				int nMonth = 36;
 				int nOffset = 0;
 				
-				report.sd3Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div3Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield3Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror3Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
+				report.sd3Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
+				report.div3Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
+				report.yield3Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
+				report.ror3Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
 			}
 			// 5 year
 			{
 				int nMonth = 60;
 				int nOffset = 0;
 				
-				report.sd5Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div5Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield5Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror5Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
+				report.sd5Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
+				report.div5Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
+				report.yield5Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
+				report.ror5Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
 			}
 			// 10 year
 			{
 				int nMonth = 120;
 				int nOffset = 0;
 				
-				report.sd10Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div10Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield10Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror10Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? MINUS_ONE : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
+				report.sd10Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
+				report.div10Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
+				report.yield10Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
+				report.ror10Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
 			}
 			
 //			report.divScore1Y  = (nikkei == null || !DivScoreType.hasValue(nikkei.score1Y))  ? null : nikkei.score1Y;
 //			report.divScore3Y  = (nikkei == null || !DivScoreType.hasValue(nikkei.score3Y))  ? null : nikkei.score3Y;
 //			report.divScore5Y  = (nikkei == null || !DivScoreType.hasValue(nikkei.score5Y))  ? null : nikkei.score5Y;
 //			report.divScore10Y = (nikkei == null || !DivScoreType.hasValue(nikkei.score10Y)) ? null : nikkei.score10Y;
-			report.divScore1Y  = MINUS_ONE;
-			report.divScore3Y  = MINUS_ONE;
-			report.divScore5Y  = MINUS_ONE;
-			report.divScore10Y = MINUS_ONE;
+			report.divScore1Y  = null;
+			report.divScore3Y  = null;
+			report.divScore5Y  = null;
+			report.divScore10Y = null;
 			
 			report.name     = fundInfo.name;
 			
@@ -172,37 +172,37 @@ public class UpdateReport extends UpdateBase {
 				var nisaInfo = nisaInfoMap.get(isinCode);
 				report.nisa = nisaInfo.tsumitate ? BigDecimal.ONE : BigDecimal.ZERO;
 			} else {
-				report.nisa = MINUS_ONE;
+				report.nisa = null;
 			}
 
 			if (report.stockCode.isEmpty()) {
 				// FUND
+				report.nikko   = null;
+				report.rakuten = null;
+//				report.sony    = null;
+				report.prestia = null;
+				report.smtb    = null;
 //				report.nikko   = !nikkoMap.containsKey(fund.isinCode)   ? null: nikkoMap.get(fund.isinCode).salesFee;
 //				report.rakuten = !rakutenMap.containsKey(fund.isinCode) ? null: rakutenMap.get(fund.isinCode).salesFee;
-				report.sony    = !sonyMap.containsKey(fundInfo.isinCode)? MINUS_ONE: sonyMap.get(fundInfo.isinCode).salesFee;
+				report.sony    = !sonyMap.containsKey(fundInfo.isinCode)? null: sonyMap.get(fundInfo.isinCode).salesFee;
 //				report.prestia = !prestiaMap.containsKey(fund.isinCode) ? null: prestiaMap.get(fund.isinCode).salesFee;
 //				report.smtb    = !smtbMap.containsKey(fund.isinCode)    ? null: smtbMap.get(fund.isinCode).salesFee;
-				report.nikko   = MINUS_ONE;
-				report.rakuten = MINUS_ONE;
-//				report.sony    = MINUS_ONE;
-				report.prestia = MINUS_ONE;
-				report.smtb    = MINUS_ONE;
 			} else {
 				// ETF
-				report.nikko   = BigDecimal.ZERO;;
-				report.rakuten = BigDecimal.ZERO;;
-				report.sony    = MINUS_ONE;
-				report.prestia = MINUS_ONE;
-				report.smtb    = MINUS_ONE;
+				report.nikko   = BigDecimal.ZERO;
+				report.rakuten = BigDecimal.ZERO;
+				report.sony    = null;
+				report.prestia = null;
+				report.smtb    = null;
 			}
 			
 			// special case
 			if (fundInfo.redemptionDate.toString().compareTo(FundInfoJP.NO_REDEMPTION_DATE_STRING) == 0) report.redemption = NO_DATE;
 
-			if (report.div1Y  != null && report.div1Y.compareTo(BigDecimal.ZERO) == 0)  report.yield1Y  = report.divScore1Y  = MINUS_ONE;
-			if (report.div3Y  != null && report.div3Y.compareTo(BigDecimal.ZERO) == 0)  report.yield3Y  = report.divScore3Y  = MINUS_ONE;
-			if (report.div5Y  != null && report.div5Y.compareTo(BigDecimal.ZERO) == 0)  report.yield5Y  = report.divScore5Y  = MINUS_ONE;
-			if (report.div10Y != null && report.div10Y.compareTo(BigDecimal.ZERO) == 0) report.yield10Y = report.divScore10Y = MINUS_ONE;
+			if (report.div1Y  != null && report.div1Y.compareTo(BigDecimal.ZERO) == 0)  report.yield1Y  = report.divScore1Y  = null;
+			if (report.div3Y  != null && report.div3Y.compareTo(BigDecimal.ZERO) == 0)  report.yield3Y  = report.divScore3Y  = null;
+			if (report.div5Y  != null && report.div5Y.compareTo(BigDecimal.ZERO) == 0)  report.yield5Y  = report.divScore5Y  = null;
+			if (report.div10Y != null && report.div10Y.compareTo(BigDecimal.ZERO) == 0) report.yield10Y = report.divScore10Y = null;
 			
 			list.add(report);
 		}
@@ -215,14 +215,7 @@ public class UpdateReport extends UpdateBase {
 		return list;
 	}
 	private void generateReport(List<ReportForm> reportList) {
-		String urlReport;
-		{
-			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
-			var file       = StorageJP.Report.getFile(timestamp);
-			
-			urlReport  = StringUtil.toURLString(file);
-		}
-
+		var urlReport = StringUtil.toURLString(StorageJP.Report.getFile());
 		logger.info("urlReport {}", urlReport);
 		logger.info("docLoad   {}", URL_TEMPLATE);
 		try {
@@ -250,6 +243,15 @@ public class UpdateReport extends UpdateBase {
 		} finally {
 			// stop LibreOffice process
 			LibreOffice.terminate();
+		}
+		{
+			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
+			var newName = "report-" + timestamp + ".ods";
+			var destFile = StorageJP.Report.getFile(newName);
+			
+			logger.info("copy {} to {}", StorageJP.Report.getFile(), destFile);
+			
+			FileUtil.copy(StorageJP.Report.getFile(), destFile);
 		}
 	}
 
