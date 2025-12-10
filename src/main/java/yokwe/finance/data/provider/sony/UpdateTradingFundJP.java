@@ -1,7 +1,6 @@
 package yokwe.finance.data.provider.sony;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +20,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJITA.FundInfo).
+//		input(StorageJITA.FundInfo).
 		output(StorageSony.TradingFundJP).
 		build();
 	
@@ -137,7 +136,6 @@ public class UpdateTradingFundJP extends UpdateBase {
 				continue;
 			}
 			
-			// FIXME how to convert abic fund code to ISIN
 			var fundCode = e.id_abicfund.substring(1);
 			if (map.containsKey(fundCode)) {
 				var fundInfo = map.get(fundCode);

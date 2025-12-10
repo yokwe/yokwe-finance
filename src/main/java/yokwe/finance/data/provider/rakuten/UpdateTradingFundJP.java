@@ -21,7 +21,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-//		input(StorageJITA.FundInfo).
+		input(). // StorageJITA.FundInfo
 		output(StorageRakuten.TradingFundJP).
 		build();
 	
