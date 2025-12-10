@@ -2,9 +2,6 @@ package yokwe.finance.data.provider.sony;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,11 +42,34 @@ public class UpdateTradingFundJP extends UpdateBase {
 		String queryString;
 		{
 			var currentTimeMillis = System.currentTimeMillis();
-	        var instant = Instant.ofEpochMilli(currentTimeMillis);
-	        var localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-	        var formatter = DateTimeFormatter.ofPattern("02yyyyMMdd0");
-	        var com_id_session = localDateTime.format(formatter) + Long.toString(currentTimeMillis % 1000000000);
-	        com_id_session = "02202512050269295267";
+	        // valid values
+	        // 02YYYYMMDD0----00000
+	        // 02202512050269000000
+	        
+	        // 02202512060269500000
+	        // 02202512060269600000
+	        // 02202512060269700000
+	        
+	        // 02202512070269800000
+	        // 02202512070269900000
+	        // 02202512070270000000
+	        
+	        // 02202512080270100000
+	        // 02202512080270200000
+	        // 02202512080270300000
+	        // 02202512080270400000
+	        // 
+	        // 02202512090270500000
+	        // 02202512090270600000
+	        // 02202512090270700000
+	        // 02202512090270800000
+	        
+	        // 02202512090270834223
+	        // 02202512090270834494
+	        // 02202512090270834645
+	        
+	        // 
+	        var com_id_session = "02202512080270100000";
 			
 			var map = new LinkedHashMap<String, String>();
 			// _com_id_product=1&
@@ -68,7 +88,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 			map.put("_com_id_screen", "10107101");
 			map.put("_biz_id_abiccode", "");
 			map.put("id_companyapp", "003");
-			map.put("_com_id_session", com_id_session); // FIXME
+			map.put("_com_id_session", com_id_session);
 			map.put("id_keyword", "");
 			map.put("id_fundlist", "");
 			map.put("fg_stop", "");
