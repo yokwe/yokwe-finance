@@ -215,6 +215,15 @@
 		</java>
 	</target>
 	
+	<!-- provider smtb -->
+	<target name="smtb-update-trading-fund-jp">
+		<java module="yokwe.finance/yokwe.finance.data.provider.smtb.UpdateTradingFundJP" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+		</java>
+	</target>
+	
 	<!-- provider sony -->
 	<target name="sony-update-trading-fund-jp">
 		<java module="yokwe.finance/yokwe.finance.data.provider.sony.UpdateTradingFundJP" fork="true" failonerror="true">

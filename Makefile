@@ -107,7 +107,7 @@ update-all-debug:
 	make -f tmp/update-all.make -n update-all
 
 
-update-data-jp: update-jpx update-jita update-rakute-jp update-sony-jp
+update-data-jp: update-jpx update-jita update-rakute-jp update-smtb-jp update-sony-jp
 	make update-all
 
 update-data-us: update-rakuten-us update-us-exchange
@@ -139,6 +139,9 @@ update-rakuten-us:
 
 update-sony-jp:
 	ant sony-update-trading-fund-jp
+
+update-smtb-jp:
+	ant smtb-update-trading-fund-jp
 
 update-mizuho:
 	ant mizuho-update-fx-rate
