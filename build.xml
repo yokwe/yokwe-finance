@@ -27,14 +27,14 @@
 		<java module="yokwe.finance/yokwe.finance.tool.GenerateMakefile" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="generate-dot">
 		<java module="yokwe.finance/yokwe.finance.tool.GenerateDot" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -43,7 +43,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.bats.UpdateStockCodeName" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -52,21 +52,21 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.jita.UpdateFundDivPrice" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jita-update-fund-info">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jita.UpdateFundInfo" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jita-update-nisa-info">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jita.UpdateNISAInfo" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -75,84 +75,84 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateETF" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-etn">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateETN" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-infra">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateInfra" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-kessan-json">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateKessanJSON" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-reit">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateREIT" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-stock-code-name">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockCodeName" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-stock-detail-json">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockDetailJSON" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-stock-div">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockDiv" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-stock-intra-price">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockIntraPrice" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-stock-list">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockList" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-stock-price-ohlcv">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockPriceOHLCV" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jpx-update-stock-value">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jpx.UpdateStockValue" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -161,14 +161,14 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.jreit.UpdateJREITDiv" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="jreit-update-jreit-info">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jreit.UpdateJREITInfo" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -177,7 +177,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.mizuho.UpdateFXRate" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -186,7 +186,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.nasdaq.UpdateStockCodeName" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -195,7 +195,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.nikkei.UpdateFundDivScore" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -204,7 +204,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.nikko.UpdateTradingFundJP" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -213,7 +213,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.nyse.UpdateStockCodeName" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -222,14 +222,14 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.rakuten.UpdateTradingFundJP" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="rakuten-update-trading-stock-us">
 		<java module="yokwe.finance/yokwe.finance.data.provider.rakuten.UpdateTradingStockUS" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -238,7 +238,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.smtb.UpdateTradingFundJP" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -247,7 +247,7 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.sony.UpdateTradingFundJP" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -256,14 +256,14 @@
 		<java module="yokwe.finance/yokwe.finance.data.provider.yahoo.UpdateCompanyInfoJP" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="yahoo-update-company-info-us">
 		<java module="yokwe.finance/yokwe.finance.data.provider.yahoo.UpdateCompanyInfoUS" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 
@@ -272,21 +272,21 @@
 		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockDiv" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="stock-jp-update-stock-info">
 		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockInfo" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="stock-jp-update-stock-price">
 		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockPrice" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 
@@ -295,35 +295,35 @@
 		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockCodeName" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="stock-us-update-stock-div">
 		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockDiv" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="stock-us-update-stock-info">
 		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockInfo" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="stock-us-update-stock-info-all">
 		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockInfoAll" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	<target name="stock-us-update-stock-price-ohlcv">
 		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockPriceOHLCV" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 
@@ -332,8 +332,7 @@
 		<java module="yokwe.finance/yokwe.finance.report.stock.jp.UpdateReport" fork="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
-			<jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 
@@ -342,8 +341,7 @@
 		<java module="yokwe.finance/yokwe.finance.report.stock.us.UpdateReport" fork="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
-			<jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 	
@@ -352,8 +350,7 @@
 		<java module="yokwe.finance/yokwe.finance.report.fund.jp.UpdateReport" fork="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" />
-			<jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
 
