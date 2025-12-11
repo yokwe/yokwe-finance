@@ -190,6 +190,15 @@
 		</java>
 	</target>
 	
+	<!-- provider nikkei -->
+	<target name="nikkei-update-fund-div-score">
+		<java module="yokwe.finance/yokwe.finance.data.provider.nikkei.UpdateFundDivScore" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" />
+		</java>
+	</target>
+	
 	<!-- provider nikko -->
 	<target name="nikko-update-trading-fund-jp">
 		<java module="yokwe.finance/yokwe.finance.data.provider.nikko.UpdateTradingFundJP" fork="true" failonerror="true">

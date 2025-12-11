@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.data.type.DailyValue;
+import yokwe.finance.data.type.FundDivScore;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.util.DoubleUtil;
@@ -36,7 +37,8 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.provider.nikko.StorageNikko.TradingFundJP,
 					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJP,
 					yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJP,
-					yokwe.finance.data.provider.sony.StorageSony.TradingFundJP
+					yokwe.finance.data.provider.sony.StorageSony.TradingFundJP,
+					yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore
 				).
 			output(StorageJP.Report).
 			build();
@@ -68,14 +70,28 @@ public class UpdateReport extends UpdateBase {
 		var rakutenMap   = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var smtbMap      = yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var sonyMap      = yokwe.finance.data.provider.sony.StorageSony.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var divScoreMap  = yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		
-		int countNoPrice = 0;
-		int count        = 0;
+		int countNoPrice    = 0;
+		int countNoDivScore = 0;
+		int count           = 0;
 		
 		for(var fundInfo: fundInfoList) {
 			var isinCode  = fundInfo.isinCode;
 			
 			if ((++count % 500) == 1) logger.info("{} / {}  {}", count, fundInfoList.size(), isinCode);
+			
+			var divScore = divScoreMap.getOrDefault(isinCode, null);
+			if (divScore == null) {
+				countNoDivScore++;
+				divScore = new FundDivScore(isinCode);
+			} else {
+				if (!FundDivScore.isValid(divScore.score1Y))  divScore.score1Y  = null;
+				if (!FundDivScore.isValid(divScore.score3Y))  divScore.score3Y  = null;
+				if (!FundDivScore.isValid(divScore.score5Y))  divScore.score5Y  = null;
+				if (!FundDivScore.isValid(divScore.score10Y)) divScore.score10Y = null;
+			}
+			
 			
 			MonthlyStats  monthlyStats;
 			BigDecimal    nav;
@@ -163,14 +179,10 @@ public class UpdateReport extends UpdateBase {
 				report.ror10Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
 			}
 			
-//			report.divScore1Y  = (nikkei == null || !DivScoreType.hasValue(nikkei.score1Y))  ? null : nikkei.score1Y;
-//			report.divScore3Y  = (nikkei == null || !DivScoreType.hasValue(nikkei.score3Y))  ? null : nikkei.score3Y;
-//			report.divScore5Y  = (nikkei == null || !DivScoreType.hasValue(nikkei.score5Y))  ? null : nikkei.score5Y;
-//			report.divScore10Y = (nikkei == null || !DivScoreType.hasValue(nikkei.score10Y)) ? null : nikkei.score10Y;
-			report.divScore1Y  = null;
-			report.divScore3Y  = null;
-			report.divScore5Y  = null;
-			report.divScore10Y = null;
+			report.divScore1Y  = divScore.score1Y;
+			report.divScore3Y  = divScore.score3Y;
+			report.divScore5Y  = divScore.score5Y;
+			report.divScore10Y = divScore.score10Y;
 			
 			report.name     = fundInfo.name;
 			
@@ -210,10 +222,10 @@ public class UpdateReport extends UpdateBase {
 			list.add(report);
 		}
 		
-		logger.info("fundList       {}", fundInfoList.size());
-//		logger.info("nikkeiMap      {}", nikkeiMap.size());
-		logger.info("countNoPrice   {}", countNoPrice);
-//		logger.info("countNoNikkei  {}", countNoNikkei);
+		logger.info("fundList        {}", fundInfoList.size());
+		logger.info("divScoreMap     {}", divScoreMap.size());
+		logger.info("countNoPrice    {}", countNoPrice);
+		logger.info("countNoDivScore {}", countNoDivScore);
 
 		return list;
 	}
