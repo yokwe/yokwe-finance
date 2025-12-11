@@ -118,12 +118,12 @@ public class GenerateDot {
 				for(var e: makefile.inputList) {
 					countEdge++;
 					var path = e.getPath().replace(rootPath, "");
-					g.edge(path, antTarget);
+					g.edge(path, antTarget).attr("style", "dashed"); // use dashed line for input file
 				}
 				for(var e: makefile.outputList) {
 					countEdge++;
 					var path = e.getPath().replace(rootPath, "");
-					g.edge(antTarget, path).attr("style", "bold"); // make bold for output file
+					g.edge(antTarget, path).attr("style", "solid");  // use solid line for output file
 				}
 			}
 		}
