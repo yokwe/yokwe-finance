@@ -107,7 +107,7 @@ update-all-debug:
 	make -f tmp/update-all.make -n update-all
 
 
-update-data-jp: update-jpx update-jita update-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp
+update-data-jp: update-jpx update-jita update-click-jp uupdate-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp
 	make update-all
 
 update-data-us: update-rakuten-us update-us-exchange
@@ -130,6 +130,9 @@ update-jita:
 
 update-us-exchange:
 	ant bats-update-stock-code-name nasdaq-update-stock-code-name nyse-update-stock-code-name
+
+update-click-jp:
+	ant click-update-trading-fund-jp
 
 update-nikko-jp:
 	ant nikko-update-trading-fund-jp
