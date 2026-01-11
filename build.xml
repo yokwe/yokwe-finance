@@ -47,6 +47,15 @@
 		</java>
 	</target>
 	
+	<!-- provider click -->
+	<target name="click-update-trading-fund-jp">
+		<java module="yokwe.finance/yokwe.finance.data.provider.click.UpdateTradingFundJP" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
+	
 	<!-- provider jista -->
 	<target name="jita-update-fund-div-price">
 		<java module="yokwe.finance/yokwe.finance.data.provider.jita.UpdateFundDivPrice" fork="true" failonerror="true">

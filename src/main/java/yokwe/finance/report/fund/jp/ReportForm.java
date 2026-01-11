@@ -94,7 +94,9 @@ public class ReportForm extends Sheet implements Comparable<ReportForm> {
 	@Sheet.NumberFormat(SpreadSheet.FORMAT_PERCENT2)
 	@Sheet.ColumnName("PRESTIA")    public BigDecimal prestia;
 	@Sheet.NumberFormat(SpreadSheet.FORMAT_PERCENT2)
-	@Sheet.ColumnName("SMTB")    public BigDecimal smtb;
+	@Sheet.ColumnName("SMTB")       public BigDecimal smtb;
+	@Sheet.NumberFormat(SpreadSheet.FORMAT_PERCENT2)
+	@Sheet.ColumnName("クリック")   public BigDecimal click;
 	
 	@Sheet.ColumnName("NISA")       public BigDecimal nisa;
 	

@@ -38,6 +38,7 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJP,
 					yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJP,
 					yokwe.finance.data.provider.sony.StorageSony.TradingFundJP,
+					yokwe.finance.data.provider.click.StorageClick.TradingFundJP,
 					yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore
 				).
 			output(StorageJP.Report).
@@ -70,6 +71,7 @@ public class UpdateReport extends UpdateBase {
 		var rakutenMap   = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var smtbMap      = yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var sonyMap      = yokwe.finance.data.provider.sony.StorageSony.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var clickMap     = yokwe.finance.data.provider.click.StorageClick.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var divScoreMap  = yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		
 		int countNoPrice    = 0;
@@ -199,9 +201,10 @@ public class UpdateReport extends UpdateBase {
 				//
 				report.nikko   = !nikkoMap.containsKey(fundInfo.isinCode)   ? null: nikkoMap.get(fundInfo.isinCode).salesFee;
 				report.rakuten = !rakutenMap.containsKey(fundInfo.isinCode) ? null: rakutenMap.get(fundInfo.isinCode).salesFee;
+//				report.prestia = !prestiaMap.containsKey(fundInfo.isinCode) ? null: prestiaMap.get(fundInfo.isinCode).salesFee;
 				report.smtb    = !smtbMap.containsKey(fundInfo.isinCode)    ? null: smtbMap.get(fundInfo.isinCode).salesFee;
 				report.sony    = !sonyMap.containsKey(fundInfo.isinCode)    ? null: sonyMap.get(fundInfo.isinCode).salesFee;
-//				report.prestia = !prestiaMap.containsKey(fundInfo.isinCode) ? null: prestiaMap.get(fundInfo.isinCode).salesFee;
+				report.click   = !clickMap.containsKey(fundInfo.isinCode)   ? null: clickMap.get(fundInfo.isinCode).salesFee;
 			} else {
 				// ETF
 				report.nikko   = BigDecimal.ZERO;
@@ -209,6 +212,7 @@ public class UpdateReport extends UpdateBase {
 				report.prestia = null;
 				report.smtb    = null;
 				report.sony    = null;
+				report.click   = null;
 			}
 			
 			// special case
