@@ -108,9 +108,12 @@ public class UpdateReport extends UpdateBase {
 //					stats.vol       = (double)stockStats.vol / stockInfo.issued.doubleValue();
 //					stats.vol5      = (double)stockStats.vol5 / stockInfo.issued.doubleValue();
 //					stats.vol21     = (double)stockStats.vol21 / stockInfo.issued.doubleValue();
-					report.vol       = (double)stockStats.vol   * report.price;
-					report.vol5      = (double)stockStats.vol5  * report.price;
-					report.vol21     = (double)stockStats.vol21 * report.price;
+//					report.vol       = (double)stockStats.vol   * report.price;
+//					report.vol5      = (double)stockStats.vol5  * report.price;
+//					report.vol21     = (double)stockStats.vol21 * report.price;
+					report.vol       = stockStats.vol;
+					report.vol5      = stockStats.vol5;
+					report.vol21     = stockStats.vol21;
 				}
 				
 				if (stockInfo.type.isETF()) {
