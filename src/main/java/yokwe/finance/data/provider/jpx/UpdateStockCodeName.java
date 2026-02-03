@@ -46,6 +46,7 @@ public class UpdateStockCodeName extends UpdateBase {
 				
 				var type = typeMap.get(stockCode);
 				if (type == null) type = typeMap.get(e.LISS_CNV);
+				if (type == null && name.contains("インフラ投資法人")) type = Type.INFRA;
 				if (type == null) {
 					logger.error("Unexpected type");
 					logger.error("  stockCode  {}", stockCode);
