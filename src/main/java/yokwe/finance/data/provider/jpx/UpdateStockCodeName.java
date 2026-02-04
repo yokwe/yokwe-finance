@@ -39,6 +39,8 @@ public class UpdateStockCodeName extends UpdateBase {
 			for(var e: stockDetail.section1.data.values()) {
 				// skip Tokyo Pro Markets
 				if (e.LISS_CNV.equals("TPM")) continue;
+				// skip if no history price  -- before inception date
+				if (e.A_HISTDAYL.isEmpty()) continue;
 				
 				var stockCode = StockCodeJP.toStockCode5(e.TTCODE2);
 				var isinCode  = e.ISIN;
@@ -46,7 +48,6 @@ public class UpdateStockCodeName extends UpdateBase {
 				
 				var type = typeMap.get(stockCode);
 				if (type == null) type = typeMap.get(e.LISS_CNV);
-				if (type == null && name.contains("インフラ投資法人")) type = Type.INFRA;
 				if (type == null) {
 					logger.error("Unexpected type");
 					logger.error("  stockCode  {}", stockCode);
