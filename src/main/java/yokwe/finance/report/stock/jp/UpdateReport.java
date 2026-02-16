@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.report.stats.StockStats;
+import yokwe.util.CSVUtil;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
@@ -21,7 +22,7 @@ import yokwe.util.update.UpdateBase;
 
 public class UpdateReport extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
 					yokwe.finance.data.fund.jp.StorageJP.NISAInfo,
@@ -30,24 +31,50 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.stock.jp.StorageJP.StockPriceOHLCV,
 					yokwe.finance.data.stock.jp.StorageJP.StockDiv
 				).
-			output(StorageJP.Report).
+			output(StorageJP.ReportODS).
 			build();
-	
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	public void update() {
-		var list = getReportList();		
+		var list = getReportList();
+		// save ods
 		generateReport(list);
-		// save
-		// generateReport saves file
+		// save csv
+		{
+			var file = StorageJP.ReportCSV.getFile();
+			logger.info("save  {}  {}", list.size(), file.getPath());
+			CSVUtil.write(ReportForm.class).file(file, list);
+		}
+		// copy files
+		{
+			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
+
+			{
+				var newName    = "report-" + timestamp + ".ods";
+				var destFile   = StorageJP.ReportODS.getFile(newName);
+				var sourceFile = StorageJP.ReportODS.getFile();
+
+				logger.info("copy {} to {}", sourceFile, destFile);
+				FileUtil.copy(sourceFile, destFile);
+			}
+			{
+				var newName    = "report-" + timestamp + ".csv";
+				var destFile   = StorageJP.ReportCSV.getFile(newName);
+				var sourceFile = StorageJP.ReportCSV.getFile();
+
+				logger.info("copy {} to {}", sourceFile, destFile);
+				FileUtil.copy(sourceFile, destFile);
+			}
+		}
 	}
 	private List<ReportForm> getReportList() {
 		var dateStop  = MarketHoliday.JP.getLastTradingDate();
 		logger.info("dateStop  {}", dateStop);
-		
+
 		var list = new ArrayList<ReportForm>();
 		{
 			var nisaMap        = yokwe.finance.data.fund.jp.StorageJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
@@ -58,44 +85,44 @@ public class UpdateReport extends UpdateBase {
 				var priceList = yokwe.finance.data.stock.jp.StorageJP.StockPriceOHLCV.getList(stockCode);
 				var divList   = yokwe.finance.data.stock.jp.StorageJP.StockDiv.getList(stockCode);
 				var stockValue = stockValueMap.get(stockCode);
-				
+
 				if (priceList.size() < 10) {
 					logger.info("skip  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
 					continue;
 				}
-				
+
 				ReportForm report = new ReportForm();
 				report.stockCode = stockCode;
 				report.type      = stockInfo.type.simpleType.toString();
 				report.sector    = stockInfo.sector;
 				report.industry  = stockInfo.industry;
-				
+
 				report.divc     = -1;
 				// set sector and industry
-				
+
 				report.name      = stockInfo.name;
 				report.marketCap = BigDecimal.valueOf(stockValue.issued).multiply(priceList.get(priceList.size() - 1).close).longValue();
-				
+
 				{
 					StockStats stockStats = StockStats.getInstance(stockCode, dateStop, priceList, divList);
-					
+
 					report.price     = stockStats.price;
 					report.pricec    = priceList.size();
 					report.invest    = (int)(stockStats.price * stockInfo.tradeUnit);
 					report.last      = stockStats.last;
-					
+
 					report.rorNoReinvested = stockStats.rorNoReinvested;
-					
+
 					report.sd        = stockStats.sd;
 					report.hv        = stockStats.hv;
 					report.rsi14     = stockStats.rsi14;
 					report.rsi7      = stockStats.rsi7;
-					
+
 					report.min       = stockStats.min;
 					report.max       = stockStats.max;
 					report.minY3     = stockStats.minY3;
 					report.maxY3     = stockStats.maxY3;
-					
+
 //					if (stats.divc == -1) {
 //						stats.divc          = stockStats.divc;
 //					}
@@ -115,7 +142,7 @@ public class UpdateReport extends UpdateBase {
 					report.vol5      = stockStats.vol5;
 					report.vol21     = stockStats.vol21;
 				}
-				
+
 				if (stockInfo.type.isETF()) {
 					if (nisaMap.containsKey(stockInfo.isinCode)) {
 						var nisaInfo = nisaMap.get(stockInfo.isinCode);
@@ -126,7 +153,7 @@ public class UpdateReport extends UpdateBase {
 				} else {
 					report.nisa = "0";
 				}
-				
+
 				list.add(report);
 			}
 		}
@@ -134,27 +161,27 @@ public class UpdateReport extends UpdateBase {
 		return list;
 	}
 	private void generateReport(List<ReportForm> reportList) {
-		String urlReport = StringUtil.toURLString(StorageJP.Report.getFile());
+		String urlReport = StringUtil.toURLString(StorageJP.ReportODS.getFile());
 		logger.info("urlReport {}", urlReport);
 		logger.info("docLoad   {}", URL_TEMPLATE);
 		try {
 			// start LibreOffice process
 			LibreOffice.initialize();
-			
+
 			SpreadSheet docLoad = new SpreadSheet(URL_TEMPLATE, true);
 			SpreadSheet docSave = new SpreadSheet();
-			
+
 			String sheetName = Sheet.getSheetName(ReportForm.class);
 			logger.info("sheet     {}", sheetName);
 			docSave.importSheet(docLoad, sheetName, docSave.getSheetCount());
 			Sheet.fillSheet(docSave, reportList);
-			
+
 			// remove first sheet
 			docSave.removeSheet(docSave.getSheetName(0));
 
 			docSave.store(urlReport);
 			logger.info("output    {}", urlReport);
-			
+
 			docLoad.close();
 			logger.info("close     docLoad");
 			docSave.close();
@@ -162,15 +189,6 @@ public class UpdateReport extends UpdateBase {
 		} finally {
 			// stop LibreOffice process
 			LibreOffice.terminate();
-		}
-		{
-			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
-			var newName = "report-" + timestamp + ".ods";
-			var destFile = StorageJP.Report.getFile(newName);
-			
-			logger.info("copy {} to {}", StorageJP.Report.getFile(), destFile);
-			
-			FileUtil.copy(StorageJP.Report.getFile(), destFile);
 		}
 	}
 	private static final String URL_TEMPLATE  = StringUtil.toURLString(new File("data/form/STOCK_STATS_JP.ods"));
