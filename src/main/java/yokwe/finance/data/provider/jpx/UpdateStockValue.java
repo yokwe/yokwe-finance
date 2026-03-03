@@ -14,46 +14,48 @@ import yokwe.util.update.UpdateBase;
 
 public class UpdateStockValue extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(StorageJPX.StockDetailJSON).
 		output(StorageJPX.StockValue).
 		build();
-		
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	public void update() {
 		var stockCodeList = UpdateStockDetailJSON.getJSONFileList().stream().map(o -> o.getName().replace(".json", "")).toList();
-		
+
 		logger.info("stockCodeList  {}", stockCodeList.size());
-		
+
 		var dataList = new ArrayList<StockDetail.Data>();
-		
+
 		for(var stockCode: stockCodeList) {
 			var string = StorageJPX.StockDetailJSON.load(stockCode);
 			var result = JSON.unmarshal(StockDetail.class, string);
-			
-			if (result.section1.data == null) continue;
-			
+
+			if (result.section1.data == null) {
+				continue;
+			}
+
 			dataList.addAll(result.section1.data.values());
 		}
 		logger.info("dataList  {}", dataList.size());
-		
+
 		var list = toStockValueList(dataList);
 		save(list, StorageJPX.StockValue); // use save for make
 	}
-	
+
 	private List<StockValueJP> toStockValueList(List<StockDetail.Data> dataList) {
 		var list = new ArrayList<StockValueJP>(dataList.size());
-		
+
 		for(var data: dataList) {
 			StockValueJP stockValue = new StockValueJP();
-			
+
 			// from stock detail
-			stockValue.stockCode = StockCodeJP.toStockCode5(data.TTCODE2);
+			stockValue.stockCode = StockCodeJP.toStockCode5(data.TTCODE.replace("/T", ""));
 			stockValue.date      = toLocalDate(data.ZXD);   // ZXD
 			stockValue.open      = toBigDecimal(data.DOP);	// DOP
 			stockValue.openTime  = toLocalTime(data.DOPT);  // DOPT
@@ -70,10 +72,10 @@ public class UpdateStockValue extends UpdateBase {
 			stockValue.ask       = toBigDecimal(data.QAP);	// QAP
 			stockValue.askTime   = toLocalTime(data.QAPT);	// QAPT
 			stockValue.previous  = toBigDecimal(data.PRP);	// PRP  -- previous close
-			
+
 			list.add(stockValue);
 		}
-		
+
 		return list;
 	}
 	private static LocalDate toLocalDate(String string) {
@@ -88,7 +90,7 @@ public class UpdateStockValue extends UpdateBase {
 	private static long toLong(String string) {
 		return string.equals("-") ? 0 : Long.valueOf(string.replace(",", ""));
 	}
-	
+
 	private static final LocalDate ZERO_DATE = LocalDate.of(2000, 1, 1);
 	private static final LocalTime ZERO_TIME = LocalTime.of(0, 0);
 

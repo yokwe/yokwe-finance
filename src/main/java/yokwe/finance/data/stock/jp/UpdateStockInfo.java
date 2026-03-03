@@ -21,42 +21,46 @@ import yokwe.util.update.UpdateBase;
 
 public class UpdateStockInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	protected static Makefile MAKEFILE = Makefile.builder().
 		input(StorageJPX.StockCodeName, StorageJITA.FundInfo, StorageJREIT.JREITInfo, StorageYahoo.CompanyInfoJP).
 		output(StorageJP.StockInfo).
 		build();
-	
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	public void update() {
 		var stockList      = StorageJPX.StockCodeName.getList();
 		var fundMap        = StorageJITA.FundInfo.getList().stream().filter(o -> !o.stockCode.isEmpty()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 		var jreitMap       = StorageJREIT.JREITInfo.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 		var companyInfoMap = StorageYahoo.CompanyInfoJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
-		
-		
+
+
 		var list = new ArrayList<StockInfoJP>(stockList.size());
-		
+
 		int count = 0;
 		for(var stock: stockList) {
-			if ((++count % 1000) == 1) logger.info("{}  /  {}", count, stockList.size());
+			if ((++count % 1000) == 1) {
+				logger.info("{}  /  {}", count, stockList.size());
+			}
 
 			var string = StorageJPX.StockDetailJSON.load(stock.stockCode);
 			var result = JSON.unmarshal(StockDetail.class, string);
-			
+
 			if (result.section1.data == null) {
 				logger.warn("data is null  {}  {}", stock.stockCode, stock.name);
 			} else {
 				for(var data: result.section1.data.values()) {
 					// skip Tokyo Pro Markets
-					if (data.LISS_CNV.equals("TPM")) continue;
+					if (data.LISS_CNV.equals("TPM")) {
+						continue;
+					}
 
-					String stockCode = StockCodeJP.toStockCode5(data.TTCODE2);
-					
+					String stockCode = StockCodeJP.toStockCode5(data.TTCODE.replace("/T", ""));
+
 					// sanity check
 					if (stockCode.equals(stock.stockCode)) {
 						String isinCode  = stock.isinCode;
@@ -70,7 +74,9 @@ public class UpdateStockInfo extends UpdateBase {
 						if (type.isETF() || type.isETN()) {
 							var fundInfo = fundMap.get(stockCode);
 							if (fundInfo == null) {
-								if (!isinCode.startsWith("JP")) industry = "ETF-外国籍";
+								if (!isinCode.startsWith("JP")) {
+									industry = "ETF-外国籍";
+								}
 							} else {
 								sector   = "ETF-" + fundInfo.investingAsset;
 								industry = "ETF-" + fundInfo.investingArea;
@@ -93,7 +99,7 @@ public class UpdateStockInfo extends UpdateBase {
 								industry  = "*" + type + "*";
 							}
 						}
-						
+
 						var stockInfo = new StockInfoJP(stockCode, isinCode, tradeUnit, type, sector, industry, name);
 						list.add(stockInfo);
 					} else {
@@ -105,11 +111,11 @@ public class UpdateStockInfo extends UpdateBase {
 				}
 			}
 		}
-		
+
 		save(list, StorageJP.StockInfo); // use save for make
 	}
-	
-	
+
+
 	private static final Map<String, Type> typeMap = new HashMap<>();
 	//                       code
 	static {
@@ -119,7 +125,7 @@ public class UpdateStockInfo extends UpdateBase {
 		StorageJPX.REIT. getList().stream().forEach(o -> typeMap.put(o.code, StockInfoJP.Type.REIT));
 		typeMap.put("83010", Type.CERTIFICATE); // 日本銀行
 		typeMap.put("84210", Type.CERTIFICATE); // 信金中央金庫
-		
+
 		typeMap.put("グロース",           Type.DOMESTIC_GROWTH);
 		typeMap.put("プライム",           Type.DOMESTIC_PRIME);
 		typeMap.put("スタンダード",       Type.DOMESTIC_STANDARD);

@@ -11,13 +11,13 @@ public class StockDetail {
 		public int               hitcount;
 		public int               status;
 		public String            type;
-		
+
 		@Override
 		public String toString() {
 			return ToString.withFieldName(this);
 		}
 	}
-	
+
 	public static class Index {
         public String YEAR;     // "2024/09"
         public String FY;       // "中間"
@@ -30,7 +30,7 @@ public class StockDetail {
         public String DIVD;     // "0.00"
         public String KABU;     // "-"
 	}
-	
+
 	public static class Data {
 		@Ignore
 		public String A_CALC027; // "-"
@@ -89,7 +89,6 @@ public class StockDetail {
         public String QBP;  // 買気配 "4,105"
         public String QBPT; // 買気配 時刻 "10:43"
         public String SHRK; // 発行済株式数 "12,078,283"
-		@Ignore
         public String TTCODE;  // "1301/T"
         public String TTCODE2; // "1301"
         public String YHPD; // 年初来高値 日付 "2024/09/24"
@@ -117,20 +116,20 @@ public class StockDetail {
         public String LISS_CNV; // "プライム"
 		@Ignore
         public String LISSE_CNV; // "Prime"
-        
+
 		@Override
 		public String toString() {
 			return ToString.withFieldName(this);
 		}
 	}
-	
+
 	public String   cputime;
 	public Section1 section1;
 	public int      status;
 	public String   ver;
 	@Ignore
 	public Object   urlparam;
-	
+
 	@Override
 	public String toString() {
 		return ToString.withFieldName(this);

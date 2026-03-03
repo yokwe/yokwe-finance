@@ -10,8 +10,8 @@ public class StockValueJP implements Comparable<StockValueJP> {
 	public static final LocalDate ZERO_DATE = LocalDate.of(1980,  1,  1);
 	public static final LocalTime ZERO_TIME = LocalTime.of(0,  0);
 
-	public String		stockCode;						// TTCODE2
-	
+	public String		stockCode;						// TTCODE.replace("/T", "")
+
 	// from stock list
 //	public BigDecimal	roe       = BigDecimal.ZERO;	// ROE
 //	public BigDecimal	per       = BigDecimal.ZERO;	// PER
@@ -33,17 +33,17 @@ public class StockValueJP implements Comparable<StockValueJP> {
 	public BigDecimal	ask       = BigDecimal.ZERO;	// QAP
 	public LocalTime	askTime   = ZERO_TIME;			// QAPT
 	public BigDecimal	previous  = BigDecimal.ZERO;	// PRP  -- previous close
-	
+
 	public StockValueJP() {}
 	public StockValueJP(String stockCode) {
 		this.stockCode = stockCode;
 	}
-	
+
 	@Override
 	public int compareTo(StockValueJP that) {
 		return this.stockCode.compareTo(that.stockCode);
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToString.withFieldName(this);
