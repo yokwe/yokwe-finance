@@ -61,14 +61,6 @@ public class UpdateReport extends UpdateBase {
 				logger.info("copy {} to {}", sourceFile, destFile);
 				FileUtil.copy(sourceFile, destFile);
 			}
-			{
-				var newName    = "report-" + timestamp + ".csv";
-				var destFile   = StorageJP.ReportCSV.getFile(newName);
-				var sourceFile = StorageJP.ReportCSV.getFile();
-
-				logger.info("copy {} to {}", sourceFile, destFile);
-				FileUtil.copy(sourceFile, destFile);
-			}
 		}
 	}
 	private List<ReportForm> getReportList() {
