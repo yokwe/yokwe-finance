@@ -26,7 +26,7 @@ CRON_LOG=/Users/hasegawa/git/yokwe-finance/tmp/cron.log
 
 # SAVE FILE
 #m   h     dom mon dow   command
-05   5     *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="save file"  log-start save-all log-stop ) 1>>$CRON_LOG 2>&1
+30   5     *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="save file"  log-start save-all log-stop ) 1>>$CRON_LOG 2>&1
 50   13    *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="save file"  log-start save-all log-stop ) 1>>$CRON_LOG 2>&1
 05   21    *   *   *     cd $YOKWE_FINANCE; ( make LOG_TITLE="save file"  log-start save-all log-stop ) 1>>$CRON_LOG 2>&1
 
