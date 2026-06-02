@@ -247,7 +247,7 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 			if (resultInfo.investArea10kindCd8.equals("1")) {
 				areaList.add(FundDataSearch.InvestingArea.getInstance("8").getName());
 			}
-			if (resultInfo.investArea10kindCd8.equals("1")) {
+			if (resultInfo.investArea10kindCd9.equals("1")) {
 				areaList.add(FundDataSearch.InvestingArea.getInstance("9").getName());
 			}
 			if (resultInfo.investArea10kindCd10.equals("1")) {
