@@ -107,7 +107,7 @@ update-all-debug:
 	make -f tmp/update-all.make -n update-all
 
 
-update-data-jp: update-jpx update-jita update-click-jp uupdate-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp
+update-data-jp: update-jpx update-jita update-click-jp update-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp
 	make update-all
 
 update-data-us: update-rakuten-us update-us-exchange
