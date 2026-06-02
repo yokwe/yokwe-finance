@@ -18,29 +18,37 @@ import yokwe.util.update.UpdateList;
 
 public class UpdateFXRate extends UpdateList<Quote> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
 		input().
 		output(StorageMizuho.FXRate).
 		build();
-		
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	protected List<Quote> downloadFile() {
 		logger.info("EPOCH DATE  {}", EPOCH_DATE);
-		
-		String string = HttpUtil.getInstance().withCharset(ENCODING_CSV).downloadString(URL_CSV);
+
+		var string = HttpUtil.getInstance().
+			withCharset(ENCODING_CSV).
+			withHeader("Accept", ACCEPT).
+			withHeader("accept-encoding", ACCEPT_ENCODING).
+			downloadString(URL_CSV);
 		StorageMizuho.Quote.write(string);
-		
+
 		Reader reader = new StringReader(string);
 		return CSVUtil.read(Quote.class).withHeader(false).file(reader);
 	}
 	private static final LocalDate EPOCH_DATE   = LocalDate.of(2024, 1, 1);
 	private static final String    ENCODING_CSV = "SHIFT_JIS";
 	private static final String    URL_CSV      = "https://www.mizuhobank.co.jp/market/quote.csv";
+
+	private static final String    ACCEPT          = "*/*";
+	private static final String    ACCEPT_ENCODING = "gzip, deflate, br, zstd";
+
 
 	@Override
 	protected void updateFile(List<Quote> list) {
@@ -93,32 +101,32 @@ public class UpdateFXRate extends UpdateList<Quote> {
 				}
 			}
 		}
-		
+
 		List<FXRate> result = new ArrayList<>();
 		for(int i = 3; i < list.size(); i++) {
 			Quote value = list.get(i);
-			
+
 			var date = toLocalDate(value.DATE);
 			var usd  = new BigDecimal(value.USD).setScale(2);
-			
+
 			result.add(new FXRate(date, usd));
 		}
-		
+
 		// remove entry before EPOC_DATE
 		result.removeIf(o -> o.date.isBefore(EPOCH_DATE));
-		
+
 		logger.info("date  {} - {}", result.getFirst().date, result.getLast().date);
-		
+
 		save(result, StorageMizuho.FXRate); // use save for make
 	}
 	private LocalDate toLocalDate(String string) {
 		Matcher m = PAT_YYYYMMDD.matcher(string);
-		
+
 		if (m.matches() && m.groupCount() == 3) {
 			int yyyy = Integer.parseInt(m.group("yyyy"));
 			int mm   = Integer.parseInt(m.group("mm"));
 			int dd   = Integer.parseInt(m.group("dd"));
-			
+
 			return LocalDate.of(yyyy, mm, dd);
 		} else {
 			logger.error("Unexpected string");
