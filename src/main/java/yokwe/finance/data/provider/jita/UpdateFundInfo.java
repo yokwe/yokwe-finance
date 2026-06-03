@@ -12,6 +12,7 @@ import org.apache.hc.core5.http2.HttpVersionPolicy;
 
 import yokwe.finance.data.provider.jpx.StockCodeName;
 import yokwe.finance.data.type.FundInfoJP;
+import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.Download;
@@ -55,6 +56,9 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 
 				for(var e: data.searchResultInfo.resultInfoMapList) {
 					fundList.add(toFund(e));
+					// save for later inspection
+					var jsonString = JSON.marshal(e);
+					StorageJITA.FundInfoJSON.save(e.isinCd, jsonString);
 				}
 			}
 		}
@@ -72,6 +76,16 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 
 	@Override
 	protected List<Task> getTaskList(List<FundInfoJP> dummy) {
+		// delete existing JSON file
+		{
+			var dir = StorageJITA.FundInfoJSON.getDir();
+			for(var file: FileUtil.listFile(dir)) {
+				if (file.getName().endsWith(".json")) {
+					file.delete();
+				}
+			}
+		}
+
 		var list = new ArrayList<Task>();
 
 		// build list only first time
