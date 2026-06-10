@@ -19,16 +19,16 @@ import yokwe.util.update.UpdateBase;
 
 public class UpdateTradingFundJP extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
 //		input(StorageJITA.FundInfo).
 		output(StorageSMTB.TradingFundJP).
 		build();
-	
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	public void update() {
 		downloadFile();
@@ -36,11 +36,11 @@ public class UpdateTradingFundJP extends UpdateBase {
 		buildList(list);
 		save(list, StorageSMTB.TradingFundJP); // use save for make
 	}
-	
+
 	void downloadFile() {
 		// delete all file in WebPage
 		StorageSMTB.WebPage.deleteFiles(o -> true);
-		
+
 		int pageNoMax;
 		{
 			int pageNo = 0;
@@ -49,17 +49,17 @@ public class UpdateTradingFundJP extends UpdateBase {
 			var page = StorageSMTB.WebPage.load(getName(pageNo));
 			var pageInfo = PageInfo.getInstance(page);
 			logger.info("pageInfo  {}", pageInfo);
-			
+
 			pageNoMax = pageInfo.hitcount / pageInfo.maxdisp;
 			logger.info("pageNoMax  {}", pageNoMax);
 		}
-		
+
 		for(int pageNo = 1; pageNo <= pageNoMax; pageNo++) {
 			logger.info("pageNo  {}", pageNo);
 			downloadPage(pageNo);
 		}
 	}
-	
+
 	String getName(int pageNo) {
 		return String.format("%04d", pageNo);
 	}
@@ -67,10 +67,10 @@ public class UpdateTradingFundJP extends UpdateBase {
 	void downloadPage(int pageNo) {
 		var url  = getURL(pageNo);
 		var value = HttpUtil.getInstance().downloadString(url);
-		
+
 		value = value.replace("\r", "\n");
 		value = value.replace("\n\n", "\n");
-		
+
 		StorageSMTB.WebPage.save(getName(pageNo), value);
 	}
 
@@ -81,7 +81,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		int before = MAXDISP * pageNo;
 		return String.format("https://fund.smtb.jp/smtbhp/qsearch.exe?F=openlist&type=result&MAXDISP=%d&TAB=t&BEFORE=%d&GO_BEFORE=", MAXDISP, before);
 	}
-	
+
 	void buildList(ArrayList<TradingFund> list) {
 		int countA = 0;
 		int countB = 0;
@@ -89,11 +89,11 @@ public class UpdateTradingFundJP extends UpdateBase {
 		int countD = 0;
 		var fundInfoList = StorageJP.FundInfo.getList();
 		var fundCodeMap  = fundInfoList.stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
-		
+
 		for(var file: StorageSMTB.WebPage.getDir().listFiles((d, n) -> n.endsWith(".html"))) {
 			var page = FileUtil.read().file(file);
-			
-			var fundList = WebPage.FundInfo.getInstance(page);			
+
+			var fundList = WebPage.FundInfo.getInstance(page);
 			for(var e: fundList) {
 				var fundCode = e.fundCode;
 				var fundName = normalizeString(e.fundName);
@@ -103,7 +103,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 					continue;
 				}
 				var salesFee = new BigDecimal(e.initialFee);
-				
+
 //				logger.info("fund  {}  {}", fundCode, fundName);
 				FundInfoJP fundInfo = null;
 				if (fundCodeMap.containsKey(fundCode)) {
@@ -122,7 +122,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 						logger.error("  fund  {}", e);
 						logger.error("        {}!", normalizeString(e.fundName));
 						countD++;
-						throw new UnexpectedException("Unexpected fund");						
+						throw new UnexpectedException("Unexpected fund");
 					}
 				}
 				list.add(new TradingFund(fundInfo.isinCode, salesFee, fundInfo.name));
@@ -133,7 +133,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		logger.info("countC  {}", countC);
 		logger.info("countD  {}", countD);
 	}
-		
+
 	private static String normalizeString(String string) {
 		int length = string.length();
 		var ret = new StringBuilder(length);
@@ -160,6 +160,13 @@ public class UpdateTradingFundJP extends UpdateBase {
 		{
 			char h = 'A';
 			char f = 'Ａ';
+			for(int i = 0; i < 26; i++) {
+				NORMALIZE_CHAR_MAP.put(Character.valueOf(h++), Character.toString(f++));
+			}
+		}
+		{
+			char h = 'a';
+			char f = 'ａ';
 			for(int i = 0; i < 26; i++) {
 				NORMALIZE_CHAR_MAP.put(Character.valueOf(h++), Character.toString(f++));
 			}
