@@ -37,8 +37,8 @@ CRON_LOG=/Users/hasegawa/git/yokwe-finance/tmp/cron.log
 
 # UPDATE DATA JP
 #m   h     dom mon dow   command
-05   3     *   *   1-5   cd $YOKWE_FINANCE; ( make LOG_TITLE="update data jp"  log-start update-data-jp log-stop ) 1>>$CRON_LOG 2>&1
-05   4     *   *   1-5   cd $YOKWE_FINANCE; ( make LOG_TITLE="update data jp"  log-start update-all     log-stop ) 1>>$CRON_LOG 2>&1
+05   3     *   *   2-6   cd $YOKWE_FINANCE; ( make LOG_TITLE="update data jp"  log-start update-data-jp log-stop ) 1>>$CRON_LOG 2>&1
+05   4     *   *   2-6   cd $YOKWE_FINANCE; ( make LOG_TITLE="update data jp"  log-start update-all     log-stop ) 1>>$CRON_LOG 2>&1
 
 # UPDATE DATA US
 #m   h     dom mon dow   command
