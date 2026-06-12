@@ -131,6 +131,8 @@ public class UpdateFundDivPrice extends UpdateBase {
 //				logger.info("{}  /  {}  {}", count, list.size(), isinCode);
 			}
 
+			var referer = String.format("https://toushin-lib.fwg.ne.jp/FdsWeb/FDST030000?isinCd=%s", isinCode);
+			http.withReferer(referer);
 
 			var file = StorageJITA.FundDivPrice.getFile(isinCode);
 
