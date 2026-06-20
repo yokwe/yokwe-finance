@@ -107,7 +107,7 @@ public class UpdateStockPriceOHLCV  extends UpdateBase {
 					throw new UnexpectedException("Unexpected ohlcvString");
 				}
 
-				var dateString = valueString[0];
+				var dateString = valueString[0].replace("//", "/"); // special for error date in 9903
 				var oString    = valueString[1];
 				var hString    = valueString[2];
 				var lString    = valueString[3];
