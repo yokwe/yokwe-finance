@@ -38,6 +38,15 @@
 		</java>
 	</target>
 	
+	<!-- fund jp -->
+	<target name="fund-jp-update-fund-div">
+		<java module="yokwe.finance/yokwe.finance.data.fund.jp.UpdateFundDiv" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
+	
 	<!-- provider bats -->
 	<target name="bats-update-stock-code-name">
 		<java module="yokwe.finance/yokwe.finance.data.provider.bats.UpdateStockCodeName" fork="true" failonerror="true">

@@ -10,19 +10,19 @@ import yokwe.util.Storage;
 
 public class StorageJP {
 	public static final Storage storage = StorageFund.storage.getStorage("jp");
-	
+
 	// fund-info
 	public static final Storage.LoadSaveFileList<FundInfoJP>
 		FundInfo = StorageJITA.FundInfo;
-	
+
 	// fund-div
 	public static final Storage.LoadSaveDirectoryList<DailyValue>
-		FundDiv = StorageJITA.FundDiv;
-	
+		FundDiv = new Storage.LoadSaveDirectoryList<DailyValue>(DailyValue.class, storage, "fund-div", o -> o + ".csv");
+
 	// fund-price
 	public static final Storage.LoadSaveDirectoryList<FundPriceJP>
 		FundPrice = StorageJITA.FundPrice;
-	
+
 	// nisa-info
 	public static final Storage.LoadSaveFileList<NISAInfo>
 		NISAInfo = StorageJITA.NISAInfo;
