@@ -87,5 +87,7 @@ public class UpdateFundDiv extends UpdateBase {
 
 			StorageJP.FundDiv.save(isinCode, divList);
 		}
+
+		StorageJP.FundDiv.touch();
 	}
 }
