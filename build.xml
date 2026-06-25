@@ -199,6 +199,16 @@
 		</java>
 	</target>
 	
+	<!-- provider moneybu -->
+	
+	<target name="moneybu-update-stock-info">
+		<java module="yokwe.finance/yokwe.finance.data.provider.moneybu.UpdateStockInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
+
 	<!-- provider nasdaq -->
 	<target name="nasdaq-update-stock-code-name">
 		<java module="yokwe.finance/yokwe.finance.data.provider.nasdaq.UpdateStockCodeName" fork="true" failonerror="true">
