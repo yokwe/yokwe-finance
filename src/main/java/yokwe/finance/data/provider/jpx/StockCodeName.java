@@ -15,32 +15,44 @@ import yokwe.util.UnexpectedException;
 
 public final class StockCodeName implements Comparable<StockCodeName>{
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public String stockCode;
 	public String isinCode;
 	public Type   type;
 	public String name;
-	
+
 	public StockCodeName(String stockCode, String isinCode, Type type, String name) {
 		this.stockCode = stockCode;
 		this.isinCode  = isinCode;
 		this.type      = type;
 		this.name      = name;
 	}
-	
+
 	public boolean isPreferredStock() {
 		return StockCodeJP.isPreferredStock(stockCode);
 	}
-	
+
 	@Override
 	public int compareTo(StockCodeName that) {
 		return this.stockCode.compareTo(that.stockCode);
 	}
 	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof StockCodeName) {
+			StockCodeName that = (StockCodeName)o;
+			return this.stockCode.equals(that.stockCode) && this.isinCode.equals(that.isinCode) && this.type == that.type && this.name.equals(that.name);
+		} else {
+			return false;
+		}
+	}
+	@Override
 	public String toString() {
 		return ToString.withFieldName(this);
 	}
-	
+
 	private static final Map<String, StockCodeName> stockCodeMap = new HashMap<>();
 	//                       stockCode
 	private static final Map<String, StockCodeName> isinCodeMap = new HashMap<>();
@@ -48,7 +60,7 @@ public final class StockCodeName implements Comparable<StockCodeName>{
 	static {
 		reload();
 	}
-	
+
 	public static void reload() {
 		stockCodeMap.clear();
 		isinCodeMap.clear();
@@ -57,8 +69,8 @@ public final class StockCodeName implements Comparable<StockCodeName>{
 			isinCodeMap.put(e.isinCode, e);
 		}
 	}
-	
-	
+
+
 	//
 	// getXXX by stockCode
 	//
@@ -101,8 +113,8 @@ public final class StockCodeName implements Comparable<StockCodeName>{
 		throw new UnexpectedException("Unexpected isinCode");
 	}
 
-	
-	
+
+
 	public static void checkStockCodeName() {
 		// check and fix other
 		var list = StorageJPX.StockCodeName.getList();
@@ -119,7 +131,9 @@ public final class StockCodeName implements Comparable<StockCodeName>{
 		for(var e: myList) {
 			var name = map.get(e.code);
 			if (name == null) {
-				if (count++ == 0) logger.info("====");
+				if (count++ == 0) {
+					logger.info("====");
+				}
 				// not found in map
 				logger.warn("{}  missing  {}  {}", group, e.code, e.name);
 			} else {
@@ -127,12 +141,16 @@ public final class StockCodeName implements Comparable<StockCodeName>{
 				if (name.equals(e.name)) {
 					// expect
 				} else {
-					if (count++ == 0) logger.info("====");
+					if (count++ == 0) {
+						logger.info("====");
+					}
 					logger.warn("{}  fix      {}  {}  <-  {}", group, e.code, e.name, name);
 					count++;
 				}
 			}
 		}
-		if (count != 0) logger.info("====");
+		if (count != 0) {
+			logger.info("====");
+		}
 	}
 }
