@@ -200,9 +200,15 @@
 	</target>
 	
 	<!-- provider moneybu -->
-	
 	<target name="moneybu-update-stock-info">
 		<java module="yokwe.finance/yokwe.finance.data.provider.moneybu.UpdateStockInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
+	<target name="moneybu-update-stock-list">
+		<java module="yokwe.finance/yokwe.finance.data.provider.moneybu.UpdateStockList" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
@@ -305,13 +311,6 @@
 	</target>
 	<target name="stock-jp-update-stock-info">
 		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockInfo" fork="true" failonerror="true">
-			<modulepath refid="build.classpath" />
-			<modulepath refid="target.jar" />
-			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
-		</java>
-	</target>
-	<target name="stock-jp-update-stock-price">
-		<java module="yokwe.finance/yokwe.finance.data.stock.jp.UpdateStockPrice" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
