@@ -1,7 +1,6 @@
 package yokwe.finance.data.provider.moneybu;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -37,8 +36,6 @@ public class UpdateStockInfo extends UpdateBase {
 
 	@Override
 	public void update() {
-		gracePeriod = Duration.ofDays(7);
-
 		var list = StorageMoneybu.StockList.getList();
 		download(list);
 		update(list);
@@ -127,9 +124,8 @@ public class UpdateStockInfo extends UpdateBase {
 
 				stockInfoList.add(stockInfo);
 			} else {
-				logger.error("Unexpected code");
-				logger.error("  code  {}", e.code);
-				throw new UnexpectedException("Unexpected code");
+				// delisted in jpx but not delisted in moneybu
+				logger.warn("Unexpected code  {}  {}", e.code, e.name);
 			}
 		}
 
