@@ -33,6 +33,11 @@ public class UpdateFundDiv extends UpdateBase {
 				continue; // not ETF
 			}
 			var stockInfo = stockInfoMap.get(stockCode);
+			if (stockInfo == null) {
+				// must be delisted etf
+				logger.warn("Unexpected stockCode  {}  {}", e.stockCode, e.name);
+				continue;
+			}
 
 			var isinCode  = e.isinCode;
 			var divList   = StorageJITA.FundDiv.getList(isinCode);
@@ -78,7 +83,7 @@ public class UpdateFundDiv extends UpdateBase {
 				}
 
 				var factor = stockInfo.lastDivValue.divide(myValue);
-				logger.info("{}  {}  {}  {}  {}", stockInfo.stockCode, stockInfo.isinCode, factor.toPlainString(), stockInfo.divYield, stockInfo.name);
+//				logger.info("{}  {}  {}  {}  {}", stockInfo.stockCode, stockInfo.isinCode, factor.toPlainString(), stockInfo.divYield, stockInfo.name);
 				// modify divList with factor
 				for(var ee: divList) {
 					ee.value = ee.value.multiply(factor);
