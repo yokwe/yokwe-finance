@@ -5,10 +5,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import yokwe.finance.data.type.OHLCV;
 import yokwe.finance.report.stats.StockStats;
 import yokwe.util.CSVUtil;
 import yokwe.util.FileUtil;
@@ -81,6 +83,19 @@ public class UpdateReport extends UpdateBase {
 				if (priceList.size() < 10) {
 					logger.info("skip  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
 					continue;
+				}
+				// Add stockValue to priceList if needed
+				{
+					var dateSet = priceList.stream().map(o -> o.date).collect(Collectors.toSet());
+					if (dateSet.contains(stockValue.date)) {
+						// no need to add to priceList
+					} else {
+						// add stockValue to priceList if has trading
+						if (stockValue.volume != 0) {
+							priceList.add(new OHLCV(stockValue.date, stockValue.open, stockValue.high, stockValue.low, stockValue.price, stockValue.volume));
+							Collections.sort(priceList);
+						}
+					}
 				}
 
 				ReportForm report = new ReportForm();
