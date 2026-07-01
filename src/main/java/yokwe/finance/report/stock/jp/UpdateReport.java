@@ -80,8 +80,13 @@ public class UpdateReport extends UpdateBase {
 				var divList   = yokwe.finance.data.stock.jp.StorageJP.StockDiv.getList(stockCode);
 				var stockValue = stockValueMap.get(stockCode);
 
+				if (stockValue == null) {
+					logger.info("no stockValue        {}  {}", stockCode, stockInfo.name);
+					continue;
+				}
+
 				if (priceList.size() < 10) {
-					logger.info("skip  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
+					logger.info("priceList too short  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
 					continue;
 				}
 				// Add stockValue to priceList if needed
