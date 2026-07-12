@@ -11,12 +11,12 @@ public class OtherListed implements Comparable<OtherListed> {
 
 	// See below URL for detail
 	//   http://www.nasdaqtrader.com/trader.aspx?id=symboldirdefs
-	
+
 	// ACT Symbol
 	//   Identifier for each security used in ACT and CTCI connectivity protocol.
 	//   Typical identifiers have 1-5 character root symbol and then 1-3 characters for suffixes. Allow up to 14 characters.
-	
-	// Exchange	
+
+	// Exchange
 	//   The listing stock exchange or market of a security.
 	//   Allowed values are:
 	//   A = NYSE MKT
@@ -31,36 +31,36 @@ public class OtherListed implements Comparable<OtherListed> {
 	public static final String EXCHANGE_BATS      = "Z";
 	public static final String EXCHANGE_IEXG      = "V";
 
-	// CQS Symbol	
+	// CQS Symbol
 	//   Identifier of the security used to disseminate data via the SIAC Consolidated Quotation System (CQS) and Consolidated Tape System (CTS) data feeds.
 	//   Typical identifiers have 1-5 character root symbol and then 1-3 characters for suffixes. Allow up to 14 characters.
-	
+
 	// ETF
 	//   Identifies whether the security is an exchange traded fund (ETF). Possible values:
 	//   Y = Yes, security is an ETF
 	//   N = No, security is not an ETF
-	
+
 	// Round Lot Size
 	//   Indicates the number of shares that make up a round lot for the given security. Allow up to 6 digits.
-	
+
 	// Test Issue
 	//   Indicates whether the security is a test security.
 	//   Y = Yes, it is a test issue.
 	//   N = No, it is not a test issue
-	
+
 	// NASDAQ Symbol
 	//   Identifier of the security used to in various NASDAQ connectivity protocols and NASDAQ market data feeds.
 	//   Typical identifiers have 1-5 character root symbol and then 1-3 characters for suffixes. Allow up to 14 characters.
 	//   See below link for explanation
 	//     https://www.nasdaqtrader.com/trader.aspx?id=CQSsymbolconvention
-	
+
 	public static final String SUFFIX_WARRANT     = "+";
 	public static final String SUFFIX_RIGHTS      = "^";
 	public static final String SUFFIX_UNITS       = "=";
 	public static final String SUFFIX_WHEN_ISSUED = "#";
 	public static final String SUFFIX_CALLED      = "*";
 
-	
+
 	// ACT Symbol|Security Name|Exchange|CQS Symbol|ETF|Round Lot Size|Test Issue|NASDAQ Symbol
 	@CSVUtil.ColumnName("ACT Symbol")      public String actSymbol;
 	@CSVUtil.ColumnName("Security Name")   public String name;
@@ -70,14 +70,14 @@ public class OtherListed implements Comparable<OtherListed> {
 	@CSVUtil.ColumnName("Round Lot Size")  public String roundLotSize;
 	@CSVUtil.ColumnName("Test Issue")      public String testIssue;
 	@CSVUtil.ColumnName("NASDAQ Symbol")   public String symbol;
-		
+
 	public boolean isETF() {
 		return etf.equals("Y");
 	}
 	public boolean isTestIssue() {
 		return testIssue.equals("Y");
 	}
-	
+
 	public boolean isWarrant() {
 		return symbol.contains(SUFFIX_WARRANT);
 	}
@@ -93,7 +93,7 @@ public class OtherListed implements Comparable<OtherListed> {
 	public boolean isCalled() {
 		return symbol.contains(SUFFIX_CALLED);
 	}
-	
+
 	public boolean isStock() {
 		return (isWarrant() || isRights() || isUnits()) ? false : true;
 	}
@@ -102,20 +102,20 @@ public class OtherListed implements Comparable<OtherListed> {
 		return exchange.equals(EXCHANGE_BATS);
 	}
 	public boolean isNYSE() {
-		return exchange.equals(EXCHANGE_BATS) || exchange.equals(EXCHANGE_BATS) || exchange.equals(EXCHANGE_BATS);
+		return exchange.equals(EXCHANGE_NYSE_MKT) || exchange.equals(EXCHANGE_NYSE) || exchange.equals(EXCHANGE_NYSE_ARCA);
 	}
-	
+
 	// Remove suffix of issued and called
 	public String normalizedSymbol() {
 		return symbol.replace(SUFFIX_WHEN_ISSUED, "").replace(SUFFIX_CALLED, "");
 	}
 
-	
+
 	@Override
 	public String toString() {
 		return ToString.withFieldName(this);
 	}
-	
+
 	@Override
 	public int compareTo(OtherListed that) {
 		return this.actSymbol.compareTo(that.actSymbol);
