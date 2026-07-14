@@ -66,10 +66,18 @@ public class UpdateStockList extends UpdateBase {
 
 		var stockList = new ArrayList<StockList>();
 		for(var e: raw0.data) {
-			stockList.add(toStockList(e));
+			if (e.price != null) {
+				stockList.add(toStockList(e));
+			} else {
+				logger.info("no price  {}  {}", e.stockCode, e.stockName);
+			}
 		}
 		for(var e: raw1.data) {
-			stockList.add(toStockList(e));
+			if (e.price != null) {
+				stockList.add(toStockList(e));
+			} else {
+				logger.info("no price  {}  {}", e.stockCode, e.stockName);
+			}
 		}
 
 		logger.info("stockList  {}", stockList.size());
@@ -144,7 +152,9 @@ public class UpdateStockList extends UpdateBase {
     	public static class Data {
      		public String     stockCode;
      		public String     stockName;
+     		@Optional
      		public BigDecimal minInvest;
+     		@Optional
      		public BigDecimal price;
      		public String     date;
      		public int        exType;        // 0 => ETF  1 => ETN
