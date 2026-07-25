@@ -15,7 +15,7 @@ public class StorageMoneybu {
 
 	// stock-list
 	public static final Storage.LoadSaveFileList<StockList> StockList =
-		new Storage.LoadSaveFileList<StockList>(StockList.class, storage, "stock-list.csv");
+		new Storage.LoadSaveFileList<StockList>(StockList.class, storage, "moneybu-stock-list.csv");
 
 	// stock-info-json
 	public static final Storage.LoadSaveDirectoryString StockInfoJSON =
@@ -23,6 +23,6 @@ public class StorageMoneybu {
 
 	// stock-list
 	public static final Storage.LoadSaveFileList<StockInfo> StockInfo =
-		new Storage.LoadSaveFileList<StockInfo>(StockInfo.class, storage, "stock-info.csv");
+		new Storage.LoadSaveFileList<StockInfo>(StockInfo.class, storage, "moneybu-stock-info.csv");
 
 }
