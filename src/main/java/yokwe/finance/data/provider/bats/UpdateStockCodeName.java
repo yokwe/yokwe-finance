@@ -8,18 +8,18 @@ import yokwe.finance.data.provider.nasdaq.StorageNASDAQ;
 import yokwe.finance.data.type.StockCodeNameUS;
 import yokwe.finance.data.type.StockInfoUS.Market;
 import yokwe.finance.data.type.StockInfoUS.Type;
-import yokwe.util.Makefile;
 import yokwe.util.update.UpdateList;
 
 public class UpdateStockCodeName extends UpdateList<OtherListed> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
-	// NOTE  Daily Listed Securities Report become not accessible. Use OhterListed in NASDAQ
+	// NOTE  Daily Listed Securities Report become not accessible.
+	// NOTE  Use StockCodeName in NASDAQ.
 
-	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageNASDAQ.OtherListed).
-		output(StorageBATS.StockCodeName).
-		build();
+//	public static Makefile MAKEFILE = Makefile.builder().
+//		input(StorageNASDAQ.OtherListed).
+//		output(StorageBATS.StockCodeName).
+//		build();
 
 	public static void main(String[] args) {
 		callUpdate();
