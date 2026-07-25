@@ -353,6 +353,20 @@
 			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
+	<target name="stock-us-update-quotes">
+		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateQuotes" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
+	<target name="stock-us-update-stock-stats">
+		<java module="yokwe.finance/yokwe.finance.data.stock.us.UpdateStockStats" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
 
 	<!-- report stock jp -->
 	<target name="stock-jp-update-report">
