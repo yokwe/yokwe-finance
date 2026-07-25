@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import yokwe.finance.data.type.StockCodeJP;
 import yokwe.util.Makefile;
 import yokwe.util.ToString;
 import yokwe.util.UnexpectedException;
@@ -86,7 +87,7 @@ public class UpdateStockList extends UpdateBase {
 	private StockList toStockList(Raw.Data data) {
 		StockList ret = new StockList();
 
-		ret.code          = data.stockCode;
+		ret.code          = StockCodeJP.toStockCode5(data.stockCode); // use 5 digits stock code
 		ret.name          = data.stockName;
 
 		ret.exType        = data.exType == 0 ? "ETF" : "ETN";
@@ -207,7 +208,4 @@ public class UpdateStockList extends UpdateBase {
  		    return ToString.withFieldName(this);
  		}
     }
-
-
-
 }
