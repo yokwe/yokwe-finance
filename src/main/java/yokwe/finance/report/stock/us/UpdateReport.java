@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.report.stats.StockStats;
@@ -46,6 +47,7 @@ public class UpdateReport extends UpdateBase {
 		logger.info("dateStop  {}", dateStop);
 
 		var rakutenSet = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingStockUS.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
+		var stockStatsMap = yokwe.finance.data.stock.us.StorageUS.StockStats.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
 		var list = new ArrayList<ReportForm>();
 		{
@@ -55,7 +57,13 @@ public class UpdateReport extends UpdateBase {
 				var divList   = yokwe.finance.data.stock.us.StorageUS.StockDiv.getList(stockCode);
 
 				if (priceList.size() < 10) {
-					logger.info("skip  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
+					logger.info("to small  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
+					continue;
+				}
+
+				var stockStatsUS = stockStatsMap.get(stockCode);
+				if (stockStatsUS == null) {
+					logger.info("no stockStats {}  {}", stockCode, stockInfo.name);
 					continue;
 				}
 
@@ -98,6 +106,11 @@ public class UpdateReport extends UpdateBase {
 					report.forwardYield  = stockStats.forwardYield;
 					report.annualDiv     = stockStats.annualDiv;
 					report.trailingYield = stockStats.trailingYield;
+
+					// stockStatsUS
+					report.rorPrice      = stockStatsUS.fiftyTwoWeek.doubleValue();
+					report.divc          = stockStatsUS.divInt;
+					report.trailingYield = stockStatsUS.divYield.doubleValue();
 
 //					stats.vol       = (double)stockStats.vol / stockInfo.issued.doubleValue();
 //					stats.vol5      = (double)stockStats.vol5 / stockInfo.issued.doubleValue();
