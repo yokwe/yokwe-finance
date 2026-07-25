@@ -48,6 +48,7 @@ public class UpdateStockInfo extends UpdateBase {
 		var uuid = UUID.randomUUID().toString();
 
 		var list = stockList.stream().filter(o -> needsUpdate(StorageMoneybu.StockInfoJSON.getFile(o.code))).collect(Collectors.toList());
+		logger.info("download  {}", list.size());
 		//
 		Collections.shuffle(list);
 		int count = 0;
@@ -58,10 +59,14 @@ public class UpdateStockInfo extends UpdateBase {
 //				logger.info("{}", e.code);
 			}
 
-			var string = http.withPost(getBody(uuid, e.code), CONTENT_TYPE).downloadString(URL);
+			var stockCode = StockCodeJP.toStockCode4(e.code);
+			var referer   = getReferer(stockCode);
+			var string    = http.withPost(getBody(uuid, stockCode), CONTENT_TYPE).withReferer(referer).downloadString(URL);
 			StorageMoneybu.StockInfoJSON.save(e.code, string);
 		}
-
+	}
+	private static String getReferer(String stockCode) {
+		return String.format("https://jpx.cloud.qri.jp/tosyo-moneybu/detail/%s", stockCode);
 	}
 	private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
 	private static final String URL = "https://jpx.cloud.qri.jp/tosyo-moneybu/api/detail/info";
@@ -82,7 +87,8 @@ public class UpdateStockInfo extends UpdateBase {
 		var today    = LocalDate.now();
 
 		logger.info("update  {}", stockList.size());
-		int count = 0;
+		int count         = 0;
+		int countNotFound = 0;
 		for(var e: stockList) {
 			if ((count++ % 40) == 0) {
 				logger.info("{}", count - 1);
@@ -91,9 +97,15 @@ public class UpdateStockInfo extends UpdateBase {
 			}
 
 			var string = StorageMoneybu.StockInfoJSON.load(e.code);
+			if (string.contains("銘柄が見つかりませんでした")) {
+				logger.warn("cannot find stock  {}  {}", e.code, e.name);
+				countNotFound++;
+				continue;
+			}
+
 			var raw = JSON.unmarshal(Raw.class, string);
 
-			var stockCode = StockCodeJP.toStockCode5(e.code);
+			var stockCode = e.code;
 			if (stockMap.containsKey(stockCode)) {
 				var stock = stockMap.get(stockCode);
 
@@ -128,6 +140,9 @@ public class UpdateStockInfo extends UpdateBase {
 				logger.warn("Unexpected code  {}  {}", e.code, e.name);
 			}
 		}
+
+		logger.info("count          {}", count);
+		logger.info("countNotFound  {}", countNotFound);
 
 		logger.info("stockInfoList  {}", stockInfoList.size());
 		StorageMoneybu.StockInfo.save(stockInfoList);
