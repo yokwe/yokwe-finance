@@ -90,16 +90,11 @@ public class UpdateReport extends UpdateBase {
 					continue;
 				}
 				// Add stockValue to priceList if needed
-				{
+				if (stockValue.volume != 0) {
 					var dateSet = priceList.stream().map(o -> o.date).collect(Collectors.toSet());
-					if (dateSet.contains(stockValue.date)) {
-						// no need to add to priceList
-					} else {
-						// add stockValue to priceList if has trading
-						if (stockValue.volume != 0) {
-							priceList.add(new OHLCV(stockValue.date, stockValue.open, stockValue.high, stockValue.low, stockValue.price, stockValue.volume));
-							Collections.sort(priceList);
-						}
+					if (!dateSet.contains(stockValue.date)) {
+						priceList.add(new OHLCV(stockValue.date, stockValue.open, stockValue.high, stockValue.low, stockValue.price, stockValue.volume));
+						Collections.sort(priceList);
 					}
 				}
 
