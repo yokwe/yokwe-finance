@@ -25,7 +25,8 @@ public class UpdateStockInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageMoneybu.StockList, StorageJPX.StockCodeName).
+//		input(StorageMoneybu.StockList, StorageJPX.StockCodeName).
+		input(StorageJPX.StockCodeName). // remove StorageMoneybu.StockList to prevent run in make-update-all
 		output(StorageMoneybu.StockInfo).
 		build();
 
