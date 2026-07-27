@@ -73,6 +73,7 @@ public class UpdateReport extends UpdateBase {
 		{
 			var nisaMap        = yokwe.finance.data.fund.jp.StorageJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 			var stockValueMap  = yokwe.finance.data.stock.jp.StorageJP.StockValue.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var taxMap         = yokwe.finance.data.analysis.StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
 			for(var stockInfo: yokwe.finance.data.stock.jp.StorageJP.StockInfo.getList()) {
 				var stockCode = stockInfo.stockCode;
@@ -103,7 +104,7 @@ public class UpdateReport extends UpdateBase {
 				report.type      = stockInfo.type.simpleType.toString();
 				report.sector    = stockInfo.sector;
 				report.industry  = stockInfo.industry;
-
+				report.taxAdjust = taxMap.containsKey(stockCode) ? "1" : "0";
 				report.divc     = -1;
 				// set sector and industry
 
