@@ -229,7 +229,7 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 		int        divFreq = resultInfo.setlFqcy.equals("-") ? 0 : Integer.parseInt(resultInfo.setlFqcy);
 		String     name    = resultInfo.fundNm;
 
-		BigDecimal expenseRatio = new BigDecimal(resultInfo.trustReward).scaleByPowerOfTen(-1); // percent to value
+		BigDecimal expenseRatio = new BigDecimal(resultInfo.trustReward).scaleByPowerOfTen(-2); // percent to value
 		BigDecimal buyFreeMax   = (resultInfo.buyFee != null) ? new BigDecimal(resultInfo.buyFee).scaleByPowerOfTen(-2) : BigDecimal.ZERO;
 
 		String     fundType = FundDataSearch.FundType.getInstance(resultInfo.unitOpenDiv).getName();
