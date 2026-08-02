@@ -84,7 +84,7 @@ public class UpdateStockCodeName extends UpdateBase {
 		// sanity check
 		checkDuplicateKey(list, o -> o.stockCode);
 
-		save(list, StorageNYSE.StockCodeName);  // use save for make
+		save(list, StorageNYSE.StockCodeNameNYSE);  // use save for make
 	}
 	private static final String TYPE_STOCK = "EQUITY";
 	private static final String TYPE_ETF   = "EXCHANGE_TRADED_FUND";

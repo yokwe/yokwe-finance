@@ -26,8 +26,8 @@ public class UpdateStockInfo extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 //		input(StorageMoneybu.StockList, StorageJPX.StockCodeName).
-		input(StorageJPX.StockCodeName). // remove StorageMoneybu.StockList to prevent run in make-update-all
-		output(StorageMoneybu.StockInfo).
+		input(StorageJPX.StockCodeNameJPX). // remove StorageMoneybu.StockList to prevent run in make-update-all
+		output(StorageMoneybu.StockInfoMoneybu).
 		build();
 
 
@@ -37,7 +37,7 @@ public class UpdateStockInfo extends UpdateBase {
 
 	@Override
 	public void update() {
-		var list = StorageMoneybu.StockList.getList();
+		var list = StorageMoneybu.StockListMoneybu.getList();
 		download(list);
 		update(list);
 	}
@@ -84,7 +84,7 @@ public class UpdateStockInfo extends UpdateBase {
 		//
 		var stockInfoList = new ArrayList<StockInfo>(stockList.size());
 
-		var stockMap = StorageJPX.StockCodeName.getList().stream().collect(Collectors.toMap(o->o.stockCode, Function.identity()));
+		var stockMap = StorageJPX.StockCodeNameJPX.getList().stream().collect(Collectors.toMap(o->o.stockCode, Function.identity()));
 		var today    = LocalDate.now();
 
 		logger.info("update  {}", stockList.size());
@@ -146,7 +146,7 @@ public class UpdateStockInfo extends UpdateBase {
 		logger.info("countNotFound  {}", countNotFound);
 
 		logger.info("stockInfoList  {}", stockInfoList.size());
-		StorageMoneybu.StockInfo.save(stockInfoList);
+		StorageMoneybu.StockInfoMoneybu.save(stockInfoList);
 	}
 
 

@@ -22,7 +22,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 //		input(StorageJITA.FundInfo).
-		output(StorageSMTB.TradingFundJP).
+		output(StorageSMTB.TradingFundJPSMTB).
 		build();
 
 	public static void main(String[] args) {
@@ -34,7 +34,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		downloadFile();
 		var list = new ArrayList<TradingFund>();
 		buildList(list);
-		save(list, StorageSMTB.TradingFundJP); // use save for make
+		save(list, StorageSMTB.TradingFundJPSMTB); // use save for make
 	}
 
 	void downloadFile() {

@@ -22,7 +22,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(). // StorageJITA.FundInfo
-		output(StorageRakuten.TradingFundJP).
+		output(StorageRakuten.TradingFundJPRakuten).
 		build();
 	
 	public static void main(String[] args) {
@@ -39,7 +39,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		var list = toTradingFund(data);
 		
 		checkDuplicateKey(list, o -> o.isinCode);
-		save(list, StorageRakuten.TradingFundJP); // use save for make
+		save(list, StorageRakuten.TradingFundJPRakuten); // use save for make
 	}
 	private static String getPostBody() {
 		LinkedHashMap<String, String> map = new LinkedHashMap<>();
@@ -56,7 +56,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	
 	
 	private List<TradingFund> toTradingFund(ReloadScreener reloadScreener) {
-		var set = StorageJITA.FundInfo.getList().stream().map(o -> o.isinCode).collect(Collectors.toSet());
+		var set = StorageJITA.FundInfoJITA.getList().stream().map(o -> o.isinCode).collect(Collectors.toSet());
 		
 		List<TradingFund> list = new ArrayList<>();
 		for(int i = 0; i < reloadScreener.data.length; i++) {

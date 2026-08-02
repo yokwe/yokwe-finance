@@ -23,7 +23,7 @@ public class UpdateNISAInfo extends UpdateSimpleGeneric<Void> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJPX.StockCodeName).
+		input(StorageJPX.StockCodeNameJPX).
 		output(StorageJITA.NISAInfo).
 		build();
 	
@@ -85,7 +85,7 @@ public class UpdateNISAInfo extends UpdateSimpleGeneric<Void> {
 		// build list from listed
 		{
 			// stockCode to isinCode
-			var stockInfoMap = StorageJPX.StockCodeName.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var stockInfoMap = StorageJPX.StockCodeNameJPX.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 			
 			for (var data : StorageJITA.ListedFundForInvestor.getList()) {
 				var stockCode = StockCodeJP.toStockCode5(data.stockCode);
@@ -109,7 +109,7 @@ public class UpdateNISAInfo extends UpdateSimpleGeneric<Void> {
 		// build list from unlisted
 		{
 			// fundCode to isinCode
-			var fundInfoMap  = StorageJITA.FundInfo.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
+			var fundInfoMap  = StorageJITA.FundInfoJITA.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
 			
 			for (var data : StorageJITA.UnlistedFundForInvestor.getList()) {
 				var fundCode = data.fundCode;

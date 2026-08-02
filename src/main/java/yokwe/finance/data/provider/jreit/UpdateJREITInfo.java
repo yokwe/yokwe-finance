@@ -22,7 +22,7 @@ public class UpdateJREITInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJPX.StockCodeName).
+		input(StorageJPX.StockCodeNameJPX).
 		output(StorageJREIT.JREITInfo).
 		build();
 	
@@ -34,7 +34,7 @@ public class UpdateJREITInfo extends UpdateBase {
 	public void update() {
 		var list = new ArrayList<JREITInfo>();
 		
-		var stockList = StorageJPX.StockCodeName.getList().stream().filter(o -> o.type.isREIT() || o.type.isInfra()).toList();
+		var stockList = StorageJPX.StockCodeNameJPX.getList().stream().filter(o -> o.type.isREIT() || o.type.isInfra()).toList();
 		logger.info("stockList  {}", stockList.size());
 		
 		var categoryMap = getCategoryMap(stockList);

@@ -20,7 +20,7 @@ public class UpdateStockPriceOHLCV extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockInfo, StorageUS.Quotes).
+		input(StorageUS.StockInfoUS, StorageUS.Quotes).
 		output(StorageUS.StockPriceOHLCV).
 		build();
 
@@ -30,7 +30,7 @@ public class UpdateStockPriceOHLCV extends UpdateBase {
 
 	@Override
 	public void update() {
-		var stockInfoList = StorageUS.StockInfo.getList();
+		var stockInfoList = StorageUS.StockInfoUS.getList();
 		logger.info("stockInfoList  {}", stockInfoList.size());
 
 		// delist unknonwn

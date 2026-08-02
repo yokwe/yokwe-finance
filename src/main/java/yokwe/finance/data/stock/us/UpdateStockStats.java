@@ -20,8 +20,8 @@ public class UpdateStockStats extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockInfo, StorageUS.Quotes).
-		output(StorageUS.StockStats).
+		input(StorageUS.StockInfoUS, StorageUS.Quotes).
+		output(StorageUS.StockStatsUS).
 		build();
 
 	public static void main(String[] args) throws IOException {
@@ -30,7 +30,7 @@ public class UpdateStockStats extends UpdateBase {
 
 	@Override
 	public void update() {
-		var stockInfoList = StorageUS.StockInfo.getList();
+		var stockInfoList = StorageUS.StockInfoUS.getList();
 		logger.info("stockInfoList  {}", stockInfoList.size());
 
 		var list = new ArrayList<StockStatsUS>(stockInfoList.size());
@@ -69,7 +69,7 @@ public class UpdateStockStats extends UpdateBase {
 			}
 		}
 
-		StorageUS.StockStats.save(list);
+		StorageUS.StockStatsUS.save(list);
 	}
 
 	private StockStatsUS toStockStatsUS(Quotes quotes) {

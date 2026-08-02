@@ -9,7 +9,7 @@ public class StorageNASDAQ {
 
 	// stock-code-name
 	public static final Storage.LoadSaveFileList<StockCodeNameUS>
-		StockCodeName = new Storage.LoadSaveFileList<StockCodeNameUS>(StockCodeNameUS.class, storage, "stock-code-name.csv");
+		StockCodeNameNASDAQ = new Storage.LoadSaveFileList<StockCodeNameUS>(StockCodeNameUS.class, storage, "stock-code-name-nasdaq.csv");
 
 	// nasdqqlisted
 	public static final Storage.LoadSaveFileList<NasdaqListed>

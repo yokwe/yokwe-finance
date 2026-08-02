@@ -29,7 +29,7 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 		input().
-		output(StorageJITA.FundInfo).
+		output(StorageJITA.FundInfoJITA).
 		build();
 
 	public static void main(String[] args) {
@@ -177,7 +177,7 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 	@Override
 	protected void updateFile(List<FundInfoJP> dummy) {
 		checkDuplicateKey(consumer.fundList, o -> o.isinCode);
-		save(consumer.fundList, StorageJITA.FundInfo); // to force update use save
+		save(consumer.fundList, StorageJITA.FundInfoJITA); // to force update use save
 
 	}
 

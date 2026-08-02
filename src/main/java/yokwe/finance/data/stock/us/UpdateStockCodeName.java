@@ -11,8 +11,8 @@ public class UpdateStockCodeName extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageRakuten.TradingStockUS, StorageNASDAQ.StockCodeName).
-		output(StorageUS.StockCodeName).
+		input(StorageRakuten.TradingStockUSRakuten, StorageNASDAQ.StockCodeNameNASDAQ).
+		output(StorageUS.StockCodeNameUS).
 		build();
 
 	public static void main(String[] args) {
@@ -21,15 +21,15 @@ public class UpdateStockCodeName extends UpdateBase {
 
 	@Override
 	public void update() {
-		var list = StorageNASDAQ.StockCodeName.getList();
+		var list = StorageNASDAQ.StockCodeNameNASDAQ.getList();
 		logger.info("list     {}", list.size());
 
-		var tradingSet = StorageRakuten.TradingStockUS.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
+		var tradingSet = StorageRakuten.TradingStockUSRakuten.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
 		logger.info("trading  {}", tradingSet.size());
 
 		list.removeIf(o -> !tradingSet.contains(o.stockCode));
 		logger.info("list     {}", list.size());
 
-		save(list, StorageUS.StockCodeName); // use save for make
+		save(list, StorageUS.StockCodeNameUS); // use save for make
 	}
 }

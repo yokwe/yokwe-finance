@@ -19,7 +19,7 @@ public class UpdateStockList extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	public static Makefile MAKEFILE = Makefile.builder().
-		output(StorageMoneybu.StockList).
+		output(StorageMoneybu.StockListMoneybu).
 		build();
 
 
@@ -82,7 +82,7 @@ public class UpdateStockList extends UpdateBase {
 		}
 
 		logger.info("stockList  {}", stockList.size());
-		StorageMoneybu.StockList.save(stockList);
+		StorageMoneybu.StockListMoneybu.save(stockList);
 	}
 	private StockList toStockList(Raw.Data data) {
 		StockList ret = new StockList();

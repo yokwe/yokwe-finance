@@ -20,7 +20,7 @@ public class UpdateStockList extends UpdateBase {
 	
 	public static Makefile MAKEFILE = Makefile.builder().
 		input().
-		output(StorageJPX.StockList).
+		output(StorageJPX.StockListJPX).
 		build();
 	
 	public static void main(String[] args) {
@@ -76,7 +76,7 @@ public class UpdateStockList extends UpdateBase {
 		StorageJPX.StockListJSON.touch();
 		
 		var list = getCodeNameList();
-		save(list, StorageJPX.StockList); // use save for make
+		save(list, StorageJPX.StockListJPX); // use save for make
 
 	}
 	private String downloadFile(int page) {

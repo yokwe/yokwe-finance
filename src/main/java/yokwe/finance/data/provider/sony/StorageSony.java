@@ -6,10 +6,10 @@ import yokwe.util.Storage;
 
 public class StorageSony {
 	public static final Storage storage = StorageProvider.storage.getStorage("sony");
-	
+
 	// trading-fund-sony
-	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJP =
-		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp.csv");
+	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJPSony =
+		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp-sony.csv");
 
 	// fund-list.json
 	public static final Storage.LoadSaveFileString FundListJSON =

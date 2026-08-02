@@ -14,15 +14,15 @@ public class StorageMoneybu {
 		new Storage.LoadSaveFileString(storage, "list-1.json");
 
 	// stock-list
-	public static final Storage.LoadSaveFileList<StockList> StockList =
-		new Storage.LoadSaveFileList<StockList>(StockList.class, storage, "moneybu-stock-list.csv");
+	public static final Storage.LoadSaveFileList<StockList> StockListMoneybu =
+		new Storage.LoadSaveFileList<StockList>(StockList.class, storage, "stock-list-moneybu.csv");
 
 	// stock-info-json
 	public static final Storage.LoadSaveDirectoryString StockInfoJSON =
 		new Storage.LoadSaveDirectoryString(storage, "stock-info-json", o -> o + ".json");
 
 	// stock-list
-	public static final Storage.LoadSaveFileList<StockInfo> StockInfo =
-		new Storage.LoadSaveFileList<StockInfo>(StockInfo.class, storage, "moneybu-stock-info.csv");
+	public static final Storage.LoadSaveFileList<StockInfo> StockInfoMoneybu =
+		new Storage.LoadSaveFileList<StockInfo>(StockInfo.class, storage, "stock-info-moneybu.csv");
 
 }

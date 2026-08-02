@@ -15,7 +15,7 @@ public class UpdateCompanyInfoJP extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJPX.StockCodeName).  // FIXME circular dependency
+		input(StorageJPX.StockCodeNameJPX).  // FIXME circular dependency
 		output(StorageYahoo.CompanyInfoJP).
 		build();
 	
@@ -50,7 +50,7 @@ public class UpdateCompanyInfoJP extends UpdateBase {
 		logger.info("companyInfo  {}  remove if sector or industry is empty", list.size());
 
 		// set of required stockCode
-		var stockList = StorageJPX.StockCodeName.getList();
+		var stockList = StorageJPX.StockCodeNameJPX.getList();
 		logger.info("stockList    {}", stockList.size());
 		// remove if not stock
 		stockList.removeIf(o -> !o.type.isStock());

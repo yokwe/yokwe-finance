@@ -28,8 +28,8 @@ public class UpdateReport extends UpdateBase {
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
 					yokwe.finance.data.fund.jp.StorageJP.NISAInfo,
-					yokwe.finance.data.stock.jp.StorageJP.StockValue,
-					yokwe.finance.data.stock.jp.StorageJP.StockInfo,
+					yokwe.finance.data.stock.jp.StorageJP.StockValueJP,
+					yokwe.finance.data.stock.jp.StorageJP.StockInfoJP,
 					yokwe.finance.data.stock.jp.StorageJP.StockPriceOHLCV,
 					yokwe.finance.data.stock.jp.StorageJP.StockDiv
 				).
@@ -72,10 +72,10 @@ public class UpdateReport extends UpdateBase {
 		var list = new ArrayList<ReportForm>();
 		{
 			var nisaMap        = yokwe.finance.data.fund.jp.StorageJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-			var stockValueMap  = yokwe.finance.data.stock.jp.StorageJP.StockValue.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var stockValueMap  = yokwe.finance.data.stock.jp.StorageJP.StockValueJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 			var taxMap         = yokwe.finance.data.analysis.StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
-			for(var stockInfo: yokwe.finance.data.stock.jp.StorageJP.StockInfo.getList()) {
+			for(var stockInfo: yokwe.finance.data.stock.jp.StorageJP.StockInfoJP.getList()) {
 				var stockCode = stockInfo.stockCode;
 				var priceList = yokwe.finance.data.stock.jp.StorageJP.StockPriceOHLCV.getList(stockCode);
 				var divList   = yokwe.finance.data.stock.jp.StorageJP.StockDiv.getList(stockCode);

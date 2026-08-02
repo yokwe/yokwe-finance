@@ -23,8 +23,8 @@ public class UpdateStockInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJPX.StockCodeName, StorageJITA.FundInfo, StorageJREIT.JREITInfo, StorageYahoo.CompanyInfoJP).
-		output(StorageJP.StockInfo).
+		input(StorageJPX.StockCodeNameJPX, StorageJITA.FundInfoJITA, StorageJREIT.JREITInfo, StorageYahoo.CompanyInfoJP).
+		output(StorageJP.StockInfoJP).
 		build();
 
 	public static void main(String[] args) {
@@ -33,8 +33,8 @@ public class UpdateStockInfo extends UpdateBase {
 
 	@Override
 	public void update() {
-		var stockList      = StorageJPX.StockCodeName.getList();
-		var fundMap        = StorageJITA.FundInfo.getList().stream().filter(o -> !o.stockCode.isEmpty()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+		var stockList      = StorageJPX.StockCodeNameJPX.getList();
+		var fundMap        = StorageJITA.FundInfoJITA.getList().stream().filter(o -> !o.stockCode.isEmpty()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 		var jreitMap       = StorageJREIT.JREITInfo.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 		var companyInfoMap = StorageYahoo.CompanyInfoJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
@@ -112,7 +112,7 @@ public class UpdateStockInfo extends UpdateBase {
 			}
 		}
 
-		save(list, StorageJP.StockInfo); // use save for make
+		save(list, StorageJP.StockInfoJP); // use save for make
 	}
 
 

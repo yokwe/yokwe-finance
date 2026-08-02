@@ -23,7 +23,7 @@ public class UpdateStockDetailJSON extends UpdateComplexTask<CodeName> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJPX.StockList).
+		input(StorageJPX.StockListJPX).
 		output(StorageJPX.StockDetailJSON).
 		build();
 	
@@ -41,7 +41,7 @@ public class UpdateStockDetailJSON extends UpdateComplexTask<CodeName> {
 	
 	@Override
 	protected List<CodeName> getList() {
-		return StorageJPX.StockList.getList();
+		return StorageJPX.StockListJPX.getList();
 	}
 	
 	@Override

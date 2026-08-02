@@ -23,7 +23,7 @@ public class UpdateKessanJSON extends UpdateComplexTask<StockCodeName>  {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJPX.StockCodeName).
+		input(StorageJPX.StockCodeNameJPX).
 		output(StorageJPX.KessanJSON).
 		build();
 	
@@ -40,7 +40,7 @@ public class UpdateKessanJSON extends UpdateComplexTask<StockCodeName>  {
 	
 	@Override
 	protected List<StockCodeName> getList() {
-		var list = StorageJPX.StockCodeName.getList();
+		var list = StorageJPX.StockCodeNameJPX.getList();
 		// deletes not json file
 		deleteNotJSONFile(list);
 		return list;

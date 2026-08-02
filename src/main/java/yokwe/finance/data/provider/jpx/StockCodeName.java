@@ -64,7 +64,7 @@ public final class StockCodeName implements Comparable<StockCodeName>{
 	public static void reload() {
 		stockCodeMap.clear();
 		isinCodeMap.clear();
-		for(var e: StorageJPX.StockCodeName.getList()) {
+		for(var e: StorageJPX.StockCodeNameJPX.getList()) {
 			stockCodeMap.put(e.stockCode, e);
 			isinCodeMap.put(e.isinCode, e);
 		}
@@ -117,7 +117,7 @@ public final class StockCodeName implements Comparable<StockCodeName>{
 
 	public static void checkStockCodeName() {
 		// check and fix other
-		var list = StorageJPX.StockCodeName.getList();
+		var list = StorageJPX.StockCodeNameJPX.getList();
 		checkMyList("ETF",       list, StorageJPX.ETF.getList().stream().map(o ->new CodeName(o.code, o.name)).toList());
 		checkMyList("ETN",       list, StorageJPX.ETN.getList().stream().map(o ->new CodeName(o.code, o.name)).toList());
 		checkMyList("Infra",     list, StorageJPX.Infra.getList().stream().map(o ->new CodeName(o.code, o.name)).toList());

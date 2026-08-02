@@ -12,13 +12,13 @@ public class StorageUS {
 	public static final Storage storage = StorageStock.storage.getStorage("us");
 
 	public static final Storage.LoadSaveFileList<StockCodeNameUS>
-		StockCodeName    = new Storage.LoadSaveFileList<StockCodeNameUS>(StockCodeNameUS.class, storage, "stock-code-name.csv");
+		StockCodeNameUS    = new Storage.LoadSaveFileList<StockCodeNameUS>(StockCodeNameUS.class, storage, "stock-code-name-us.csv");
 
 	public static final Storage.LoadSaveDirectoryString
 		Quotes = new Storage.LoadSaveDirectoryString(storage, "quotes", o -> o + ".json");
 
 	public static final Storage.LoadSaveFileList<StockInfoUS>
-		StockInfo        = new Storage.LoadSaveFileList<StockInfoUS>(StockInfoUS.class, storage, "stock-info.csv");
+		StockInfoUS        = new Storage.LoadSaveFileList<StockInfoUS>(StockInfoUS.class, storage, "stock-info-us.csv");
 
 	// stock-div
 	public static final Storage.LoadSaveDirectoryList<DailyValue>
@@ -29,5 +29,5 @@ public class StorageUS {
 
 	// stock-stats
 	public static final Storage.LoadSaveFileList<StockStatsUS>
-		StockStats = new Storage.LoadSaveFileList<StockStatsUS>(StockStatsUS.class, storage, "stock-stats.csv");
+		StockStatsUS = new Storage.LoadSaveFileList<StockStatsUS>(StockStatsUS.class, storage, "stock-stats-us.csv");
 }

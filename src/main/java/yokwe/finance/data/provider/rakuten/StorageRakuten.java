@@ -7,14 +7,14 @@ import yokwe.util.Storage;
 
 public class StorageRakuten {
 	public static final Storage storage = StorageProvider.storage.getStorage("rakuten");
-	
+
 	// trading-fund-rakuten
-	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJP =
-		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp.csv");
+	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJPRakuten =
+		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp-rakuten.csv");
 	// trading-stock-rakuten
-	public static final Storage.LoadSaveFileList<TradingStock> TradingStockUS =
-		new Storage.LoadSaveFileList<TradingStock>(TradingStock.class, storage, "trading-stock-us.csv");
-	
+	public static final Storage.LoadSaveFileList<TradingStock> TradingStockUSRakuten =
+		new Storage.LoadSaveFileList<TradingStock>(TradingStock.class, storage, "trading-stock-us-rakuten.csv");
+
 	// reloadscreener
 	public static final Storage.LoadSaveFileString ReloadScreener =
 		new Storage.LoadSaveFileString(storage, "reloadscreener.json");

@@ -17,7 +17,7 @@ public class UpdateStockValue extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(StorageJPX.StockDetailJSON).
-		output(StorageJPX.StockValue).
+		output(StorageJPX.StockValueJPX).
 		build();
 
 	public static void main(String[] args) {
@@ -45,7 +45,7 @@ public class UpdateStockValue extends UpdateBase {
 		logger.info("dataList  {}", dataList.size());
 
 		var list = toStockValueList(dataList);
-		save(list, StorageJPX.StockValue); // use save for make
+		save(list, StorageJPX.StockValueJPX); // use save for make
 	}
 
 	private List<StockValueJP> toStockValueList(List<StockDetail.Data> dataList) {

@@ -18,7 +18,7 @@ public class UpdateQuotes extends UpdateComplexGeneric<StockInfoUS, StockInfoUS>
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockInfo).
+		input(StorageUS.StockInfoUS).
 		output(StorageUS.Quotes).
 		build();
 
@@ -39,7 +39,7 @@ public class UpdateQuotes extends UpdateComplexGeneric<StockInfoUS, StockInfoUS>
 
 	@Override
 	protected List<StockInfoUS> getList() {
-		return StorageUS.StockInfo.getList();
+		return StorageUS.StockInfoUS.getList();
 	}
 
 	@Override

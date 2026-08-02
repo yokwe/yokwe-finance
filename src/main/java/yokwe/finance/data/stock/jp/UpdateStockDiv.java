@@ -9,7 +9,7 @@ public class UpdateStockDiv extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJP.StockInfo, StorageJPX.StockDiv, yokwe.finance.data.fund.jp.StorageJP.FundDiv, StorageJREIT.JREITDiv).
+		input(StorageJP.StockInfoJP, StorageJPX.StockDiv, yokwe.finance.data.fund.jp.StorageJP.FundDiv, StorageJREIT.JREITDiv).
 		output(StorageJP.StockDiv).
 		build();
 
@@ -19,7 +19,7 @@ public class UpdateStockDiv extends UpdateBase {
 
 	@Override
 	public void update() {
-		var list = StorageJP.StockInfo.getList();
+		var list = StorageJP.StockInfoJP.getList();
 		logger.info("list       {}", list.size());
 
 		{

@@ -22,7 +22,7 @@ public class UpdateStockCodeName extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 		input().
-		output(StorageNASDAQ.StockCodeName, StorageNASDAQ.NasdaqListed, StorageNASDAQ.OtherListed).
+		output(StorageNASDAQ.StockCodeNameNASDAQ, StorageNASDAQ.NasdaqListed, StorageNASDAQ.OtherListed).
 		build();
 
 	public static void main(String[] args) {
@@ -132,7 +132,7 @@ public class UpdateStockCodeName extends UpdateBase {
 		checkDuplicateKey(list, o -> o.stockCode);
 
 		// save
-		save(list, StorageNASDAQ.StockCodeName); // use save for make
+		save(list, StorageNASDAQ.StockCodeNameNASDAQ); // use save for make
 	}
 
 	private static Map<String, Market> marketMap = Map.ofEntries(

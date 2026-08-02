@@ -27,7 +27,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 	
 	public static Makefile MAKEFILE = Makefile.builder().
 		input().
-		output(StorageRakuten.TradingStockUS).
+		output(StorageRakuten.TradingStockUSRakuten).
 		build();
 	
 	public static void main(String[] args) {
@@ -64,7 +64,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		}
 		
 		checkDuplicateKey(list, o -> o.stockCode);
-		save(list, StorageRakuten.TradingStockUS); // use save for make
+		save(list, StorageRakuten.TradingStockUSRakuten); // use save for make
 	}
 	private void add(Map<String, CodeName> map, List<CodeName> list) {
 		for(var e: list) {

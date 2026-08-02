@@ -12,7 +12,7 @@ public class StorageJITA {
 
 	// fund-info
 	public static final Storage.LoadSaveFileList<FundInfoJP>
-		FundInfo = new Storage.LoadSaveFileList<FundInfoJP>(FundInfoJP.class, storage, "fund-info.csv");
+		FundInfoJITA = new Storage.LoadSaveFileList<FundInfoJP>(FundInfoJP.class, storage, "fund-info-jita.csv");
 
 	public static final Storage.LoadSaveDirectoryString
 		FundInfoJSON = new Storage.LoadSaveDirectoryString(storage, "fund-info-json", o -> o + ".json");

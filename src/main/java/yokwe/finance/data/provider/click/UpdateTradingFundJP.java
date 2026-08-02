@@ -18,7 +18,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(). // StorageJITA.FundInfo
-		output(StorageClick.TradingFundJP).
+		output(StorageClick.TradingFundJPClick).
 		build();
 
 	public static void main(String[] args) {
@@ -93,8 +93,8 @@ public class UpdateTradingFundJP extends UpdateBase {
 			list.add(new TradingFund(isinCode, salesFee, name));
 		}
 
-		logger.info("save  {}  {}", list.size(), StorageClick.TradingFundJP.getFile());
-		StorageClick.TradingFundJP.save(list);
+		logger.info("save  {}  {}", list.size(), StorageClick.TradingFundJPClick.getFile());
+		StorageClick.TradingFundJPClick.save(list);
 	}
 
 	public static class FundList implements Comparable<FundList> {

@@ -27,7 +27,7 @@ public class StorageJPX {
 		StockListJSON = new Storage.LoadSaveDirectoryString(storage, "stock-list-json", o -> o + ".json");
 	// stock list
 	public static final Storage.LoadSaveFileList<CodeName>
-		StockList = new Storage.LoadSaveFileList<CodeName>(CodeName.class, storage, "stock-list.csv");
+		StockListJPX = new Storage.LoadSaveFileList<CodeName>(CodeName.class, storage, "stock-list-jpx.csv");
 
 	// stock detail
 	public static final Storage.LoadSaveDirectoryString
@@ -35,11 +35,11 @@ public class StorageJPX {
 
 	// stock code name
 	public static final Storage.LoadSaveFileList<StockCodeName>
-		StockCodeName = new Storage.LoadSaveFileList<StockCodeName>(StockCodeName.class, storage, "stock-code-name.csv");
+		StockCodeNameJPX = new Storage.LoadSaveFileList<StockCodeName>(StockCodeName.class, storage, "stock-code-name-jpx.csv");
 
 	// stock value
 	public static final Storage.LoadSaveFileList<StockValueJP>
-		StockValue = new Storage.LoadSaveFileList<StockValueJP>(StockValueJP.class, storage, "stock-value.csv");
+		StockValueJPX = new Storage.LoadSaveFileList<StockValueJP>(StockValueJP.class, storage, "stock-value-jpx.csv");
 
 	// etf
 	public static final Storage.LoadSaveFileList<CodeName>

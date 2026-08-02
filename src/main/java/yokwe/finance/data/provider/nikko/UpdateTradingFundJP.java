@@ -21,7 +21,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(). // StorageJITA.FundInfo
-		output(StorageNikko.TradingFundJP).
+		output(StorageNikko.TradingFundJPNikko).
 		build();
 	
 	public static void main(String[] args) {
@@ -125,7 +125,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		logger.info("countF  {}", countF);
 		logger.info("countG  {}", countG);
 		
-		save(list, StorageNikko.TradingFundJP); // use save for make
+		save(list, StorageNikko.TradingFundJPNikko); // use save for make
 	}
 	
 	public static class CourseData {

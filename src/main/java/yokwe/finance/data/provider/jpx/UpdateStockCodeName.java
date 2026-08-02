@@ -19,7 +19,7 @@ public class UpdateStockCodeName extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(StorageJPX.StockDetailJSON, StorageJPX.ETF, StorageJPX.ETN, StorageJPX.Infra, StorageJPX.REIT).
-		output(StorageJPX.StockCodeName).
+		output(StorageJPX.StockCodeNameJPX).
 		build();
 
 	public static void main(String[] args) {
@@ -71,7 +71,7 @@ public class UpdateStockCodeName extends UpdateBase {
 		checkDuplicateKey(list, o -> o.stockCode);
 		checkDuplicateKey(list, o -> o.isinCode);
 
-		save(list, StorageJPX.StockCodeName); // use save for make
+		save(list, StorageJPX.StockCodeNameJPX); // use save for make
 
 		// sanity check
 		StockCodeName.checkStockCodeName();

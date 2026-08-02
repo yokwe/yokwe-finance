@@ -6,13 +6,13 @@ import yokwe.util.Storage;
 
 public class StorageSMTB {
 	public static final Storage storage = StorageProvider.storage.getStorage("smtb");
-	
+
 	// trading-fund-smtb
-	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJP =
-		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp.csv");
-	
+	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJPSMTB =
+		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp-smtb.csv");
+
 	// webpage
 	public static final Storage.LoadSaveDirectoryString WebPage =
 		new Storage.LoadSaveDirectoryString(storage, "webpage", o -> o + ".html");
-	
+
 }

@@ -13,7 +13,7 @@ public class StorageJP {
 
 	// fund-info
 	public static final Storage.LoadSaveFileList<FundInfoJP>
-		FundInfo = StorageJITA.FundInfo;
+		FundInfo = StorageJITA.FundInfoJITA;
 
 	// fund-div
 	public static final Storage.LoadSaveDirectoryList<DailyValue>

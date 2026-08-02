@@ -7,12 +7,12 @@ import yokwe.util.Storage.LoadSaveFileList;
 
 public class StorageClick {
 	public static final Storage storage = StorageProvider.storage.getStorage("click");
-	
+
 	// trading-fund-jp
-	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJP =
-		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp.csv");
-	
+	public static final Storage.LoadSaveFileList<TradingFund> TradingFundJPClick =
+		new Storage.LoadSaveFileList<TradingFund>(TradingFund.class, storage, "trading-fund-jp-click.csv");
+
 	// fund
 	public static final LoadSaveFileList<UpdateTradingFundJP.FundList> FundListJSON =
-		new Storage.LoadSaveFileList<UpdateTradingFundJP.FundList>(UpdateTradingFundJP.FundList.class, storage, "fund-list.json");	
+		new Storage.LoadSaveFileList<UpdateTradingFundJP.FundList>(UpdateTradingFundJP.FundList.class, storage, "fund-list.json");
 }

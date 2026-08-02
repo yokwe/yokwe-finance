@@ -21,7 +21,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	
 	public static Makefile MAKEFILE = Makefile.builder().
 //		input(StorageJITA.FundInfo).
-		output(StorageSony.TradingFundJP).
+		output(StorageSony.TradingFundJPSony).
 		build();
 	
 	public static void main(String[] args) {
@@ -34,7 +34,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		
 		var list = new ArrayList<TradingFund>();
 		buildList(list);
-		save(list, StorageSony.TradingFundJP); // use save for make
+		save(list, StorageSony.TradingFundJPSony); // use save for make
 	}
 	
 	private String getURL() {
@@ -122,7 +122,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 			throw new UnexpectedException("JSON unmarshal failed");
 		}
 		
-		var map = StorageJITA.FundInfo.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
+		var map = StorageJITA.FundInfoJITA.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
 		
 		logger.info("ns_favourregisterfund  {}", data.ns_favourregisterfund.length);
 		

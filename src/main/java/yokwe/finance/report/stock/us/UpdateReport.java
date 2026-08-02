@@ -23,10 +23,10 @@ public class UpdateReport extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
-					yokwe.finance.data.stock.us.StorageUS.StockInfo,
+					yokwe.finance.data.stock.us.StorageUS.StockInfoUS,
 					yokwe.finance.data.stock.us.StorageUS.StockPriceOHLCV,
 					yokwe.finance.data.stock.us.StorageUS.StockDiv,
-					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingStockUS
+					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingStockUSRakuten
 				).
 			output(StorageUS.Report).
 			build();
@@ -46,18 +46,18 @@ public class UpdateReport extends UpdateBase {
 		var dateStop  = MarketHoliday.JP.getLastTradingDate();
 		logger.info("dateStop  {}", dateStop);
 
-		var rakutenSet = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingStockUS.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
-		var stockStatsMap = yokwe.finance.data.stock.us.StorageUS.StockStats.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+		var rakutenSet = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingStockUSRakuten.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
+		var stockStatsMap = yokwe.finance.data.stock.us.StorageUS.StockStatsUS.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
 		var list = new ArrayList<ReportForm>();
 		{
-			for(var stockInfo: yokwe.finance.data.stock.us.StorageUS.StockInfo.getList()) {
+			for(var stockInfo: yokwe.finance.data.stock.us.StorageUS.StockInfoUS.getList()) {
 				var stockCode = stockInfo.stockCode;
 				var priceList = yokwe.finance.data.stock.us.StorageUS.StockPriceOHLCV.getList(stockCode);
 				var divList   = yokwe.finance.data.stock.us.StorageUS.StockDiv.getList(stockCode);
 
 				if (priceList.size() < 10) {
-					logger.info("to small  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
+					logger.info("too small  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
 					continue;
 				}
 

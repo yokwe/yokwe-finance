@@ -17,7 +17,7 @@ public class UpdateFundDiv extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJP.FundInfo, StorageJITA.FundDiv, StorageMoneybu.StockInfo).
+		input(StorageJP.FundInfo, StorageJITA.FundDiv, StorageMoneybu.StockInfoMoneybu).
 		output(StorageJP.FundDiv).
 		build();
 
@@ -27,7 +27,7 @@ public class UpdateFundDiv extends UpdateBase {
 
 	@Override
 	public void update() {
-		var stockInfoMap = StorageMoneybu.StockInfo.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+		var stockInfoMap = StorageMoneybu.StockInfoMoneybu.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
 		var fundInfoList = StorageJP.FundInfo.getList();
 		for(var fundInfo: fundInfoList) {

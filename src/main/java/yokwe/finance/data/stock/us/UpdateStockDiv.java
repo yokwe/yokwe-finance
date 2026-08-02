@@ -34,7 +34,7 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockInfo).
+		input(StorageUS.StockInfoUS).
 		output(StorageUS.StockDiv).
 		build();
 
@@ -48,7 +48,7 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 	
 	@Override
 	protected List<StockInfoUS> getList() {
-		return StorageUS.StockInfo.getList();
+		return StorageUS.StockInfoUS.getList();
 	}
 	
 	@Override

@@ -24,7 +24,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJITA.FundInfo).
+		input(StorageJITA.FundInfoJITA).
 		output(StorageJITA.FundDiv, StorageJITA.FundPrice).
 		build();
 
@@ -36,7 +36,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 	public void update() {
 		Storage.initialize();
 
-		var fundInfoList = StorageJITA.FundInfo.getList();
+		var fundInfoList = StorageJITA.FundInfoJITA.getList();
 
 		// delist unknown
 		delistUnknownFile(fundInfoList);
