@@ -15,6 +15,7 @@ import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundDivScore;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.finance.report.stats.MonthlyStats;
+import yokwe.finance.report.stats.online.BigDecimalSMA;
 import yokwe.util.DoubleUtil;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
@@ -35,11 +36,11 @@ public class UpdateReport extends UpdateBase {
 					yokwe.finance.data.fund.jp.StorageJP.FundDiv,
 					yokwe.finance.data.fund.jp.StorageJP.FundPrice,
 					yokwe.finance.data.fund.jp.StorageJP.NISAInfo,
-					yokwe.finance.data.provider.nikko.StorageNikko.TradingFundJP,
-					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJP,
-					yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJP,
-					yokwe.finance.data.provider.sony.StorageSony.TradingFundJP,
-					yokwe.finance.data.provider.click.StorageClick.TradingFundJP,
+					yokwe.finance.data.provider.nikko.StorageNikko.TradingFundJPNikko,
+					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJPRakuten,
+					yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJPSMTB,
+					yokwe.finance.data.provider.sony.StorageSony.TradingFundJPSony,
+					yokwe.finance.data.provider.click.StorageClick.TradingFundJPClick,
 					yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore
 				).
 			output(StorageJP.Report).
@@ -68,11 +69,11 @@ public class UpdateReport extends UpdateBase {
 		var list = new ArrayList<ReportForm>();
 		var nisaInfoMap  = yokwe.finance.data.fund.jp.StorageJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var fundInfoList = yokwe.finance.data.fund.jp.StorageJP.FundInfo.getList();
-		var nikkoMap     = yokwe.finance.data.provider.nikko.StorageNikko.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var rakutenMap   = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var smtbMap      = yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var sonyMap      = yokwe.finance.data.provider.sony.StorageSony.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var clickMap     = yokwe.finance.data.provider.click.StorageClick.TradingFundJP.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var nikkoMap     = yokwe.finance.data.provider.nikko.StorageNikko.TradingFundJPNikko.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var rakutenMap   = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJPRakuten.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var smtbMap      = yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJPSMTB.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var sonyMap      = yokwe.finance.data.provider.sony.StorageSony.TradingFundJPSony.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var clickMap     = yokwe.finance.data.provider.click.StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var divScoreMap  = yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var taxMap       = yokwe.finance.data.analysis.StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 
@@ -118,6 +119,17 @@ public class UpdateReport extends UpdateBase {
 
 				var priceList = fundPriceList.stream().map(o -> new DailyValue(o.date, o.price)).collect(Collectors.toList());
 				var divList   = MonthlyStats.getDivList(priceList, yokwe.finance.data.fund.jp.StorageJP.FundDiv.getList(isinCode));
+
+				// FIXME create moving average of priceList
+				{
+					var size = 7;
+					var sma = new BigDecimalSMA(size);
+
+					for(int index = 0; index < priceList.size(); index++) {
+						var e = priceList.get(index);
+						e.value = sma.apply(e.value);
+					}
+				}
 
 				// use last element for nav
 				nav = fundPriceList.get(fundPriceList.size() - 1).nav;
