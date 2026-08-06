@@ -14,31 +14,31 @@ import yokwe.util.json.JSON;
 
 public class CompanyInfoYahoo {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	private static final String  URL            = "https://query1.finance.yahoo.com/v1/finance/search";
 	private static final Charset CHARSET_UTF_8  = StandardCharsets.UTF_8;
-	
+
 	public static class Result {
 		public static class Quote {
 			@JSON.Name("symbol")                        public String     symbol;
 			@JSON.Name("prevTicker")       @JSON.Ignore public String     prevTicker;
 			@JSON.Name("tickerChangeDate") @JSON.Ignore public String     tickerChangeDate;
-			
+
 			@JSON.Name("quoteType")                     public String     type;
 			@JSON.Name("typeDisp")       @JSON.Ignore   public String     typeDisp;
-			
+
 			@JSON.Name("exchange")                          public String exchange;
 			@JSON.Name("exchDisp")                          public String exchDisp;
 			@JSON.Name("prevExchange")         @JSON.Ignore public String prevExchange;
 			@JSON.Name("exchangeTransferDate") @JSON.Ignore public String exchangeTransferDate;
 
-			
+
 			@JSON.Name("shortname")      @JSON.Optional public String     shortname;
 			@JSON.Name("longname")       @JSON.Optional public String     longname;
 			@JSON.Name("prevName")       @JSON.Ignore   public String     prevName;
 			@JSON.Name("nameChangeDate") @JSON.Ignore   public String     nameChangeDate;
 
-			
+
 			@JSON.Name("index")          @JSON.Ignore   public String     index;
 			@JSON.Name("score")          @JSON.Ignore   public BigDecimal score;
 			@JSON.Name("isYahooFinance")                public boolean    isYahooFinance;
@@ -47,10 +47,10 @@ public class CompanyInfoYahoo {
 			@JSON.Name("sectorDisp")     @JSON.Optional public String     sectorDisp;     // only for EQUITY
 			@JSON.Name("industry")       @JSON.Ignore   public String     industry;       // only for EQUITY
 			@JSON.Name("industryDisp")   @JSON.Optional public String     industryDisp;   // only for EQUITY
-			
+
 			@JSON.Name("newListingDate") @JSON.Ignore   public String     newListingDate; // only for EQUITY
 			@JSON.Name("dispSecIndFlag") @JSON.Ignore   public String     dispSecIndFlag; // only for EQUITY
-			
+
 			// dispSecIndFlag
 			@Override
 			public String toString() {
@@ -74,16 +74,17 @@ public class CompanyInfoYahoo {
 		@JSON.Name("timeTakenForCrunchbase")         @JSON.Ignore public int      timeTakenForCrunchbase;
 		@JSON.Name("timeTakenForNav")                @JSON.Ignore public int      timeTakenForNav;
 		@JSON.Name("timeTakenForResearchReports")    @JSON.Ignore public int      timeTakenForResearchReports;
+		@JSON.Name("timeTakenForQuestions")          @JSON.Ignore public int      timeTakenForQuestions;
 		@JSON.Name("timeTakenForScreenerField")      @JSON.Ignore public int      timeTakenForScreenerField;
 		@JSON.Name("timeTakenForSearchLists")        @JSON.Ignore public int      timeTakenForSearchLists;
 		@JSON.Name("timeTakenForCulturalAssets")     @JSON.Ignore public int      timeTakenForCulturalAssets;
-		
+
 		@Override
 		public String toString() {
 			return String.format("{%d  %d  %s}", count, totalTime, (quotes == null) ? "null" : Arrays.stream(quotes).toList());
 		}
 	}
-	
+
 	private static String getURL(String q) {
 		LinkedHashMap<String, String> map = new LinkedHashMap<>();
 		map.put("q",  q);
@@ -91,15 +92,15 @@ public class CompanyInfoYahoo {
 		map.put("newsCount",   "0");
 		map.put("listsCount",  "0");
 		String queryString = map.entrySet().stream().map(o -> o.getKey() + "=" + URLEncoder.encode(o.getValue(), CHARSET_UTF_8)).collect(Collectors.joining("&"));
-		
+
 		return String.format("%s?%s", URL, queryString);
 	}
-	
+
 	private static String downloadString(String key) {
 		String url = getURL(key);
 		return HttpUtil.getInstance().downloadString(url);
 	}
-	
+
 	public static CompanyInfo getInstance(String key) {
 		String string = downloadString(key);
 		if (string == null) {
