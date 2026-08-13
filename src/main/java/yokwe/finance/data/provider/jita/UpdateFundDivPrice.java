@@ -35,6 +35,9 @@ public class UpdateFundDivPrice extends UpdateBase {
 	@Override
 	public void update() {
 		Storage.initialize();
+		// updateFile() takes time and fund data is update daily.
+		// set gracePeriod to 20 hours
+		gracePeriod = Duration.ofHours(20);
 
 		var fundInfoList = StorageJITA.FundInfoJITA.getList();
 
@@ -136,7 +139,11 @@ public class UpdateFundDivPrice extends UpdateBase {
 
 			var file = StorageJITA.FundDivPrice.getFile(isinCode);
 
-			var rawData = http.downloadRaw(getURL(fundInfo));
+			var rawData = http.downloadRawOrNull(getURL(fundInfo));
+			if (rawData == null) {
+				logger.warn("download failed  {}  {}", fundInfo.isinCode, fundInfo.name);
+				continue;
+			}
 			sleep(SLEEP_BETWEEN_DOWNLOAD);
 			var string = new String(rawData, CHARSET);
 			if (string.startsWith(CSV_HEADER)) {
