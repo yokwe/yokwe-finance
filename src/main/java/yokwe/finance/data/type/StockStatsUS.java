@@ -2,6 +2,7 @@ package yokwe.finance.data.type;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import yokwe.util.ToString;
 
@@ -9,6 +10,11 @@ public class StockStatsUS implements Comparable<StockStatsUS> {
 	public String	  stockCode;    // normalized symbol like TRNT-A and RDS.A not like TRTN^A and RDS/A
 
 	public String     stockType;    // STOCK ETF ADR
+
+	// price and volume
+    public LocalDateTime time;     // "Friday July 10, 2026 08:00:00 PM ET"
+    public BigDecimal    last;     // "24.91"
+    public BigDecimal    volume;   // "1538151"
 
 	// dividend
     public BigDecimal dividend;     // "0.147200"

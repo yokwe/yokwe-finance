@@ -34,8 +34,8 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockInfoUS).
-		output(StorageUS.StockDiv).
+		input(StorageStockUS.StockInfoUS).
+		output(StorageStockUS.StockDiv).
 		build();
 
 	// It will takes 16 minutes for update.
@@ -48,13 +48,13 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 	
 	@Override
 	protected List<StockInfoUS> getList() {
-		return StorageUS.StockInfoUS.getList();
+		return StorageStockUS.StockInfoUS.getList();
 	}
 	
 	@Override
 	public void delistUnknownFile(List<StockInfoUS> stockInfoList) {
 		Set<String> validNameSet = stockInfoList.stream().map(o -> o.stockCode).collect(Collectors.toSet());
-		StorageUS.StockDiv.delistUnknownFile(validNameSet);
+		StorageStockUS.StockDiv.delistUnknownFile(validNameSet);
 	}
 	
 	private static class MyConsumer implements Consumer<String> {
@@ -79,7 +79,7 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 			if (div == null || div.data == null || div.data.dividends == null || div.data.dividends.rows == null) {
 				if (list.isEmpty()) {
 					// Update last modified time of file
-					StorageUS.StockDiv.save(stockInfo.stockCode, list);
+					StorageStockUS.StockDiv.save(stockInfo.stockCode, list);
 				}
 				return;
 			}
@@ -126,7 +126,7 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 				}
 			}
 			
-			StorageUS.StockDiv.save(stockInfo.stockCode, oldMap.values());
+			StorageStockUS.StockDiv.save(stockInfo.stockCode, oldMap.values());
 		}
 	}
 	
@@ -139,9 +139,9 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 		
 		for(var stockInfo: stockInfoList) {
 			var stockCode = stockInfo.stockCode;
-			var file      = StorageUS.StockDiv.getFile(stockCode);
+			var file      = StorageStockUS.StockDiv.getFile(stockCode);
 			if (needsUpdate(file)) {
-				var divList = StorageUS.StockDiv.getList(stockCode);
+				var divList = StorageStockUS.StockDiv.getList(stockCode);
 				var limit   = divList.size() == 0 ? 99999 : 2;
 				var url     = getURL(stockInfo, limit);
 				list.add(StringTask.get(url, new MyConsumer(stockInfo, divList)));
@@ -235,6 +235,6 @@ public class UpdateStockDiv extends UpdateComplexTask<StockInfoUS> {
 	@Override
 	protected void updateFile(List<StockInfoUS> list) {
 		// touch file
-		StorageUS.StockDiv.touch();
+		StorageStockUS.StockDiv.touch();
 	}
 }

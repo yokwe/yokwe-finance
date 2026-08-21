@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import yokwe.finance.data.fund.jp.StorageJP;
+import yokwe.finance.data.fund.jp.StorageFundJP;
 import yokwe.finance.data.type.TradingFund;
 import yokwe.util.Makefile;
 import yokwe.util.ToString;
@@ -74,7 +74,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	void updateFile() {
 		var list = new ArrayList<TradingFund>();
 
-		var fundMap = StorageJP.FundInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var fundMap = StorageFundJP.FundInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 
 		var fundList = StorageClick.FundListJSON.load();
 		logger.info("fundList  {}", fundList.size());

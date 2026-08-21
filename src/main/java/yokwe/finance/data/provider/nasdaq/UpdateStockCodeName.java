@@ -106,7 +106,8 @@ public class UpdateStockCodeName extends UpdateBase {
 			}
 			// skip warrant and beneficial interest
 			var upperCaseName = e.name.toUpperCase();
-			if (upperCaseName.contains("WARRANT") || upperCaseName.contains("BENEFICIAL INTEREST")) {
+//			if (upperCaseName.contains("WARRANT") || upperCaseName.contains("BENEFICIAL INTEREST")) {
+			if (upperCaseName.contains("WARRANT")) {
 				countSkip++;
 				continue;
 			}

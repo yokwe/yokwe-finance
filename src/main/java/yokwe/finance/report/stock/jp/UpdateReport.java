@@ -3,7 +3,6 @@ package yokwe.finance.report.stock.jp;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,13 +26,13 @@ public class UpdateReport extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
-					yokwe.finance.data.fund.jp.StorageJP.NISAInfo,
-					yokwe.finance.data.stock.jp.StorageJP.StockValueJP,
-					yokwe.finance.data.stock.jp.StorageJP.StockInfoJP,
-					yokwe.finance.data.stock.jp.StorageJP.StockPriceOHLCV,
-					yokwe.finance.data.stock.jp.StorageJP.StockDiv
+					yokwe.finance.data.fund.jp.StorageFundJP.NISAInfo,
+					yokwe.finance.data.stock.jp.StorageStockJP.StockValueJP,
+					yokwe.finance.data.stock.jp.StorageStockJP.StockInfoJP,
+					yokwe.finance.data.stock.jp.StorageStockJP.StockPriceOHLCV,
+					yokwe.finance.data.stock.jp.StorageStockJP.StockDiv
 				).
-			output(StorageJP.ReportODS).
+			output(StorageReportStockJP.ReportODS).
 			build();
 
 	public static void main(String[] args) {
@@ -47,22 +46,16 @@ public class UpdateReport extends UpdateBase {
 		generateReport(list);
 		// save csv
 		{
-			var file = StorageJP.ReportCSV.getFile();
+			var file = StorageReportStockJP.ReportCSV.getFile();
 			logger.info("save  {}  {}", list.size(), file.getPath());
 			CSVUtil.write(ReportForm.class).file(file, list);
 		}
 		// copy files
 		{
-			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
-
-			{
-				var newName    = "report-" + timestamp + ".ods";
-				var destFile   = StorageJP.ReportODS.getFile(newName);
-				var sourceFile = StorageJP.ReportODS.getFile();
-
-				logger.info("copy {} to {}", sourceFile, destFile);
-				FileUtil.copy(sourceFile, destFile);
-			}
+			var oldFile = StorageReportStockJP.ReportODS.getFile();
+			var newFile = StorageReportStockJP.ReportODS.getFile(LocalDateTime.now());
+			logger.info("copy {} to {}", oldFile, newFile);
+			FileUtil.copy(oldFile, newFile);
 		}
 	}
 	private List<ReportForm> getReportList() {
@@ -71,14 +64,14 @@ public class UpdateReport extends UpdateBase {
 
 		var list = new ArrayList<ReportForm>();
 		{
-			var nisaMap        = yokwe.finance.data.fund.jp.StorageJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-			var stockValueMap  = yokwe.finance.data.stock.jp.StorageJP.StockValueJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var nisaMap        = yokwe.finance.data.fund.jp.StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+			var stockValueMap  = yokwe.finance.data.stock.jp.StorageStockJP.StockValueJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 			var taxMap         = yokwe.finance.data.analysis.StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
-			for(var stockInfo: yokwe.finance.data.stock.jp.StorageJP.StockInfoJP.getList()) {
+			for(var stockInfo: yokwe.finance.data.stock.jp.StorageStockJP.StockInfoJP.getList()) {
 				var stockCode = stockInfo.stockCode;
-				var priceList = yokwe.finance.data.stock.jp.StorageJP.StockPriceOHLCV.getList(stockCode);
-				var divList   = yokwe.finance.data.stock.jp.StorageJP.StockDiv.getList(stockCode);
+				var priceList = yokwe.finance.data.stock.jp.StorageStockJP.StockPriceOHLCV.getList(stockCode);
+				var divList   = yokwe.finance.data.stock.jp.StorageStockJP.StockDiv.getList(stockCode);
 				var stockValue = stockValueMap.get(stockCode);
 
 				if (stockValue == null) {
@@ -169,7 +162,7 @@ public class UpdateReport extends UpdateBase {
 		return list;
 	}
 	private void generateReport(List<ReportForm> reportList) {
-		String urlReport = StringUtil.toURLString(StorageJP.ReportODS.getFile());
+		String urlReport = StringUtil.toURLString(StorageReportStockJP.ReportODS.getFile());
 		logger.info("urlReport {}", urlReport);
 		logger.info("docLoad   {}", URL_TEMPLATE);
 		try {

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import yokwe.finance.data.fund.jp.StorageJP;
+import yokwe.finance.data.fund.jp.StorageFundJP;
 import yokwe.finance.data.provider.smtb.WebPage.PageInfo;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.finance.data.type.TradingFund;
@@ -87,7 +87,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		int countB = 0;
 		int countC = 0;
 		int countD = 0;
-		var fundInfoList = StorageJP.FundInfo.getList();
+		var fundInfoList = StorageFundJP.FundInfo.getList();
 		var fundCodeMap  = fundInfoList.stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
 
 		for(var file: StorageSMTB.WebPage.getDir().listFiles((d, n) -> n.endsWith(".html"))) {

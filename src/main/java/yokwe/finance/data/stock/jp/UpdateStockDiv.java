@@ -9,8 +9,8 @@ public class UpdateStockDiv extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJP.StockInfoJP, StorageJPX.StockDiv, yokwe.finance.data.fund.jp.StorageJP.FundDiv, StorageJREIT.JREITDiv).
-		output(StorageJP.StockDiv).
+		input(StorageStockJP.StockInfoJP, StorageJPX.StockDiv, yokwe.finance.data.fund.jp.StorageFundJP.FundDiv, StorageJREIT.JREITDiv).
+		output(StorageStockJP.StockDiv).
 		build();
 
 	public static void main(String[] args) {
@@ -19,12 +19,12 @@ public class UpdateStockDiv extends UpdateBase {
 
 	@Override
 	public void update() {
-		var list = StorageJP.StockInfoJP.getList();
+		var list = StorageStockJP.StockInfoJP.getList();
 		logger.info("list       {}", list.size());
 
 		{
 			var validNameList = list.stream().map(o -> o.stockCode).toList();
-			StorageJP.StockDiv.delistUnknownFile(validNameList);
+			StorageStockJP.StockDiv.delistUnknownFile(validNameList);
 		}
 
 		int countETF    = 0;
@@ -40,7 +40,7 @@ public class UpdateStockDiv extends UpdateBase {
 			if (type.isETF()) {
 				countETF++;
 				// take value from fund jp
-				var divListFundJP = yokwe.finance.data.fund.jp.StorageJP.FundDiv.getList(e.isinCode);
+				var divListFundJP = yokwe.finance.data.fund.jp.StorageFundJP.FundDiv.getList(e.isinCode);
 //				logger.info("ETF   {}  {}  {}  {}", e.stockCode, e.isinCode, divList.size(), divListJITA.size());
 				if (divList.size() < divListFundJP.size()) {
 					countFundJP++;
@@ -56,7 +56,7 @@ public class UpdateStockDiv extends UpdateBase {
 				}
 			}
 
-			StorageJP.StockDiv.save(stockCode, divList);
+			StorageStockJP.StockDiv.save(stockCode, divList);
 		}
 
 		logger.info("countETF    {}", countETF);
@@ -65,6 +65,6 @@ public class UpdateStockDiv extends UpdateBase {
 		logger.info("countJREIT  {}", countJREIT);
 
 		// touch file
-		StorageJP.StockDiv.touch();
+		StorageStockJP.StockDiv.touch();
 	}
 }

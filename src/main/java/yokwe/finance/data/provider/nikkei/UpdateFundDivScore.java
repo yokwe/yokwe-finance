@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import yokwe.finance.data.fund.jp.StorageJP;
+import yokwe.finance.data.fund.jp.StorageFundJP;
 import yokwe.finance.data.type.FundDivScore;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.util.FileUtil;
@@ -52,7 +52,7 @@ public class UpdateFundDivScore extends UpdateBase {
 	}
 	
 	List<FundInfoJP> getList() {
-		var ret = StorageJP.FundInfo.getList();
+		var ret = StorageFundJP.FundInfo.getList();
 		ret.removeIf(o -> o.fundType.equals(FundInfoJP.FUND_TYPE_CEF));
 		ret.removeIf(o -> o.name.contains("マネー・リザーブ・ファンド"));
 		ret.removeIf(o -> o.name.contains("月号"));

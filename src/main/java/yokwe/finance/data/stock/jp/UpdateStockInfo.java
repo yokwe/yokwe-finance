@@ -24,7 +24,7 @@ public class UpdateStockInfo extends UpdateBase {
 
 	protected static Makefile MAKEFILE = Makefile.builder().
 		input(StorageJPX.StockCodeNameJPX, StorageJITA.FundInfoJITA, StorageJREIT.JREITInfo, StorageYahoo.CompanyInfoJP).
-		output(StorageJP.StockInfoJP).
+		output(StorageStockJP.StockInfoJP).
 		build();
 
 	public static void main(String[] args) {
@@ -112,7 +112,7 @@ public class UpdateStockInfo extends UpdateBase {
 			}
 		}
 
-		save(list, StorageJP.StockInfoJP); // use save for make
+		save(list, StorageStockJP.StockInfoJP); // use save for make
 	}
 
 

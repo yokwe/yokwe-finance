@@ -17,8 +17,8 @@ public class UpdateFundDiv extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJP.FundInfo, StorageJITA.FundDiv, StorageMoneybu.StockInfoMoneybu).
-		output(StorageJP.FundDiv).
+		input(StorageFundJP.FundInfo, StorageJITA.FundDiv, StorageMoneybu.StockInfoMoneybu).
+		output(StorageFundJP.FundDiv).
 		build();
 
 	public static void main(String[] args) {
@@ -29,7 +29,7 @@ public class UpdateFundDiv extends UpdateBase {
 	public void update() {
 		var stockInfoMap = StorageMoneybu.StockInfoMoneybu.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
-		var fundInfoList = StorageJP.FundInfo.getList();
+		var fundInfoList = StorageFundJP.FundInfo.getList();
 		for(var fundInfo: fundInfoList) {
 			var isinCode  = fundInfo.isinCode;
 			var divList   = StorageJITA.FundDiv.getList(isinCode);
@@ -40,10 +40,10 @@ public class UpdateFundDiv extends UpdateBase {
 				updateDivList(fundInfo, divList, stockInfo);
 			}
 
-			StorageJP.FundDiv.save(isinCode, divList);
+			StorageFundJP.FundDiv.save(isinCode, divList);
 		}
 
-		StorageJP.FundDiv.touch();
+		StorageFundJP.FundDiv.touch();
 	}
 
 	void updateDivList(FundInfoJP fundInfo, List<DailyValue> divList, yokwe.finance.data.provider.moneybu.StockInfo stockInfo) {

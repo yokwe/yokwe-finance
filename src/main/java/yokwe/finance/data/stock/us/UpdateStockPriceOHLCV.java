@@ -20,8 +20,8 @@ public class UpdateStockPriceOHLCV extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockInfoUS, StorageUS.Quotes).
-		output(StorageUS.StockPriceOHLCV).
+		input(StorageStockUS.StockInfoUS, StorageStockUS.Quotes).
+		output(StorageStockUS.StockPriceOHLCV).
 		build();
 
 	public static void main(String[] args) throws IOException {
@@ -30,14 +30,14 @@ public class UpdateStockPriceOHLCV extends UpdateBase {
 
 	@Override
 	public void update() {
-		var stockInfoList = StorageUS.StockInfoUS.getList();
+		var stockInfoList = StorageStockUS.StockInfoUS.getList();
 		logger.info("stockInfoList  {}", stockInfoList.size());
 
 		// delist unknonwn
 		{
 			logger.info("delist unknown");
 			Set<String> validNameSet = stockInfoList.stream().map(o -> o.stockCode).collect(Collectors.toSet());
-			StorageUS.StockPriceOHLCV.delistUnknownFile(validNameSet);
+			StorageStockUS.StockPriceOHLCV.delistUnknownFile(validNameSet);
 		}
 
 		int count = 0;
@@ -50,7 +50,7 @@ public class UpdateStockPriceOHLCV extends UpdateBase {
 //				logger.info("{}  /  {}", count - 1, stockInfoList.size());
 			}
 
-			var file = StorageUS.Quotes.getFile(symbol);
+			var file = StorageStockUS.Quotes.getFile(symbol);
 			if (!file.exists()) {
 				logger.info("no file  {}", file.getPath());
 				continue;
@@ -65,16 +65,16 @@ public class UpdateStockPriceOHLCV extends UpdateBase {
 				continue;
 			}
 
-			if (!symbol.equals(quoteHistory.symbol)) {
-				logger.warn("symbol not eauals {}  {}", symbol, quoteHistory.symbol);
-				continue;
-			}
+//			if (!symbol.equals(quoteHistory.symbol)) {
+//				logger.warn("symbol not eauals {}  {}", symbol, quoteHistory.symbol);
+//				continue;
+//			}
 
 			var ohlcvList = Arrays.stream(quoteHistory.historyList).map(o -> toOHLCV(o)).collect(Collectors.toList());
-			StorageUS.StockPriceOHLCV.save(symbol, ohlcvList);
+			StorageStockUS.StockPriceOHLCV.save(symbol, ohlcvList);
 		}
 
-		StorageUS.StockPriceOHLCV.touch();
+		StorageStockUS.StockPriceOHLCV.touch();
 	}
 
 	private OHLCV toOHLCV(QuoteHistory.History history) {

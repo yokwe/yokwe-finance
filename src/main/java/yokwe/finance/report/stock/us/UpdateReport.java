@@ -2,13 +2,15 @@ package yokwe.finance.report.stock.us;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import yokwe.finance.data.provider.rakuten.StorageRakuten;
+import yokwe.finance.data.stock.us.StorageStockUS;
 import yokwe.finance.report.stats.StockStats;
+import yokwe.util.CSVUtil;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
@@ -23,12 +25,12 @@ public class UpdateReport extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
-					yokwe.finance.data.stock.us.StorageUS.StockInfoUS,
-					yokwe.finance.data.stock.us.StorageUS.StockPriceOHLCV,
-					yokwe.finance.data.stock.us.StorageUS.StockDiv,
-					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingStockUSRakuten
+					StorageStockUS.StockInfoUS,
+					StorageStockUS.StockPriceOHLCV,
+					StorageStockUS.StockDiv,
+					StorageRakuten.TradingStockUSRakuten
 				).
-			output(StorageUS.Report).
+			output(StorageReportStockUS.ReportODS).
 			build();
 
 	public static void main(String[] args) {
@@ -38,23 +40,35 @@ public class UpdateReport extends UpdateBase {
 	@Override
 	public void update() {
 		var list = getReportList();
+		// save ods
 		generateReport(list);
-		// save
-		// generateReport saves file
+		// save csv
+		{
+			var file = StorageReportStockUS.ReportCSV.getFile();
+			logger.info("save  {}  {}", list.size(), file.getPath());
+			CSVUtil.write(ReportForm.class).file(file, list);
+		}
+		// copy files
+		{
+			var oldFile = StorageReportStockUS.ReportODS.getFile();
+			var newFile = StorageReportStockUS.ReportODS.getFile(LocalDateTime.now());
+			logger.info("copy {} to {}", oldFile, newFile);
+			FileUtil.copy(oldFile, newFile);
+		}
 	}
 	private List<ReportForm> getReportList() {
 		var dateStop  = MarketHoliday.JP.getLastTradingDate();
 		logger.info("dateStop  {}", dateStop);
 
-		var rakutenSet = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingStockUSRakuten.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
-		var stockStatsMap = yokwe.finance.data.stock.us.StorageUS.StockStatsUS.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+		var rakutenSet = StorageRakuten.TradingStockUSRakuten.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
+		var stockStatsMap = StorageStockUS.StockStatsUS.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
 		var list = new ArrayList<ReportForm>();
 		{
-			for(var stockInfo: yokwe.finance.data.stock.us.StorageUS.StockInfoUS.getList()) {
+			for(var stockInfo: StorageStockUS.StockInfoUS.getList()) {
 				var stockCode = stockInfo.stockCode;
-				var priceList = yokwe.finance.data.stock.us.StorageUS.StockPriceOHLCV.getList(stockCode);
-				var divList   = yokwe.finance.data.stock.us.StorageUS.StockDiv.getList(stockCode);
+				var priceList = StorageStockUS.StockPriceOHLCV.getList(stockCode);
+				var divList   = StorageStockUS.StockDiv.getList(stockCode);
 
 				if (priceList.size() < 10) {
 					logger.info("too small  {}  {}  {}", priceList.size(), stockCode, stockInfo.name);
@@ -132,7 +146,7 @@ public class UpdateReport extends UpdateBase {
 		return list;
 	}
 	private void generateReport(List<ReportForm> reportList) {
-		String urlReport = StringUtil.toURLString(StorageUS.Report.getFile());
+		String urlReport = StringUtil.toURLString(StorageReportStockUS.ReportODS.getFile());
 		logger.info("urlReport {}", urlReport);
 		logger.info("docLoad   {}", URL_TEMPLATE);
 		try {
@@ -160,15 +174,6 @@ public class UpdateReport extends UpdateBase {
 		} finally {
 			// stop LibreOffice process
 			LibreOffice.terminate();
-		}
-		{
-			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
-			var newName = "report-" + timestamp + ".ods";
-			var destFile = StorageUS.Report.getFile(newName);
-
-			logger.info("copy {} to {}", StorageUS.Report.getFile(), destFile);
-
-			FileUtil.copy(StorageUS.Report.getFile(), destFile);
 		}
 	}
 	private static final String URL_TEMPLATE  = StringUtil.toURLString(new File("data/form/STOCK_STATS_US.ods"));

@@ -3,7 +3,7 @@ package yokwe.finance.data.provider.yahoo;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import yokwe.finance.data.stock.us.StorageUS;
+import yokwe.finance.data.stock.us.StorageStockUS;
 import yokwe.finance.data.type.CompanyInfo;
 import yokwe.finance.data.type.StockInfoUS;
 import yokwe.util.Makefile;
@@ -16,7 +16,7 @@ public class UpdateCompanyInfoUS extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockCodeNameUS). // FIXME circular dependency
+		input(StorageStockUS.StockCodeNameUS). // FIXME circular dependency
 		output(StorageYahoo.CompanyInfoUS).
 		build();
 	
@@ -40,7 +40,7 @@ public class UpdateCompanyInfoUS extends UpdateBase {
 	
 	private int updateCompanyInfo() {
 		// set of required stockCode
-		var stockList = StorageUS.StockCodeNameUS.getList();
+		var stockList = StorageStockUS.StockCodeNameUS.getList();
 		logger.info("stockList    {}", stockList.size());
 		stockList.removeIf(o -> o.type.isETF());
 		logger.info("stockList    {}  after remove ETF", stockList.size());

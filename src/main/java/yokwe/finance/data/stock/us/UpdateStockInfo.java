@@ -15,8 +15,8 @@ public class UpdateStockInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 	
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockCodeNameUS, StorageYahoo.CompanyInfoUS).
-		output(StorageUS.StockInfoUS).
+		input(StorageStockUS.StockCodeNameUS, StorageYahoo.CompanyInfoUS).
+		output(StorageStockUS.StockInfoUS).
 		build();
 	
 	public static void main(String[] args) {
@@ -25,7 +25,7 @@ public class UpdateStockInfo extends UpdateBase {
 	
 	@Override
 	public void update() {
-		var stockList = StorageUS.StockCodeNameUS.getList();
+		var stockList = StorageStockUS.StockCodeNameUS.getList();
 		logger.info("stockList       {}", stockList.size());
 		
 		var companyInfoMap = StorageYahoo.CompanyInfoUS.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
@@ -45,6 +45,6 @@ public class UpdateStockInfo extends UpdateBase {
 		}
 		
 		logger.info("list  {}", list.size());
-		save(list, StorageUS.StockInfoUS); // use save for make
+		save(list, StorageStockUS.StockInfoUS); // use save for make
 	}
 }

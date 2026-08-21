@@ -3,6 +3,7 @@ package yokwe.finance.data.stock.us;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -20,8 +21,8 @@ public class UpdateStockStats extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageUS.StockInfoUS, StorageUS.Quotes).
-		output(StorageUS.StockStatsUS).
+		input(StorageStockUS.StockInfoUS, StorageStockUS.Quotes).
+		output(StorageStockUS.StockStatsUS).
 		build();
 
 	public static void main(String[] args) throws IOException {
@@ -30,7 +31,7 @@ public class UpdateStockStats extends UpdateBase {
 
 	@Override
 	public void update() {
-		var stockInfoList = StorageUS.StockInfoUS.getList();
+		var stockInfoList = StorageStockUS.StockInfoUS.getList();
 		logger.info("stockInfoList  {}", stockInfoList.size());
 
 		var list = new ArrayList<StockStatsUS>(stockInfoList.size());
@@ -45,7 +46,7 @@ public class UpdateStockStats extends UpdateBase {
 //				logger.info("{}  /  {}", count - 1, stockInfoList.size());
 			}
 
-			var file = StorageUS.Quotes.getFile(symbol);
+			var file = StorageStockUS.Quotes.getFile(symbol);
 			if (!file.exists()) {
 				logger.info("no file  {}", file.getPath());
 				continue;
@@ -65,11 +66,12 @@ public class UpdateStockStats extends UpdateBase {
 
 			var stockStatus = toStockStatsUS(quotes);
 			if (stockStatus != null) {
+				stockStatus.stockCode = symbol;
 				list.add(stockStatus);
 			}
 		}
 
-		StorageUS.StockStatsUS.save(list);
+		StorageStockUS.StockStatsUS.save(list);
 	}
 
 	private StockStatsUS toStockStatsUS(Quotes quotes) {
@@ -85,6 +87,11 @@ public class UpdateStockStats extends UpdateBase {
 			logger.error("  {}  {}", quote.dispname, totalReturn.symbolType);
 			throw new UnexpectedException("Unexpected symbolType");
 		}
+
+		// price and volume
+		ret.time     = LocalDateTime.parse(quote.time, LAST);
+		ret.last     = new BigDecimal(quote.last);
+		ret.volume   = new BigDecimal(quote.volume);
 
 		// dividend
 	    ret.dividend = quote.dividend == null ? BigDecimal.ZERO : new BigDecimal(quote.dividend);
@@ -110,11 +117,14 @@ public class UpdateStockStats extends UpdateBase {
 	}
 	private static DateTimeFormatter DIV_DATE     = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy", Locale.US); // Tuesday, June 30, 2026
 	private static LocalDate         UNKNOWN_DATE = LocalDate.of(2999, 1, 1);
+	private static DateTimeFormatter LAST         = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy hh:mm:ss a z", Locale.US); // "Friday July 10, 2026 08:00:00 PM ET"
+
 
 	private static Map<String, String> SYMBOL_TYPE_MAP = Map.ofEntries(
 		Map.entry("American Depository Receipt",   "ADR"),
 		Map.entry("ETF",                           "ETF"),
 		Map.entry("Shares of Beneficial Interest", "STOCK"),
+		Map.entry("Preferred Stock",               "PREF"),
 		Map.entry("Stock",                         "STOCK"),
 		Map.entry("Right",                         "RIGHT"),   // VIK is right
 		Map.entry("Warrant",                       "WARRANT")  // VIK is warrant

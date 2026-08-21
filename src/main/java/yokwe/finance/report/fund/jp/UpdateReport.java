@@ -5,18 +5,25 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import yokwe.finance.data.analysis.StorageAnalysis;
+import yokwe.finance.data.fund.jp.StorageFundJP;
+import yokwe.finance.data.provider.click.StorageClick;
+import yokwe.finance.data.provider.nikkei.StorageNikkei;
+import yokwe.finance.data.provider.nikko.StorageNikko;
+import yokwe.finance.data.provider.rakuten.StorageRakuten;
+import yokwe.finance.data.provider.smtb.StorageSMTB;
+import yokwe.finance.data.provider.sony.StorageSony;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundDivScore;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.finance.report.stats.online.BigDecimalSMA;
-import yokwe.util.DoubleUtil;
+import yokwe.util.CSVUtil;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
@@ -31,19 +38,19 @@ public class UpdateReport extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
-					yokwe.finance.data.analysis.StorageAnalysis.TaxAdjustment,
-					yokwe.finance.data.fund.jp.StorageJP.FundInfo,
-					yokwe.finance.data.fund.jp.StorageJP.FundDiv,
-					yokwe.finance.data.fund.jp.StorageJP.FundPrice,
-					yokwe.finance.data.fund.jp.StorageJP.NISAInfo,
-					yokwe.finance.data.provider.nikko.StorageNikko.TradingFundJPNikko,
-					yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJPRakuten,
-					yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJPSMTB,
-					yokwe.finance.data.provider.sony.StorageSony.TradingFundJPSony,
-					yokwe.finance.data.provider.click.StorageClick.TradingFundJPClick,
-					yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore
+					StorageAnalysis.TaxAdjustment,
+					StorageFundJP.FundInfo,
+					StorageFundJP.FundDiv,
+					StorageFundJP.FundPrice,
+					StorageFundJP.NISAInfo,
+					StorageNikko.TradingFundJPNikko,
+					StorageRakuten.TradingFundJPRakuten,
+					StorageSMTB.TradingFundJPSMTB,
+					StorageSony.TradingFundJPSony,
+					StorageClick.TradingFundJPClick,
+					StorageNikkei.FundDivScore
 				).
-			output(StorageJP.Report).
+			output(StorageReportFundJP.ReportODS).
 			build();
 
 	public static void main(String[] args) {
@@ -58,28 +65,42 @@ public class UpdateReport extends UpdateBase {
 	@Override
 	public void update() {
 		var list = getReportList();
+		// save ods
 		generateReport(list);
-		// save
-		// generateReport saves file
+		// save csv
+		{
+			var file = StorageReportFundJP.ReportCSV.getFile();
+			logger.info("save  {}  {}", list.size(), file.getPath());
+			CSVUtil.write(ReportForm.class).file(file, list);
+		}
+		// copy files
+		{
+			var oldFile = StorageReportFundJP.ReportODS.getFile();
+			var newFile = StorageReportFundJP.ReportODS.getFile(LocalDateTime.now());
+			logger.info("copy {} to {}", oldFile, newFile);
+			FileUtil.copy(oldFile, newFile);
+		}
 	}
 	private List<ReportForm> getReportList() {
 		var dateStop  = MarketHoliday.JP.getLastTradingDate();
 		logger.info("dateStop  {}", dateStop);
 
 		var list = new ArrayList<ReportForm>();
-		var nisaInfoMap  = yokwe.finance.data.fund.jp.StorageJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var fundInfoList = yokwe.finance.data.fund.jp.StorageJP.FundInfo.getList();
-		var nikkoMap     = yokwe.finance.data.provider.nikko.StorageNikko.TradingFundJPNikko.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var rakutenMap   = yokwe.finance.data.provider.rakuten.StorageRakuten.TradingFundJPRakuten.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var smtbMap      = yokwe.finance.data.provider.smtb.StorageSMTB.TradingFundJPSMTB.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var sonyMap      = yokwe.finance.data.provider.sony.StorageSony.TradingFundJPSony.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var clickMap     = yokwe.finance.data.provider.click.StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var divScoreMap  = yokwe.finance.data.provider.nikkei.StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var taxMap       = yokwe.finance.data.analysis.StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var nisaInfoMap  = StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var fundInfoList = StorageFundJP.FundInfo.getList();
+		var nikkoMap     = StorageNikko.TradingFundJPNikko.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var rakutenMap   = StorageRakuten.TradingFundJPRakuten.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var smtbMap      = StorageSMTB.TradingFundJPSMTB.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var sonyMap      = StorageSony.TradingFundJPSony.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var clickMap     = StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var divScoreMap  = StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var taxMap       = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 
 		int countNoPrice    = 0;
 		int countNoDivScore = 0;
 		int count           = 0;
+
+		var smallDecimal = new BigDecimal("0.00000001");
 
 		for(var fundInfo: fundInfoList) {
 			var isinCode  = fundInfo.isinCode;
@@ -88,37 +109,17 @@ public class UpdateReport extends UpdateBase {
 				logger.info("{} / {}  {}", count, fundInfoList.size(), isinCode);
 			}
 
-			var divScore = divScoreMap.getOrDefault(isinCode, null);
-			if (divScore == null) {
-				countNoDivScore++;
-				divScore = new FundDivScore(isinCode);
-			} else {
-				if (!FundDivScore.isValid(divScore.score1Y)) {
-					divScore.score1Y  = null;
-				}
-				if (!FundDivScore.isValid(divScore.score3Y)) {
-					divScore.score3Y  = null;
-				}
-				if (!FundDivScore.isValid(divScore.score5Y)) {
-					divScore.score5Y  = null;
-				}
-				if (!FundDivScore.isValid(divScore.score10Y)) {
-					divScore.score10Y = null;
-				}
-			}
-
-
 			MonthlyStats  monthlyStats;
 			BigDecimal    nav;
 			{
-				var fundPriceList = yokwe.finance.data.fund.jp.StorageJP.FundPrice.getList(isinCode);
+				var fundPriceList = StorageFundJP.FundPrice.getList(isinCode);
 				if (fundPriceList.isEmpty()) {
 					countNoPrice++;
 					continue;
 				}
 
 				var priceList = fundPriceList.stream().map(o -> new DailyValue(o.date, o.price)).collect(Collectors.toList());
-				var divList   = MonthlyStats.getDivList(priceList, yokwe.finance.data.fund.jp.StorageJP.FundDiv.getList(isinCode));
+				var divList   = MonthlyStats.getDivList(priceList, StorageFundJP.FundDiv.getList(isinCode));
 
 				// FIXME create moving average of priceList
 				{
@@ -157,87 +158,140 @@ public class UpdateReport extends UpdateBase {
 			report.nav          = nav;
 			report.divc         = fundInfo.divFreq;
 
-			{
-				int nMonth  = 1;
-				int nOffset = 0;
 
-				report.rsi14   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rsi(nMonth, nOffset, 14));
-				report.rsi7    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rsi(nMonth, nOffset, 7));
+			if (monthlyStats != null) {
+				{
+					int nMonth  = 1;
+					int nOffset = 0;
+
+					if (monthlyStats.contains(nMonth, nOffset)) {
+						report.rsi14 = BigDecimal.valueOf(monthlyStats.rsi(nMonth, nOffset, 14));
+						report.rsi7  = BigDecimal.valueOf(monthlyStats.rsi(nMonth, nOffset,  7));
+					}
+				}
+
+				// 1 year
+				{
+					int nMonth  = 12;
+					int nOffset = 0;
+
+					if (monthlyStats.contains(nMonth, nOffset)) {
+						report.sd1Y    = BigDecimal.valueOf(monthlyStats.risk(nMonth, nOffset));
+						report.div1Y   = BigDecimal.valueOf(monthlyStats.dividend(nMonth, nOffset));
+						report.yield1Y = BigDecimal.valueOf(monthlyStats.yield(nMonth, nOffset));
+						report.ror1Y   = BigDecimal.valueOf(monthlyStats.rateOfReturn(nMonth, nOffset));
+					}
+				}
+				// 3 year
+				{
+					int nMonth = 36;
+					int nOffset = 0;
+
+					if (monthlyStats.contains(nMonth, nOffset)) {
+						report.sd3Y    = BigDecimal.valueOf(monthlyStats.risk(nMonth, nOffset));
+						report.div3Y   = BigDecimal.valueOf(monthlyStats.dividend(nMonth, nOffset));
+						report.yield3Y = BigDecimal.valueOf(monthlyStats.yield(nMonth, nOffset));
+						report.ror3Y   = BigDecimal.valueOf(monthlyStats.rateOfReturn(nMonth, nOffset));
+					}
+				}
+				// 5 year
+				{
+					int nMonth = 60;
+					int nOffset = 0;
+
+					if (monthlyStats.contains(nMonth, nOffset)) {
+						report.sd5Y    = BigDecimal.valueOf(monthlyStats.risk(nMonth, nOffset));
+						report.div5Y   = BigDecimal.valueOf(monthlyStats.dividend(nMonth, nOffset));
+						report.yield5Y = BigDecimal.valueOf(monthlyStats.yield(nMonth, nOffset));
+						report.ror5Y   = BigDecimal.valueOf(monthlyStats.rateOfReturn(nMonth, nOffset));
+					}
+				}
+				// 10 year
+				{
+					int nMonth = 120;
+					int nOffset = 0;
+
+					if (monthlyStats.contains(nMonth, nOffset)) {
+						report.sd10Y    = BigDecimal.valueOf(monthlyStats.risk(nMonth, nOffset));
+						report.div10Y   = BigDecimal.valueOf(monthlyStats.dividend(nMonth, nOffset));
+						report.yield10Y = BigDecimal.valueOf(monthlyStats.yield(nMonth, nOffset));
+						report.ror10Y   = BigDecimal.valueOf(monthlyStats.rateOfReturn(nMonth, nOffset));
+					}
+				}
+
 			}
 
-			// 1 year
 			{
-				int nMonth  = 12;
-				int nOffset = 0;
-
-				report.sd1Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div1Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield1Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror1Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
+				var divScore = divScoreMap.getOrDefault(isinCode, null);
+				if (divScore == null) {
+					countNoDivScore++;
+				} else {
+					if (FundDivScore.isValid(divScore.score1Y)) {
+						report.divScore1Y = divScore.score1Y;
+					}
+					if (FundDivScore.isValid(divScore.score3Y)) {
+						report.divScore3Y = divScore.score3Y;
+					}
+					if (FundDivScore.isValid(divScore.score5Y)) {
+						report.divScore5Y = divScore.score5Y;
+					}
+					if (FundDivScore.isValid(divScore.score10Y)) {
+						report.divScore10Y = divScore.score10Y;
+					}
+				}
 			}
-			// 3 year
-			{
-				int nMonth = 36;
-				int nOffset = 0;
-
-				report.sd3Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div3Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield3Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror3Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
-			}
-			// 5 year
-			{
-				int nMonth = 60;
-				int nOffset = 0;
-
-				report.sd5Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div5Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield5Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror5Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
-			}
-			// 10 year
-			{
-				int nMonth = 120;
-				int nOffset = 0;
-
-				report.sd10Y    = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.risk(nMonth, nOffset));
-				report.div10Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.dividend(nMonth, nOffset));
-				report.yield10Y = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.yield(nMonth, nOffset));
-				report.ror10Y   = (monthlyStats == null || !monthlyStats.contains(nMonth, nOffset)) ? null : DoubleUtil.toBigDecimal(monthlyStats.rateOfReturn(nMonth, nOffset));
-			}
-
-			report.divScore1Y  = divScore.score1Y;
-			report.divScore3Y  = divScore.score3Y;
-			report.divScore5Y  = divScore.score5Y;
-			report.divScore10Y = divScore.score10Y;
 
 			report.name     = fundInfo.name;
 
 			if (nisaInfoMap.containsKey(isinCode)) {
 				var nisaInfo = nisaInfoMap.get(isinCode);
-				report.nisa = nisaInfo.tsumitate ? BigDecimal.ONE : BigDecimal.ZERO;
+				report.nisa = nisaInfo.tsumitate ? "1" : "0";
 			} else {
-				report.nisa = null;
+				report.nisa = "";
 			}
 
 			if (report.stockCode.isEmpty()) {
 				// FUND
-				report.prestia = null;
+				report.prestia = BigDecimal.ZERO;
 				//
-				report.nikko   = !nikkoMap.containsKey(fundInfo.isinCode)   ? null: nikkoMap.get(fundInfo.isinCode).salesFee;
-				report.rakuten = !rakutenMap.containsKey(fundInfo.isinCode) ? null: rakutenMap.get(fundInfo.isinCode).salesFee;
-//				report.prestia = !prestiaMap.containsKey(fundInfo.isinCode) ? null: prestiaMap.get(fundInfo.isinCode).salesFee;
-				report.smtb    = !smtbMap.containsKey(fundInfo.isinCode)    ? null: smtbMap.get(fundInfo.isinCode).salesFee;
-				report.sony    = !sonyMap.containsKey(fundInfo.isinCode)    ? null: sonyMap.get(fundInfo.isinCode).salesFee;
-				report.click   = !clickMap.containsKey(fundInfo.isinCode)   ? null: clickMap.get(fundInfo.isinCode).salesFee;
+				{
+					var tradingFund = nikkoMap.getOrDefault(isinCode, null);
+					if (tradingFund != null) {
+						report.nikko = tradingFund.salesFee.add(smallDecimal);
+					}
+				}
+				{
+					var tradingFund = rakutenMap.getOrDefault(isinCode, null);
+					if (tradingFund != null) {
+						report.rakuten = tradingFund.salesFee.add(smallDecimal);
+					}
+				}
+				{
+					var tradingFund = smtbMap.getOrDefault(isinCode, null);
+					if (tradingFund != null) {
+						report.smtb = tradingFund.salesFee.add(smallDecimal);
+					}
+				}
+				{
+					var tradingFund = sonyMap.getOrDefault(isinCode, null);
+					if (tradingFund != null) {
+						report.sony = tradingFund.salesFee.add(smallDecimal);
+					}
+				}
+				{
+					var tradingFund = clickMap.getOrDefault(isinCode, null);
+					if (tradingFund != null) {
+						report.click = tradingFund.salesFee.add(smallDecimal);
+					}
+				}
 			} else {
 				// ETF
-				report.nikko   = BigDecimal.ZERO;
-				report.rakuten = BigDecimal.ZERO;
-				report.prestia = null;
-				report.smtb    = null;
-				report.sony    = null;
-				report.click   = null;
+				report.nikko   = smallDecimal;
+				report.rakuten = smallDecimal;
+				report.prestia = BigDecimal.ZERO;
+				report.smtb    = BigDecimal.ZERO;
+				report.sony    = BigDecimal.ZERO;
+				report.click   = BigDecimal.ZERO;
 			}
 
 			// special case
@@ -245,17 +299,17 @@ public class UpdateReport extends UpdateBase {
 				report.redemption = NO_DATE;
 			}
 
-			if (report.div1Y  != null && report.div1Y.compareTo(BigDecimal.ZERO) == 0) {
-				report.yield1Y  = report.divScore1Y  = null;
+			if (report.div1Y.equals(BigDecimal.ZERO)) {
+				report.yield1Y = BigDecimal.ZERO;
 			}
-			if (report.div3Y  != null && report.div3Y.compareTo(BigDecimal.ZERO) == 0) {
-				report.yield3Y  = report.divScore3Y  = null;
+			if (report.div3Y.equals(BigDecimal.ZERO)) {
+				report.yield3Y = BigDecimal.ZERO;
 			}
-			if (report.div5Y  != null && report.div5Y.compareTo(BigDecimal.ZERO) == 0) {
-				report.yield5Y  = report.divScore5Y  = null;
+			if (report.div5Y.equals(BigDecimal.ZERO)) {
+				report.yield5Y = BigDecimal.ZERO;
 			}
-			if (report.div10Y != null && report.div10Y.compareTo(BigDecimal.ZERO) == 0) {
-				report.yield10Y = report.divScore10Y = null;
+			if (report.div10Y.equals(BigDecimal.ZERO)) {
+				report.yield10Y = BigDecimal.ZERO;
 			}
 
 			list.add(report);
@@ -269,7 +323,7 @@ public class UpdateReport extends UpdateBase {
 		return list;
 	}
 	private void generateReport(List<ReportForm> reportList) {
-		var urlReport = StringUtil.toURLString(StorageJP.Report.getFile());
+		var urlReport = StringUtil.toURLString(StorageReportFundJP.ReportODS.getFile());
 		logger.info("urlReport {}", urlReport);
 		logger.info("docLoad   {}", URL_TEMPLATE);
 		try {
@@ -298,25 +352,16 @@ public class UpdateReport extends UpdateBase {
 			// stop LibreOffice process
 			LibreOffice.terminate();
 		}
-		{
-			var timestamp  = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
-			var newName = "report-" + timestamp + ".ods";
-			var destFile = StorageJP.Report.getFile(newName);
-
-			logger.info("copy {} to {}", StorageJP.Report.getFile(), destFile);
-
-			FileUtil.copy(StorageJP.Report.getFile(), destFile);
-		}
 	}
 
-	private static BigDecimal durationInYearMonth(LocalDate startDate, LocalDate endDate) {
+	private static String durationInYearMonth(LocalDate startDate, LocalDate endDate) {
 		// startDate and endDate is inclusive
 		if (startDate.isAfter(endDate)) {
-			return new BigDecimal("0.00");
+			return "0.00";
 		} else {
 			LocalDate endDatePlusOne = endDate.plusDays(1);
 			Period    period         = startDate.until(endDatePlusOne);
-			return new BigDecimal(String.format("%d.%02d", period.getYears(), period.getMonths()));
+			return String.format("%d.%02d", period.getYears(), period.getMonths());
 		}
 	}
 }

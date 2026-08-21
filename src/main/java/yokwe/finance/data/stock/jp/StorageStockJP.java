@@ -8,7 +8,7 @@ import yokwe.finance.data.type.StockInfoJP;
 import yokwe.finance.data.type.StockValueJP;
 import yokwe.util.Storage;
 
-public class StorageJP {
+public class StorageStockJP {
 	public static final Storage storage = StorageStock.storage.getStorage("jp");
 
 	public static final Storage.LoadSaveFileList<StockInfoJP>

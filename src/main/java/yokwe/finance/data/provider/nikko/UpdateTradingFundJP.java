@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import yokwe.finance.data.fund.jp.StorageJP;
+import yokwe.finance.data.fund.jp.StorageFundJP;
 import yokwe.finance.data.type.TradingFund;
 import yokwe.util.CSVUtil;
 import yokwe.util.Makefile;
@@ -47,7 +47,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	
 	void updateFile() {
 		var noLoad = "ノーロード";
-		var fundCodeMap = StorageJP.FundInfo.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
+		var fundCodeMap = StorageFundJP.FundInfo.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
 		
 		var pat     = Pattern.compile("(?<percent>[0-9]+\\.[0-9]+)％");
 		var patFund = Pattern.compile("銘柄コード：(?<nikkoCode>.{4})　投信協会コード：(?<fundCode>.{8})");

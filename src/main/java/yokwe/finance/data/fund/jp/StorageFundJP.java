@@ -8,7 +8,7 @@ import yokwe.finance.data.type.FundPriceJP;
 import yokwe.finance.data.type.NISAInfo;
 import yokwe.util.Storage;
 
-public class StorageJP {
+public class StorageFundJP {
 	public static final Storage storage = StorageFund.storage.getStorage("jp");
 
 	// fund-info
