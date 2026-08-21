@@ -101,10 +101,13 @@ full-build:
 # primary targets
 #
 update-all:
-	make -f tmp/update-all.make update-all
+#	make -f tmp/update-all.make update-all
+	( make -f tmp/update-all.make -n update-all ) | tee tmp/update-all.bash | cat -n
+	( make -f tmp/update-all.make    update-all )
 
 update-all-debug:
-	make -f tmp/update-all.make -n update-all
+#	make -f tmp/update-all.make -n update-all
+	( make -f tmp/update-all.make -n update-all ) | cat -n
 
 
 update-data-jp: update-jpx update-jita update-moneybu update-click-jp update-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp
