@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import yokwe.finance.data.analysis.StorageAnalysis;
+import yokwe.finance.data.fund.jp.StorageFundJP;
+import yokwe.finance.data.stock.jp.StorageStockJP;
 import yokwe.finance.data.type.OHLCV;
 import yokwe.finance.report.stats.StockStats;
 import yokwe.util.CSVUtil;
@@ -26,11 +29,11 @@ public class UpdateReport extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
-					yokwe.finance.data.fund.jp.StorageFundJP.NISAInfo,
-					yokwe.finance.data.stock.jp.StorageStockJP.StockValueJP,
-					yokwe.finance.data.stock.jp.StorageStockJP.StockInfoJP,
-					yokwe.finance.data.stock.jp.StorageStockJP.StockPriceOHLCV,
-					yokwe.finance.data.stock.jp.StorageStockJP.StockDiv
+					StorageFundJP.NISAInfo,
+					StorageStockJP.StockValueJP,
+					StorageStockJP.StockInfoJP,
+					StorageStockJP.StockPriceOHLCV,
+					StorageStockJP.StockDiv
 				).
 			output(StorageReportStockJP.ReportODS).
 			build();
@@ -64,14 +67,14 @@ public class UpdateReport extends UpdateBase {
 
 		var list = new ArrayList<ReportForm>();
 		{
-			var nisaMap        = yokwe.finance.data.fund.jp.StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-			var stockValueMap  = yokwe.finance.data.stock.jp.StorageStockJP.StockValueJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
-			var taxMap         = yokwe.finance.data.analysis.StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var nisaMap        = StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+			var stockValueMap  = StorageStockJP.StockValueJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var taxMap         = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
-			for(var stockInfo: yokwe.finance.data.stock.jp.StorageStockJP.StockInfoJP.getList()) {
+			for(var stockInfo: StorageStockJP.StockInfoJP.getList()) {
 				var stockCode = stockInfo.stockCode;
-				var priceList = yokwe.finance.data.stock.jp.StorageStockJP.StockPriceOHLCV.getList(stockCode);
-				var divList   = yokwe.finance.data.stock.jp.StorageStockJP.StockDiv.getList(stockCode);
+				var priceList = StorageStockJP.StockPriceOHLCV.getList(stockCode);
+				var divList   = StorageStockJP.StockDiv.getList(stockCode);
 				var stockValue = stockValueMap.get(stockCode);
 
 				if (stockValue == null) {
