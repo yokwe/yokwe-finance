@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 
@@ -76,16 +77,6 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 
 	@Override
 	protected List<Task> getTaskList(List<FundInfoJP> dummy) {
-		// delete existing JSON file
-		{
-			var dir = StorageJITA.FundInfoJSON.getDir();
-			for(var file: FileUtil.listFile(dir)) {
-				if (file.getName().endsWith(".json")) {
-					file.delete();
-				}
-			}
-		}
-
 		var list = new ArrayList<Task>();
 
 		// build list only first time
@@ -177,8 +168,20 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 	@Override
 	protected void updateFile(List<FundInfoJP> dummy) {
 		checkDuplicateKey(consumer.fundList, o -> o.isinCode);
-		save(consumer.fundList, StorageJITA.FundInfoJITA); // to force update use save
 
+		// remove unknown file
+		{
+			var validNameSet = consumer.fundList.stream().map(o -> o.isinCode + ".json").collect(Collectors.toSet());
+			var dir = StorageJITA.FundInfoJSON.getDir();
+			for(var file: FileUtil.listFile(dir)) {
+				if (!validNameSet.contains(file.getName())) {
+					logger.warn("delete unknown file  {}", file.getPath());
+					file.delete();
+				}
+			}
+		}
+
+		save(consumer.fundList, StorageJITA.FundInfoJITA); // to force update use save
 	}
 
 
