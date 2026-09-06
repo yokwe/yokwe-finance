@@ -1,5 +1,6 @@
 package yokwe.finance.data.stock.jp;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class UpdateStockInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJPX.StockCodeNameJPX, StorageJITA.FundInfoJITA, StorageJREIT.JREITInfo, StorageYahoo.CompanyInfoJP).
+		input(StorageJPX.StockCodeNameJPX, StorageJPX.StockTradeJPX, StorageJITA.FundInfoJITA, StorageJREIT.JREITInfo, StorageYahoo.CompanyInfoJP).
 		output(StorageStockJP.StockInfoJP).
 		build();
 
@@ -34,6 +35,7 @@ public class UpdateStockInfo extends UpdateBase {
 	@Override
 	public void update() {
 		var stockList      = StorageJPX.StockCodeNameJPX.getList();
+		var stockTradeMap  = StorageJPX.StockTradeJPX.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 		var fundMap        = StorageJITA.FundInfoJITA.getList().stream().filter(o -> !o.stockCode.isEmpty()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 		var jreitMap       = StorageJREIT.JREITInfo.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 		var companyInfoMap = StorageYahoo.CompanyInfoJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
@@ -100,7 +102,17 @@ public class UpdateStockInfo extends UpdateBase {
 							}
 						}
 
-						var stockInfo = new StockInfoJP(stockCode, isinCode, tradeUnit, type, sector, industry, name);
+						BigDecimal liquidity = BigDecimal.ZERO;
+						{
+							var stockTrade = stockTradeMap.get(stockCode);
+							if (stockTrade == null) {
+								logger.warn("no stockTrade  {}  {}", stockCode, name);
+							} else {
+								liquidity = stockTrade.liquidity;
+							}
+						}
+
+						var stockInfo = new StockInfoJP(stockCode, isinCode, liquidity, tradeUnit, type, sector, industry, name);
 						list.add(stockInfo);
 					} else {
 						logger.error("Unepected stockCode");

@@ -18,7 +18,7 @@ public class StorageJPX {
 	public static final Storage.LoadSaveDirectoryList<DailyValue>
 		StockDiv = new Storage.LoadSaveDirectoryList<DailyValue>(DailyValue.class, storage, "stock-div", o -> o + ".csv");
 
-	// stock detail
+	// stock kessan JSON
 	public static final Storage.LoadSaveDirectoryString
 		KessanJSON = new Storage.LoadSaveDirectoryString(storage, "kessan-json",  o -> o + ".json");
 
@@ -29,9 +29,17 @@ public class StorageJPX {
 	public static final Storage.LoadSaveFileList<CodeName>
 		StockListJPX = new Storage.LoadSaveFileList<CodeName>(CodeName.class, storage, "stock-list-jpx.csv");
 
-	// stock detail
+	// stock detail JSON
 	public static final Storage.LoadSaveDirectoryString
 		StockDetailJSON = new Storage.LoadSaveDirectoryString(storage, "stock-detail-json",  o -> o + ".json");
+
+	// stock intra JSON
+	public static final Storage.LoadSaveDirectoryString
+		StockIntraJSON = new Storage.LoadSaveDirectoryString(storage, "stock-intra-json",  o -> o + ".json");
+
+	// stock trade
+	public static final Storage.LoadSaveFileList<StockTrade>
+		StockTradeJPX = new Storage.LoadSaveFileList<StockTrade>(StockTrade.class, storage, "stock-trade-jpx.csv");
 
 	// stock code name
 	public static final Storage.LoadSaveFileList<StockCodeName>
