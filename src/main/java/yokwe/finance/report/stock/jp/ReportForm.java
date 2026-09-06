@@ -48,6 +48,9 @@ public final class ReportForm extends Sheet implements Comparable<ReportForm> {
 	@Sheet.ColumnName("minY3") public double minY3 = -1;
 	@Sheet.ColumnName("maxY3") public double maxY3 = -1;
 
+	// liquidity
+	@Sheet.ColumnName("liquidity")   public double liquidity   = -1;
+
 	// volume
 	@Sheet.ColumnName("vol")   public double vol   = -1;
 	// 5 <= pricec

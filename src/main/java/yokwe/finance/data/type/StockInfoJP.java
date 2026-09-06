@@ -1,5 +1,7 @@
 package yokwe.finance.data.type;
 
+import java.math.BigDecimal;
+
 import yokwe.util.ToString;
 
 public final class StockInfoJP implements Comparable<StockInfoJP> {
@@ -29,13 +31,13 @@ public final class StockInfoJP implements Comparable<StockInfoJP> {
 		INFRA(SimpleType.INFRA),
 		// OTHER
 		CERTIFICATE(SimpleType.OTHER);
-		
+
 		public final SimpleType simpleType;
-		
+
 		private Type(SimpleType simpleType) {
 			this.simpleType = simpleType;
 		}
-		
+
 		public boolean isStock() {
 			return this.simpleType == SimpleType.STOCK;
 		}
@@ -52,18 +54,20 @@ public final class StockInfoJP implements Comparable<StockInfoJP> {
 			return this.simpleType == SimpleType.INFRA;
 		}
 	}
-	
-	public String	stockCode;
-	public String	isinCode;
-	public int		tradeUnit;
-	public Type		type;
-	public String	sector;
-	public String	industry;
-	public String	name;
-	
+
+	public String	  stockCode;
+	public String	  isinCode;
+	public BigDecimal liquidity; // 0.00 - 1.00
+	public int		  tradeUnit;
+	public Type		  type;
+	public String	  sector;
+	public String	  industry;
+	public String	  name;
+
 	public StockInfoJP(
 		String     stockCode,
 		String     isinCode,
+		BigDecimal liquidity,
 		int        tradeUnit,
 		Type       type,
 		String     sector,
@@ -72,13 +76,14 @@ public final class StockInfoJP implements Comparable<StockInfoJP> {
 		) {
 		this.stockCode = stockCode;
 		this.isinCode  = isinCode;
+		this.liquidity = liquidity;
 		this.tradeUnit = tradeUnit;
 		this.type      = type;
 		this.sector    = sector;
 		this.industry  = industry;
 		this.name      = name;
 	}
-	
+
 	@Override
 	public int compareTo(StockInfoJP that) {
 		return this.stockCode.compareTo(that.stockCode);

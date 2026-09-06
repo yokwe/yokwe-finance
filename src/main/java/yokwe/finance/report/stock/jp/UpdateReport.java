@@ -136,6 +136,8 @@ public class UpdateReport extends UpdateBase {
 					report.annualDiv     = stockStats.annualDiv;
 					report.trailingYield = stockStats.trailingYield;
 
+					report.liquidity  = stockInfo.liquidity.doubleValue();
+
 //					stats.vol       = (double)stockStats.vol / stockInfo.issued.doubleValue();
 //					stats.vol5      = (double)stockStats.vol5 / stockInfo.issued.doubleValue();
 //					stats.vol21     = (double)stockStats.vol21 / stockInfo.issued.doubleValue();
