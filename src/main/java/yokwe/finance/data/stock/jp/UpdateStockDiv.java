@@ -1,5 +1,6 @@
 package yokwe.finance.data.stock.jp;
 
+import yokwe.finance.data.fund.jp.StorageFundJP;
 import yokwe.finance.data.provider.jpx.StorageJPX;
 import yokwe.finance.data.provider.jreit.StorageJREIT;
 import yokwe.util.Makefile;
@@ -9,7 +10,7 @@ public class UpdateStockDiv extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageStockJP.StockInfoJP, StorageJPX.StockDiv, yokwe.finance.data.fund.jp.StorageFundJP.FundDiv, StorageJREIT.JREITDiv).
+		input(StorageStockJP.StockInfoJP, StorageJPX.StockDiv, StorageFundJP.FundDiv, StorageJREIT.JREITDiv).
 		output(StorageStockJP.StockDiv).
 		build();
 
@@ -40,7 +41,7 @@ public class UpdateStockDiv extends UpdateBase {
 			if (type.isETF()) {
 				countETF++;
 				// take value from fund jp
-				var divListFundJP = yokwe.finance.data.fund.jp.StorageFundJP.FundDiv.getList(e.isinCode);
+				var divListFundJP = StorageFundJP.FundDiv.getList(e.isinCode);
 //				logger.info("ETF   {}  {}  {}  {}", e.stockCode, e.isinCode, divList.size(), divListJITA.size());
 				if (divList.size() < divListFundJP.size()) {
 					countFundJP++;
