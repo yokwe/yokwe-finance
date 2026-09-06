@@ -2,13 +2,10 @@ package yokwe.finance.data.provider.jita;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 
 import yokwe.finance.data.provider.jpx.StockCodeName;
@@ -57,9 +54,6 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 
 				for(var e: data.searchResultInfo.resultInfoMapList) {
 					fundList.add(toFund(e));
-					// save for later inspection
-					var jsonString = JSON.marshal(e);
-					StorageJITA.FundInfoJSON.save(e.isinCd, jsonString);
 				}
 			}
 		}
@@ -169,24 +163,21 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 	protected void updateFile(List<FundInfoJP> dummy) {
 		checkDuplicateKey(consumer.fundList, o -> o.isinCode);
 
-		// remove unknown file
-		{
-			var validNameSet = consumer.fundList.stream().map(o -> o.isinCode + ".json").collect(Collectors.toSet());
-			var dir = StorageJITA.FundInfoJSON.getDir();
-			for(var file: FileUtil.listFile(dir)) {
-				if (!validNameSet.contains(file.getName())) {
-					logger.warn("delete unknown file  {}", file.getPath());
-					file.delete();
-				}
-			}
+		// remove json file
+		FileUtil.deleteFile(StorageJITA.FundInfoJSON.getDir(), o -> o.getName().endsWith(".json"));
+		// save json file
+		for(var e: consumer.fundList) {
+			var string = JSON.marshal(e);
+			StorageJITA.FundInfoJSON.save(e.isinCode, string);
 		}
 
 		save(consumer.fundList, StorageJITA.FundInfoJITA); // to force update use save
 	}
 
 
-	private static final Pattern PAT_ESTABLISHED_DATE = Pattern.compile("(?<yyyy>[12][09][0-9][0-9])-(?<mm>[01]?[0-9])-(?<dd>[0123]?[0-9]) 00:00:00");
-	private static final Pattern PAT_REDEMPTION_DATE = Pattern.compile("(?<yyyy>[12][09][0-9][0-9])(?<mm>[01]?[0-9])(?<dd>[0123]?[0-9])");
+	private static DateTimeFormatter ESTABLISHED_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-M-d 00:00:00");
+	private static DateTimeFormatter REDEMPTION_DATE_FORMAT  = DateTimeFormatter.ofPattern("yyyyMMdd");
+
 	private static FundInfoJP toFund(FundDataSearch.ResultInfo resultInfo) {
 		String    isinCode       = resultInfo.isinCd;
 		String    fundCode       = resultInfo.associFundCd;
@@ -195,37 +186,15 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 		LocalDate listingDate;
 		{
 			// 2016-07-29 00:00:00
-			Matcher m = PAT_ESTABLISHED_DATE.matcher(resultInfo.establishedDate);
-			if (m.find()) {
-				int yyyy = Integer.parseInt(m.group("yyyy"));
-				int mm   = Integer.parseInt(m.group("mm"));
-				int dd   = Integer.parseInt(m.group("dd"));
-				listingDate = LocalDate.of(yyyy, mm, dd);
-			} else {
-				logger.error("Unexpected establishedDate");
-				logger.error("  isinCode        {}", isinCode);
-				logger.error("  establishedDate {}", resultInfo.establishedDate);
-				throw new UnexpectedException("Unexpected establishedDate");
-			}
+			listingDate = LocalDate.parse(resultInfo.establishedDate, ESTABLISHED_DATE_FORMAT);
 		}
 
 		LocalDate redemptionDate;
 		{
-			if (resultInfo.redemptionDate.equals(FundInfoJP.NO_REDEMPTION_DATE_STRING)) {
-				redemptionDate = FundInfoJP.NO_REDEMPTION_DATE;
+			if (resultInfo.redemptionDate.equals(FundInfoJP.REDEMPTION_DATE_NONE_STRING)) {
+				redemptionDate = FundInfoJP.REDEMPTION_DATE_NONE;
 			} else {
-				Matcher m = PAT_REDEMPTION_DATE.matcher(resultInfo.redemptionDate);
-				if (m.find()) {
-					int yyyy = Integer.parseInt(m.group("yyyy"));
-					int mm   = Integer.parseInt(m.group("mm"));
-					int dd   = Integer.parseInt(m.group("dd"));
-					redemptionDate = LocalDate.of(yyyy, mm, dd);
-				} else {
-					logger.error("Unexpected redemptionDate");
-					logger.error("  isinCode       {}", isinCode);
-					logger.error("  redemptionDate {}", resultInfo.redemptionDate);
-					throw new UnexpectedException("Unexpected redemptionDate");
-				}
+				redemptionDate = LocalDate.parse(resultInfo.redemptionDate, REDEMPTION_DATE_FORMAT);
 			}
 		}
 
