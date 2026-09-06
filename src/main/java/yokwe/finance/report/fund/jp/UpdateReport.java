@@ -20,7 +20,6 @@ import yokwe.finance.data.provider.smtb.StorageSMTB;
 import yokwe.finance.data.provider.sony.StorageSony;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundDivScore;
-import yokwe.finance.data.type.FundInfoJP;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.finance.report.stats.online.BigDecimalSMA;
 import yokwe.util.CSVUtil;
@@ -295,7 +294,7 @@ public class UpdateReport extends UpdateBase {
 			}
 
 			// special case
-			if (fundInfo.redemptionDate.toString().compareTo(FundInfoJP.NO_REDEMPTION_DATE_STRING) == 0) {
+			if (fundInfo.noRedemptionDate()) {
 				report.redemption = NO_DATE;
 			}
 
