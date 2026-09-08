@@ -109,12 +109,24 @@ update-all-debug:
 #	make -f tmp/update-all.make -n update-all
 	( make -f tmp/update-all.make -n update-all ) | cat -n
 
+update-report-jp:
+	( make -f tmp/update-all.make -n update-report-stock-jp update-report-fund-jp ) | tee tmp/update-all.bash | cat -n
+	( make -f tmp/update-all.make    update-report-stock-jp update-report-fund-jp )
+	
+update-report-us:
+	( make -f tmp/update-all.make -n update-report-stock-us ) | tee tmp/update-all.bash | cat -n
+	( make -f tmp/update-all.make    update-report-stock-us )
+	
+
 
 update-data-jp: update-jpx update-jita update-moneybu update-click-jp update-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp
-	make update-all
+	make update-report-jp
 
-update-data-us: update-rakuten-us update-us-exchange
-	make update-all
+update-data-us: update-rakuten-us update-us-exchange update-quotes
+	make update-report-us
+
+update-quotes:
+	ant stock-us-update-quotes
 
 
 update-fx:
@@ -126,7 +138,7 @@ update-fx:
 #
 
 update-jpx:
-	ant jpx-update-stock-list jpx-update-etf jpx-update-etn jpx-update-infra jpx-update-reit
+	ant jpx-update-stock-list jpx-update-etf jpx-update-etn jpx-update-infra jpx-update-reit jpx-update-stock-intra-json
 
 update-jita:
 	ant jita-update-fund-info
