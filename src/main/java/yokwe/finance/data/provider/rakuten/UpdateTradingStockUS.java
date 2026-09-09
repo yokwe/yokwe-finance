@@ -24,20 +24,20 @@ import yokwe.util.update.UpdateBase;
 
 public class UpdateTradingStockUS extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
 		input().
 		output(StorageRakuten.TradingStockUSRakuten).
 		build();
-	
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	public void update() {
 		Storage.initialize();
-		
+
 		var listETF   = getETFList();
 		var listStock = getStockList();
 		logger.info("etf        {}", listETF.size());
@@ -51,7 +51,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		// fix buyFree and name in list
 		var buyFreeSet = getBuyFreeSet();
 		logger.info("buyFree    {}", buyFreeSet.size());
-		
+
 		// build list
 		var list = new ArrayList<TradingStock>();
 		for(var codeName: map.values()) {
@@ -62,7 +62,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 
 			list.add(new TradingStock(code, feeType, tradeType, name));
 		}
-		
+
 		checkDuplicateKey(list, o -> o.stockCode);
 		save(list, StorageRakuten.TradingStockUSRakuten); // use save for make
 	}
@@ -99,49 +99,53 @@ public class UpdateTradingStockUS extends UpdateBase {
 		public static List<ZeroETF> getInstance(String page) {
 			return ScrapeUtil.getList(ZeroETF.class, PAT, page);
 		}
-		
+
 		public final String symbol;
 		public final String exchange;
 		public final String expenseRatio;
-		
+
 		public ZeroETF(String symbol, String exchange, String expenseRatio) {
 			this.symbol       = symbol;
 			this.exchange     = exchange;
 			this.expenseRatio = expenseRatio;
 		}
-		
+
 		@Override
 		public String toString() {
 			return String.format("%s %s %s", symbol, exchange, expenseRatio);
 		}
 	}
-	
+
 	private List<CodeName> getETFList() {
 		var url      = "https://www.rakuten-sec.co.jp/web/market/search/etf_search/ETFD.csv";
 		var string   = HttpUtil.getInstance().downloadString(url);
 		StorageRakuten.ETFD.write(string);
-		
+
 		var dataList = CSVUtil.read(ETFData.class).withHeader(false).file(new StringReader(string));
-		
+
 		var list = new ArrayList<CodeName>();
 		for(var data: dataList) {
 			String code = data.symbol;
 			String name = data.name;
-			
+
 			// sanity check
-			if (code.isEmpty()) continue;
+			if (code.isEmpty() || name.isEmpty()) {
+				continue;
+			}
 			if (exchangeMap.containsKey(data.exchange)) {
 				var skip = exchangeMap.get(data.exchange);
-				if (skip) continue;
+				if (skip) {
+					continue;
+				}
 			} else {
 				logger.error("Unpexpected exchangeJP");
-				logger.error("  etf {}", ToString.withFieldName(data));
+				logger.error("  data  {}", ToString.withFieldName(data));
 				throw new UnexpectedException("Unexpected");
 			}
-			
+
 			list.add(new CodeName(code, name));
 		}
-		
+
 		return list;
 	}
 	public static class ETFData {
@@ -154,7 +158,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		public String f07;
 		public String f08;
 		public String f09;
-		
+
 		public String f10;
 		public String f11;
 		public String f12;
@@ -165,7 +169,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		public String f17;
 		public String f18;
 		public String f19;
-		
+
 		public String f20;
 		public String f21;
 		public String f22;
@@ -176,7 +180,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		public String f27;
 		public String f28;
 		public String f29;
-		
+
 		public String f30;
 		public String f31;
 		public String f32;
@@ -187,7 +191,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		public String f37;
 		public String f38;
 		public String f39;
-		
+
 		public String f40;
 		public String f41;
 		public String f42;
@@ -198,7 +202,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		public String f47;
 		public String f48;
 		public String f49;
-		
+
 		public String f50;
 		public String f51;
 		public String f52;
@@ -207,7 +211,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		public String f55;
 		public String f56;
 		public String f57;
-		public String f58;			
+		public String f58;
 	}
 	private static Map<String, Boolean> exchangeMap = Map.ofEntries(
 		Map.entry("香港",      Boolean.TRUE),
@@ -218,33 +222,37 @@ public class UpdateTradingStockUS extends UpdateBase {
 		Map.entry("NYSE ARCA", Boolean.FALSE),
 		Map.entry("Cboe",      Boolean.FALSE)
 	);
-	
+
 	private List<CodeName> getStockList() {
 		var url      = "https://www.trkd-asia.com/rakutensec/exportcsvus?all=on&vall=on&r1=on&forwarding=na&target=0&theme=na&returns=na&head_office=na&name=&sector=na&pageNo=&c=us&p=result";
 		var string   = HttpUtil.getInstance().downloadString(url);
 		StorageRakuten.ExportCSVUS.write(string);
-		
+
 		var dataList = CSVUtil.read(StockData.class).file(new StringReader(string));
-		
+
 		var list = new ArrayList<CodeName>();
 		for(var data: dataList) {
 			String code = data.ticker;
 			String name = data.name;
-			
+
 			// sanity check
-			if (code.isEmpty()) continue;
+			if (code.isEmpty()) {
+				continue;
+			}
 			if (tradeableMap.containsKey(data.tradeable)) {
 				var skip = tradeableMap.get(data.tradeable);
-				if (skip) continue;
+				if (skip) {
+					continue;
+				}
 			} else {
 				logger.error("Unpexpected tradeable");
 				logger.error("  etf {}", ToString.withFieldName(data));
 				throw new UnexpectedException("tradeable");
 			}
-			
+
 			list.add(new CodeName(code, name));
 		}
-		
+
 		return list;
 	}
 	// 現地コード,銘柄名(English),銘柄名,市場,業種,取扱
@@ -262,7 +270,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 		@ColumnName("取扱")
 		public String tradeable;
 	}
-	
+
 	private static Map<String, Boolean> tradeableMap = Map.ofEntries(
 		Map.entry("○", Boolean.FALSE),
 		Map.entry("-",  Boolean.TRUE)
