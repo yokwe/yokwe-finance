@@ -1,7 +1,5 @@
 package yokwe.finance.data.type;
 
-import java.math.BigDecimal;
-
 import yokwe.util.ToString;
 
 public final class StockInfoJP implements Comparable<StockInfoJP> {
@@ -57,7 +55,6 @@ public final class StockInfoJP implements Comparable<StockInfoJP> {
 
 	public String	  stockCode;
 	public String	  isinCode;
-	public BigDecimal liquidity; // 0.00 - 1.00
 	public int		  tradeUnit;
 	public Type		  type;
 	public String	  sector;
@@ -67,7 +64,6 @@ public final class StockInfoJP implements Comparable<StockInfoJP> {
 	public StockInfoJP(
 		String     stockCode,
 		String     isinCode,
-		BigDecimal liquidity,
 		int        tradeUnit,
 		Type       type,
 		String     sector,
@@ -76,7 +72,6 @@ public final class StockInfoJP implements Comparable<StockInfoJP> {
 		) {
 		this.stockCode = stockCode;
 		this.isinCode  = isinCode;
-		this.liquidity = liquidity;
 		this.tradeUnit = tradeUnit;
 		this.type      = type;
 		this.sector    = sector;

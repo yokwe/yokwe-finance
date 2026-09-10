@@ -1,11 +1,11 @@
-package yokwe.finance.data.provider.jpx;
+package yokwe.finance.data.type;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import yokwe.util.ToString;
 
-public class StockTrade implements Comparable<StockTrade> {
+public class StockTradeJP implements Comparable<StockTradeJP> {
 	public String     stockCode;
 
 	public LocalDate  dateFirst;
@@ -25,7 +25,7 @@ public class StockTrade implements Comparable<StockTrade> {
 	}
 
 	@Override
-	public int compareTo(StockTrade that) {
+	public int compareTo(StockTradeJP that) {
 		return this.stockCode.compareTo(that.stockCode);
 	}
 }

@@ -5,6 +5,7 @@ import yokwe.finance.data.stock.StorageStock;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.OHLCV;
 import yokwe.finance.data.type.StockInfoJP;
+import yokwe.finance.data.type.StockTradeJP;
 import yokwe.finance.data.type.StockValueJP;
 import yokwe.util.Storage;
 
@@ -19,4 +20,6 @@ public class StorageStockJP {
 		StockDiv        = new Storage.LoadSaveDirectoryList<DailyValue>(DailyValue.class,  storage, "stock-div", o -> o + ".csv");
 	public static final Storage.LoadSaveFileList<StockValueJP>
 		StockValueJP    = StorageJPX.StockValueJPX;
+	public static final Storage.LoadSaveFileList<StockTradeJP>
+		StockTradeJP    = StorageJPX.StockTradeJPX;
 }

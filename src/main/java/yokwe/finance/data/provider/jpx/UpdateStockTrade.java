@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import yokwe.finance.data.type.StockCodeJP;
+import yokwe.finance.data.type.StockTradeJP;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.ToString;
@@ -41,7 +42,7 @@ public class UpdateStockTrade extends UpdateBase {
 
 		logger.info("stockCodeList  {}", stockCodeList.size());
 
-		var stockTradeList = new ArrayList<StockTrade>();
+		var stockTradeList = new ArrayList<StockTradeJP>();
 
 		for(var file: fileList) {
 //			logger.info("file  {}  {}", file.canRead(), file.toPath());
@@ -167,7 +168,7 @@ public class UpdateStockTrade extends UpdateBase {
 			var dateFirst = liquidityMap.firstKey();
 			var dateLast  = liquidityMap.lastKey();
 
-			var stockTrade = new StockTrade();
+			var stockTrade = new StockTradeJP();
 			stockTrade.stockCode  = stockCode;
 			stockTrade.dateFirst  = dateFirst;
 			stockTrade.dateLast   = dateLast;

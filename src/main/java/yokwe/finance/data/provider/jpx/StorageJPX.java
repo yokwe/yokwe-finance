@@ -4,6 +4,7 @@ import yokwe.finance.data.provider.StorageProvider;
 import yokwe.finance.data.type.CodeName;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.OHLCV;
+import yokwe.finance.data.type.StockTradeJP;
 import yokwe.finance.data.type.StockValueJP;
 import yokwe.util.Storage;
 
@@ -38,8 +39,8 @@ public class StorageJPX {
 		StockIntraJSON = new Storage.LoadSaveDirectoryString(storage, "stock-intra-json",  o -> o + ".json");
 
 	// stock trade
-	public static final Storage.LoadSaveFileList<StockTrade>
-		StockTradeJPX = new Storage.LoadSaveFileList<StockTrade>(StockTrade.class, storage, "stock-trade-jpx.csv");
+	public static final Storage.LoadSaveFileList<StockTradeJP>
+		StockTradeJPX = new Storage.LoadSaveFileList<StockTradeJP>(StockTradeJP.class, storage, "stock-trade-jpx.csv");
 
 	// stock code name
 	public static final Storage.LoadSaveFileList<StockCodeName>

@@ -31,6 +31,7 @@ public class UpdateReport extends UpdateBase {
 			input(
 					StorageFundJP.NISAInfo,
 					StorageStockJP.StockValueJP,
+					StorageStockJP.StockTradeJP,
 					StorageStockJP.StockInfoJP,
 					StorageStockJP.StockPriceOHLCV,
 					StorageStockJP.StockDiv
@@ -69,6 +70,7 @@ public class UpdateReport extends UpdateBase {
 		{
 			var nisaMap        = StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 			var stockValueMap  = StorageStockJP.StockValueJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var stockTradeMap  = StorageStockJP.StockTradeJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 			var taxMap         = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 
 			for(var stockInfo: StorageStockJP.StockInfoJP.getList()) {
@@ -76,9 +78,14 @@ public class UpdateReport extends UpdateBase {
 				var priceList = StorageStockJP.StockPriceOHLCV.getList(stockCode);
 				var divList   = StorageStockJP.StockDiv.getList(stockCode);
 				var stockValue = stockValueMap.get(stockCode);
+				var stockTrade = stockTradeMap.get(stockCode);
 
 				if (stockValue == null) {
 					logger.info("no stockValue        {}  {}", stockCode, stockInfo.name);
+					continue;
+				}
+				if (stockTrade == null) {
+					logger.info("no stockTrade        {}  {}", stockCode, stockInfo.name);
 					continue;
 				}
 
@@ -136,7 +143,7 @@ public class UpdateReport extends UpdateBase {
 					report.annualDiv     = stockStats.annualDiv;
 					report.trailingYield = stockStats.trailingYield;
 
-					report.liquidity  = stockInfo.liquidity.doubleValue();
+					report.liquidity  = stockTrade.liquidity.doubleValue();
 
 //					stats.vol       = (double)stockStats.vol / stockInfo.issued.doubleValue();
 //					stats.vol5      = (double)stockStats.vol5 / stockInfo.issued.doubleValue();
