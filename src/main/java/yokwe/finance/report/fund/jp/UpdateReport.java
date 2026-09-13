@@ -22,7 +22,6 @@ import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundDivScore;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.finance.report.stats.online.BigDecimalSMA;
-import yokwe.util.CSVUtil;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.MarketHoliday;
@@ -58,7 +57,6 @@ public class UpdateReport extends UpdateBase {
 
 	private static final String     URL_TEMPLATE  = StringUtil.toURLString(new File("data/form/FUND_STATS.ods"));
 	private static final LocalDate  LAST_DATE_OF_LAST_MONTH = LocalDate.now().withDayOfMonth(1).minusDays(1);
-	private static final LocalDate  NO_DATE = LocalDate.of(2099, 12, 31);
 	private static final BigDecimal CONSUMPTION_TAX_RATE    = new BigDecimal("1.1"); // 10 percent
 
 	@Override
@@ -66,12 +64,12 @@ public class UpdateReport extends UpdateBase {
 		var list = getReportList();
 		// save ods
 		generateReport(list);
-		// save csv
-		{
-			var file = StorageReportFundJP.ReportCSV.getFile();
-			logger.info("save  {}  {}", list.size(), file.getPath());
-			CSVUtil.write(ReportForm.class).file(file, list);
-		}
+//		// save csv
+//		{
+//			var file = StorageReportFundJP.ReportCSV.getFile();
+//			logger.info("save  {}  {}", list.size(), file.getPath());
+//			CSVUtil.write(ReportForm.class).file(file, list);
+//		}
 		// copy files
 		{
 			var oldFile = StorageReportFundJP.ReportODS.getFile();
@@ -99,8 +97,6 @@ public class UpdateReport extends UpdateBase {
 		int countNoDivScore = 0;
 		int count           = 0;
 
-		var smallDecimal = new BigDecimal("0.00000001");
-
 		for(var fundInfo: fundInfoList) {
 			var isinCode  = fundInfo.isinCode;
 
@@ -120,7 +116,7 @@ public class UpdateReport extends UpdateBase {
 				var priceList = fundPriceList.stream().map(o -> new DailyValue(o.date, o.price)).collect(Collectors.toList());
 				var divList   = MonthlyStats.getDivList(priceList, StorageFundJP.FundDiv.getList(isinCode));
 
-				// FIXME create moving average of priceList
+				// Modify priceList to set moving average of priceList
 				{
 					var size = 7;
 					var sma = new BigDecimalSMA(size);
@@ -131,7 +127,7 @@ public class UpdateReport extends UpdateBase {
 					}
 				}
 
-				// use last element for nav
+				// Use last element of fundPrice for nav
 				nav = fundPriceList.get(fundPriceList.size() - 1).nav;
 
 				monthlyStats = MonthlyStats.getInstance(isinCode, priceList, divList);
@@ -142,8 +138,8 @@ public class UpdateReport extends UpdateBase {
 			report.fundCode  = fundInfo.fundCode;
 			report.stockCode = fundInfo.stockCode;
 
-			report.inception  = fundInfo.inceptionDate;
-			report.redemption = fundInfo.redemptionDate;
+			report.inception  = fundInfo.inceptionDate.toString();
+			report.redemption = fundInfo.redemptionDate.toString();
 			report.age        = durationInYearMonth(fundInfo.inceptionDate, LAST_DATE_OF_LAST_MONTH);
 
 			// Use toushin category
@@ -155,7 +151,7 @@ public class UpdateReport extends UpdateBase {
 			report.expenseRatio = fundInfo.expenseRatio.multiply(CONSUMPTION_TAX_RATE);
 			report.buyFeeMax    = fundInfo.buyFeeMax.multiply(CONSUMPTION_TAX_RATE);
 			report.nav          = nav;
-			report.divc         = fundInfo.divFreq;
+			report.divc         = BigDecimal.valueOf(fundInfo.divFreq);
 
 
 			if (monthlyStats != null) {
@@ -249,66 +245,58 @@ public class UpdateReport extends UpdateBase {
 				report.nisa = "";
 			}
 
+
 			if (report.stockCode.isEmpty()) {
 				// FUND
-				report.prestia = BigDecimal.ZERO;
-				//
-				{
-					var tradingFund = nikkoMap.getOrDefault(isinCode, null);
-					if (tradingFund != null) {
-						report.nikko = tradingFund.salesFee.add(smallDecimal);
-					}
+
+				// nikko
+				if (nikkoMap.containsKey(isinCode)) {
+					report.nikko = nikkoMap.get(isinCode).salesFee;
 				}
-				{
-					var tradingFund = rakutenMap.getOrDefault(isinCode, null);
-					if (tradingFund != null) {
-						report.rakuten = tradingFund.salesFee.add(smallDecimal);
-					}
+				// rakuten
+				if (rakutenMap.containsKey(isinCode)) {
+					report.rakuten = rakutenMap.get(isinCode).salesFee;
 				}
-				{
-					var tradingFund = smtbMap.getOrDefault(isinCode, null);
-					if (tradingFund != null) {
-						report.smtb = tradingFund.salesFee.add(smallDecimal);
-					}
+				// prestia
+//				report.prestia = "";
+				// smtb
+				if (smtbMap.containsKey(isinCode)) {
+					report.smtb = smtbMap.get(isinCode).salesFee;
 				}
-				{
-					var tradingFund = sonyMap.getOrDefault(isinCode, null);
-					if (tradingFund != null) {
-						report.sony = tradingFund.salesFee.add(smallDecimal);
-					}
+				// sony
+				if (sonyMap.containsKey(isinCode)) {
+					report.sony = sonyMap.get(isinCode).salesFee;
 				}
-				{
-					var tradingFund = clickMap.getOrDefault(isinCode, null);
-					if (tradingFund != null) {
-						report.click = tradingFund.salesFee.add(smallDecimal);
-					}
+				// click
+				if (clickMap.containsKey(isinCode)) {
+					report.click = clickMap.get(isinCode).salesFee;
 				}
 			} else {
 				// ETF
-				report.nikko   = smallDecimal;
-				report.rakuten = smallDecimal;
-				report.prestia = BigDecimal.ZERO;
-				report.smtb    = BigDecimal.ZERO;
-				report.sony    = BigDecimal.ZERO;
-				report.click   = BigDecimal.ZERO;
+				report.nikko   = BigDecimal.ZERO;
+				report.rakuten = BigDecimal.ZERO;
+//				report.prestia = "";
+//				report.smtb    = "";
+//				report.sony    = "";
+//				report.click   = "";
 			}
 
 			// special case
 			if (fundInfo.noRedemptionDate()) {
-				report.redemption = NO_DATE;
+				report.redemption = "NO REDEMPTION";
 			}
 
-			if (report.div1Y.equals(BigDecimal.ZERO)) {
-				report.yield1Y = BigDecimal.ZERO;
+			if (report.div1Y == null) {
+				report.yield1Y = null;
 			}
-			if (report.div3Y.equals(BigDecimal.ZERO)) {
-				report.yield3Y = BigDecimal.ZERO;
+			if (report.div3Y == null) {
+				report.yield3Y = null;
 			}
-			if (report.div5Y.equals(BigDecimal.ZERO)) {
-				report.yield5Y = BigDecimal.ZERO;
+			if (report.div5Y == null) {
+				report.yield5Y = null;
 			}
-			if (report.div10Y.equals(BigDecimal.ZERO)) {
-				report.yield10Y = BigDecimal.ZERO;
+			if (report.div10Y == null) {
+				report.yield10Y = null;
 			}
 
 			list.add(report);

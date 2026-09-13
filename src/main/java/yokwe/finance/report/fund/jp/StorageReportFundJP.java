@@ -8,6 +8,6 @@ public class StorageReportFundJP {
 
 	public static final Storage.LoadSaveFile
 		ReportODS = new Storage.LoadSaveFile(storage, "report-fund-jp.ods");
-	public static final Storage.LoadSaveFile
-		ReportCSV = new Storage.LoadSaveFile(storage, "report-fund-jp.csv");
+//	public static final Storage.LoadSaveFile
+//		ReportCSV = new Storage.LoadSaveFile(storage, "report-fund-jp.csv");
 }
