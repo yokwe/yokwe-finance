@@ -1,6 +1,8 @@
 package yokwe.finance.report.stock.us;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,51 +89,47 @@ public class UpdateReport extends UpdateBase {
 				report.sector    = stockInfo.sector;
 				report.industry  = stockInfo.industry;
 
-				report.divc     = -1;
-				// set sector and industry
-
 				report.name      = stockInfo.name;
 
 				{
 					StockStats stockStats = StockStats.getInstance(stockCode, dateStop, priceList, divList);
 
-					report.price     = stockStats.price;
-					report.pricec    = priceList.size();
-					report.last      = stockStats.last;
+					report.price     = BigDecimal.valueOf(stockStats.price);
+					report.pricec    = BigDecimal.valueOf(priceList.size());
+					report.last      = BigDecimal.valueOf(stockStats.last);
 
-					report.rorNoReinvested = stockStats.rorNoReinvested;
+					report.rorReinvested   = BigDecimal.valueOf(stockStats.rorReinvested).setScale(5, RoundingMode.HALF_EVEN);
+					report.rorNoReinvested = BigDecimal.valueOf(stockStats.rorNoReinvested).setScale(5, RoundingMode.HALF_EVEN);
 
-					report.sd        = stockStats.sd;
-					report.hv        = stockStats.hv;
-					report.rsi       = stockStats.rsi14;
-//					report.rsi14     = stockStats.rsi14;
-//					report.rsi7      = stockStats.rsi7;
+					report.sd        = BigDecimal.valueOf(stockStats.sd).setScale(5, RoundingMode.HALF_EVEN);
+					report.hv        = BigDecimal.valueOf(stockStats.hv).setScale(5, RoundingMode.HALF_EVEN);
+					report.rsi       = BigDecimal.valueOf(stockStats.rsi14).setScale(1, RoundingMode.HALF_EVEN);
 
-					report.min       = stockStats.min;
-					report.max       = stockStats.max;
-					report.minY3     = stockStats.minY3;
-					report.maxY3     = stockStats.maxY3;
+					report.min       = BigDecimal.valueOf(stockStats.min).setScale(5, RoundingMode.HALF_EVEN);
+					report.max       = BigDecimal.valueOf(stockStats.max).setScale(5, RoundingMode.HALF_EVEN);
+					report.minY3     = BigDecimal.valueOf(stockStats.minY3).setScale(5, RoundingMode.HALF_EVEN);
+					report.maxY3     = BigDecimal.valueOf(stockStats.maxY3).setScale(5, RoundingMode.HALF_EVEN);
 
 //					if (stats.divc == -1) {
 //						stats.divc          = stockStats.divc;
 //					}
-					report.divc          = stockStats.divc;
-					report.lastDiv       = stockStats.lastDiv;
-					report.forwardYield  = stockStats.forwardYield;
-					report.annualDiv     = stockStats.annualDiv;
-					report.trailingYield = stockStats.trailingYield;
+					report.divc          = BigDecimal.valueOf(stockStats.divc);
+					report.lastDiv       = BigDecimal.valueOf(stockStats.lastDiv);
+					report.forwardYield  = BigDecimal.valueOf(stockStats.forwardYield).setScale(5, RoundingMode.HALF_EVEN);
+					report.annualDiv     = BigDecimal.valueOf(stockStats.annualDiv);
+					report.trailingYield = BigDecimal.valueOf(stockStats.trailingYield).setScale(5, RoundingMode.HALF_EVEN);
 
 					// stockStatsUS
-					report.rorPrice      = stockStatsUS.fiftyTwoWeek.doubleValue();
-					report.divc          = stockStatsUS.divInt;
-					report.trailingYield = stockStatsUS.divYield.doubleValue();
+					report.rorPrice      = stockStatsUS.fiftyTwoWeek;
+					report.divc          = BigDecimal.valueOf(stockStatsUS.divInt);
+					report.trailingYield = stockStatsUS.divYield;
 
 //					stats.vol       = (double)stockStats.vol / stockInfo.issued.doubleValue();
 //					stats.vol5      = (double)stockStats.vol5 / stockInfo.issued.doubleValue();
 //					stats.vol21     = (double)stockStats.vol21 / stockInfo.issued.doubleValue();
-					report.vol       = (long)(stockStats.vol   * report.price);
-					report.vol5      = (long)(stockStats.vol5  * report.price);
-					report.vol21     = (long)(stockStats.vol21 * report.price);
+					report.vol       = BigDecimal.valueOf(stockStats.vol).setScale(0, RoundingMode.HALF_EVEN);
+					report.vol5      = BigDecimal.valueOf(stockStats.vol5).setScale(0, RoundingMode.HALF_EVEN);
+					report.vol21     = BigDecimal.valueOf(stockStats.vol21).setScale(0, RoundingMode.HALF_EVEN);
 				}
 
 				// FXIME
