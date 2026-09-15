@@ -286,17 +286,21 @@ public class UpdateReport extends UpdateBase {
 				report.redemption = "NO REDEMPTION";
 			}
 
-			if (report.div1Y == null) {
-				report.yield1Y = null;
+			if (report.div1Y == null || report.div1Y.compareTo(BigDecimal.ZERO) == 0) {
+				report.yield1Y    = null;
+				report.divScore1Y = null;
 			}
-			if (report.div3Y == null) {
-				report.yield3Y = null;
+			if (report.div3Y == null || report.div3Y.compareTo(BigDecimal.ZERO) == 0) {
+				report.yield3Y    = null;
+				report.divScore3Y = null;
 			}
-			if (report.div5Y == null) {
-				report.yield5Y = null;
+			if (report.div5Y == null || report.div5Y.compareTo(BigDecimal.ZERO) == 0) {
+				report.yield5Y    = null;
+				report.divScore5Y = null;
 			}
-			if (report.div10Y == null) {
-				report.yield10Y = null;
+			if (report.div10Y == null || report.div10Y.compareTo(BigDecimal.ZERO) == 0) {
+				report.yield10Y    = null;
+				report.divScore10Y = null;
 			}
 
 			list.add(report);
