@@ -35,6 +35,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 	}
 
 	static final String CHARSET = "UTF-8";
+	static final BigDecimal NOT_TRADABLE = new BigDecimal("-0.99");
 
 
 	void downloadFile() {
@@ -125,9 +126,9 @@ public class UpdateTradingFundJP extends UpdateBase {
 				list.add(new TradingFund(isinCode, salesFee, fundName));
 			} else {
 				countI++;
-
 				// not tradable in direct course
-				logger.info("no direct cource  {}  {}", isinCode, fundName);
+//				logger.info("no direct cource  {}  {}", isinCode, fundName);
+				list.add(new TradingFund(isinCode, NOT_TRADABLE, fundName));
 			}
 
 		}
