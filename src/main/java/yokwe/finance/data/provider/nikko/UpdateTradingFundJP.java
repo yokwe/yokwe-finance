@@ -18,43 +18,45 @@ import yokwe.util.update.UpdateBase;
 
 public class UpdateTradingFundJP extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
-		input(). // StorageJITA.FundInfo
+		input(StorageNikko.FundInfoNikko). // StorageJITA.FundInfo
 		output(StorageNikko.TradingFundJPNikko).
 		build();
-	
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	public void update() {
 		downloadFile();
 		updateFile();
 	}
-	
+
 	static final String CHARSET = "UTF-8";
 
-	
+
 	void downloadFile() {
 		String url     = "https://www.smbcnikko.co.jp/products/inv/direct_fee/csv/coursedata.csv";
-		
+
 		var string = HttpUtil.getInstance().withCharset(CHARSET).downloadString(url);
 		StorageNikko.CourceData.save(string);
 		logger.info("courdata.csv  {}", string.length());
 	}
-	
+
 	void updateFile() {
 		var noLoad = "ノーロード";
 		var fundCodeMap = StorageFundJP.FundInfo.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
-		
+
 		var pat     = Pattern.compile("(?<percent>[0-9]+\\.[0-9]+)％");
 		var patFund = Pattern.compile("銘柄コード：(?<nikkoCode>.{4})　投信協会コード：(?<fundCode>.{8})");
 
 		var dataList = CSVUtil.read(CourseData.class).withHeader(false).withSeparator('|').file(new StringReader(StorageNikko.CourceData.load()));
 		logger.info("dataList  {}", dataList.size());
-		
+
+		var fundInfoMap = StorageNikko.FundInfoNikko.load().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+
 		int countA = 0;
 		int countB = 0;
 		int countC = 0;
@@ -62,7 +64,9 @@ public class UpdateTradingFundJP extends UpdateBase {
 		int countE = 0;
 		int countF = 0;
 		int countG = 0;
-		
+		int countH = 0;
+		int countI = 0;
+
 		var list = new ArrayList<TradingFund>();
 		for(var data: dataList) {
 			String     isinCode;
@@ -81,7 +85,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 				Matcher m = patFund.matcher(string);
 				if (m.find()) {
 					String newFundCode  = m.group("fundCode");
-					
+
 					if (fundCodeMap.containsKey(newFundCode)) {
 						var fundInfo = fundCodeMap.get(newFundCode);
 						isinCode = fundInfo.isinCode;
@@ -98,7 +102,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 					continue;
 				}
 			}
-			
+
 			if (data.salesFee.startsWith(noLoad)) {
 				salesFee = BigDecimal.ZERO;
 				countE++;
@@ -114,9 +118,20 @@ public class UpdateTradingFundJP extends UpdateBase {
 					countG++;
 				}
 			}
-			list.add(new TradingFund(isinCode, salesFee, fundName));
+
+			var fundInfo = fundInfoMap.get(isinCode);
+			if (fundInfo.directCourse) {
+				countH++;
+				list.add(new TradingFund(isinCode, salesFee, fundName));
+			} else {
+				countI++;
+
+				// not tradable in direct course
+				logger.info("no direct cource  {}  {}", isinCode, fundName);
+			}
+
 		}
-		
+
 		logger.info("countA  {}", countA);
 		logger.info("countB  {}", countB);
 		logger.info("countC  {}", countC);
@@ -124,10 +139,12 @@ public class UpdateTradingFundJP extends UpdateBase {
 		logger.info("countE  {}", countE);
 		logger.info("countF  {}", countF);
 		logger.info("countG  {}", countG);
-		
+		logger.info("countH  {}", countH);
+		logger.info("countI  {}", countI);
+
 		save(list, StorageNikko.TradingFundJPNikko); // use save for make
 	}
-	
+
 	public static class CourseData {
 		public String nikkoCode;
 		public String name;
@@ -136,7 +153,7 @@ public class UpdateTradingFundJP extends UpdateBase {
 		public String salesFee;
 		public String fundCode; // Do not use this fundCode.
 		public String flag;
-		
+
 		@Override
 		public String toString() {
 			return ToString.withFieldName(this);

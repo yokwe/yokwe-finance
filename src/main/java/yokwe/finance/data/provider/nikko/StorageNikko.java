@@ -15,4 +15,13 @@ public class StorageNikko {
 	public static final Storage.LoadSaveFileString CourceData =
 		new Storage.LoadSaveFileString(storage, "coursedata.csv");
 
+	// fundList.json
+	public static final Storage.LoadSaveFileString FundListJSON =
+		new Storage.LoadSaveFileString(storage, "fund-list.json");
+	public static final Storage.LoadSaveFileString FundListString =
+		new Storage.LoadSaveFileString(storage, "fund-list.string");
+
+	public static final Storage.LoadSaveFileList<FundInfoNikko> FundInfoNikko =
+		new Storage.LoadSaveFileList<FundInfoNikko>(FundInfoNikko.class, storage, "fund-info-nikko.csv");
+
 }
