@@ -26,7 +26,7 @@ public class UpdateFundList extends UpdateBase {
 
 	@Override
 	public void update() {
-//		downloadFile();
+		downloadFile();
 		updateFile();
 	}
 
@@ -38,12 +38,12 @@ public class UpdateFundList extends UpdateBase {
 		logger.info("string  {}", string.length());
 		StorageNikko.FundListString.save(string);
 
-		var patJSON = Pattern.compile("fnd_list\\((?<jsonString>.+)\\)");
+		var patJSON = Pattern.compile("fnd_list\\((?<json>.+)\\)");
 		var m = patJSON.matcher(string);
 		if (m.matches() && m.groupCount() == 1) {
-			var jsonString = m.group("jsonString");
-			logger.info("jsonString  {}", jsonString.length());
-			StorageNikko.FundListJSON.save(jsonString);
+			var json = m.group("json");
+			logger.info("json    {}", json.length());
+			StorageNikko.FundListJSON.save(json);
 		} else {
 			logger.info("Unexpected string");
 			throw new UnexpectedException("Unexpected string");

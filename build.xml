@@ -248,6 +248,13 @@
 			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
 		</java>
 	</target>
+	<target name="nikko-update-fund-list">
+		<java module="yokwe.finance/yokwe.finance.data.provider.nikko.UpdateFundList" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
 	
 	<!-- provider nyse -->
 	<target name="nyse-update-stock-code-name">
