@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -85,17 +86,33 @@ public class UpdateReport extends UpdateBase {
 		var list = new ArrayList<ReportForm>();
 		var nisaInfoMap  = StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var fundInfoList = StorageFundJP.FundInfo.getList();
+
+		var divScoreMap  = StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var taxMap       = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+
+		var clickMap     = StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var nikkoMap     = StorageNikko.TradingFundJPNikko.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var rakutenMap   = StorageRakuten.TradingFundJPRakuten.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var smtbMap      = StorageSMTB.TradingFundJPSMTB.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var sonyMap      = StorageSony.TradingFundJPSony.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var clickMap     = StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var divScoreMap  = StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var taxMap       = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 
 		int countNoPrice    = 0;
 		int countNoDivScore = 0;
 		int count           = 0;
+
+		// remove not trading fund
+		{
+			var set = new HashSet<String>();
+			set.addAll(clickMap.keySet());
+			set.addAll(nikkoMap.keySet());
+			set.addAll(rakutenMap.keySet());
+			set.addAll(smtbMap.keySet());
+			set.addAll(sonyMap.keySet());
+
+			logger.info("fundInfoList  {}", fundInfoList.size());
+			fundInfoList.removeIf(o -> !set.contains(o.isinCode));
+			logger.info("fundInfoList  {}", fundInfoList.size());
+		}
 
 		for(var fundInfo: fundInfoList) {
 			var isinCode  = fundInfo.isinCode;
