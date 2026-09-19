@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.data.provider.jita.StorageJITA;
+import yokwe.finance.data.provider.moneybu.StockInfoMoneybu;
 import yokwe.finance.data.provider.moneybu.StorageMoneybu;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundInfoJP;
@@ -46,7 +47,7 @@ public class UpdateFundDiv extends UpdateBase {
 		StorageFundJP.FundDiv.touch();
 	}
 
-	void updateDivList(FundInfoJP fundInfo, List<DailyValue> divList, yokwe.finance.data.provider.moneybu.StockInfo stockInfo) {
+	void updateDivList(FundInfoJP fundInfo, List<DailyValue> divList, StockInfoMoneybu stockInfo) {
 		if (stockInfo == null) {
 			// must be delisted etf
 			logger.warn("Unexpected stockCode  {}  {}  {}", fundInfo.isinCode, fundInfo.stockCode, fundInfo.name);

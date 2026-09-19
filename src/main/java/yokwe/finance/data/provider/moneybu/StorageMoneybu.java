@@ -22,7 +22,7 @@ public class StorageMoneybu {
 		new Storage.LoadSaveDirectoryString(storage, "stock-info-json", o -> o + ".json");
 
 	// stock-list
-	public static final Storage.LoadSaveFileList<StockInfo> StockInfoMoneybu =
-		new Storage.LoadSaveFileList<StockInfo>(StockInfo.class, storage, "stock-info-moneybu.csv");
+	public static final Storage.LoadSaveFileList<StockInfoMoneybu> StockInfoMoneybu =
+		new Storage.LoadSaveFileList<StockInfoMoneybu>(StockInfoMoneybu.class, storage, "stock-info-moneybu.csv");
 
 }

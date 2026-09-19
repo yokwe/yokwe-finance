@@ -82,7 +82,7 @@ public class UpdateStockInfo extends UpdateBase {
 
 	private void update(List<StockList> stockList) {
 		//
-		var stockInfoList = new ArrayList<StockInfo>(stockList.size());
+		var stockInfoList = new ArrayList<StockInfoMoneybu>(stockList.size());
 
 		var stockMap = StorageJPX.StockCodeNameJPX.getList().stream().collect(Collectors.toMap(o->o.stockCode, Function.identity()));
 		var today    = LocalDate.now();
@@ -112,13 +112,13 @@ public class UpdateStockInfo extends UpdateBase {
 
 				var duration = durationInMonth(toLocalDate(raw.data.listingDate), today);
 
-				StockInfo stockInfo = new StockInfo();
+				StockInfoMoneybu stockInfo = new StockInfoMoneybu();
 
 				stockInfo.stockCode = stock.stockCode;
 				stockInfo.isinCode  = stock.isinCode;
 				stockInfo.name      = stock.name;
 				stockInfo.duration  = duration;
-				stockInfo.divYield  = raw.data.dividendYield == null ? StockInfo.UNKNOWN_DIV_YIELD : raw.data.dividendYield.scaleByPowerOfTen(-2);
+				stockInfo.divYield  = raw.data.dividendYield == null ? StockInfoMoneybu.UNKNOWN_DIV_YIELD : raw.data.dividendYield.scaleByPowerOfTen(-2);
 
 				if (raw.data.dividendHist != null && raw.data.dividendHist.length != 0) {
 					// try find non zero dividend
@@ -131,8 +131,8 @@ public class UpdateStockInfo extends UpdateBase {
 						}
 					}
 				} else {
-					stockInfo.lastDivDate  = StockInfo.UNKNOWN_DIV_DATE;
-					stockInfo.lastDivValue = 12 < duration ? BigDecimal.ZERO : StockInfo.UNKNOWN_DIV_VALUE;
+					stockInfo.lastDivDate  = StockInfoMoneybu.UNKNOWN_DIV_DATE;
+					stockInfo.lastDivValue = 12 < duration ? BigDecimal.ZERO : StockInfoMoneybu.UNKNOWN_DIV_VALUE;
 				}
 
 				stockInfoList.add(stockInfo);

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import yokwe.util.ToString;
 
 
-public class StockInfo implements Comparable<StockInfo> {
+public class StockInfoMoneybu implements Comparable<StockInfoMoneybu> {
 	public static final LocalDate  UNKNOWN_DIV_DATE  = LocalDate.of(2099, 1, 1);
 	public static final BigDecimal UNKNOWN_DIV_VALUE = BigDecimal.ONE.negate();
 	public static final BigDecimal UNKNOWN_DIV_YIELD = BigDecimal.TWO.negate();
@@ -25,7 +25,7 @@ public class StockInfo implements Comparable<StockInfo> {
 
 
 	@Override
-	public int compareTo(StockInfo that) {
+	public int compareTo(StockInfoMoneybu that) {
 		return this.stockCode.compareTo(that.stockCode);
 	}
 
