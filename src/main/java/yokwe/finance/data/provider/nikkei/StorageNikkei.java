@@ -6,12 +6,12 @@ import yokwe.util.Storage;
 
 public class StorageNikkei {
 	public static final Storage storage = StorageProvider.storage.getStorage("nikkei");
-	
+
 	// trading-fund-jp
 	public static final Storage.LoadSaveFileList<FundDivScore> FundDivScore =
 		new Storage.LoadSaveFileList<FundDivScore>(FundDivScore.class, storage, "fund-div-score.csv");
-	
+
 	// webpage
-	public static final Storage.LoadSaveDirectoryString WebPage =
+	public static final Storage.LoadSaveDirectoryString Webpage =
 		new Storage.LoadSaveDirectoryString(storage, "webpage", o -> o + ".html");
 }

@@ -1,165 +1,155 @@
 package yokwe.finance.data.provider.nikkei;
 
 import java.math.BigDecimal;
-import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import yokwe.finance.data.fund.jp.StorageFundJP;
+import yokwe.finance.data.provider.jita.StorageJITA;
 import yokwe.finance.data.type.FundDivScore;
-import yokwe.finance.data.type.FundInfoJP;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.ScrapeUtil;
 import yokwe.util.ToString;
 import yokwe.util.UnexpectedException;
-import yokwe.util.http.HttpUtil;
 import yokwe.util.update.UpdateBase;
 
 public class UpdateFundDivScore extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
-//		input(StorageJITA.FundInfo).
+		input(StorageNikkei.Webpage).
 		output(StorageNikkei.FundDivScore).
 		build();
-	
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	public void update() {
-		var list = getList();
-		logger.info("list  {}", list.size());
+		updateFile();
+	}
 
-		for(int retry = 1; retry < 10; retry++) {
-			logger.info("  retry  {}", retry);
-			var taskList = getTaskList(list);
-			logger.info("  task   {}", taskList.size());
-			if (taskList.isEmpty()) break;
-			
-			downloadFile(taskList);
-			
-			sleep(Duration.ofSeconds(1));
-		}
-		
-		updateFile(list);
-	}
-	
-	List<FundInfoJP> getList() {
-		var ret = StorageFundJP.FundInfo.getList();
-		ret.removeIf(o -> o.fundType.equals(FundInfoJP.FUND_TYPE_CEF));
-		ret.removeIf(o -> o.name.contains("マネー・リザーブ・ファンド"));
-		ret.removeIf(o -> o.name.contains("月号"));
-		ret.removeIf(o -> o.name.contains("回公社債投資信託"));
-		ret.removeIf(o -> o.name.contains("追加型・公社債証券投資信託"));
-		ret.removeIf(o -> o.name.contains("財形給付金ファンド"));
-		ret.removeIf(o -> o.name.contains("楽天・マネーファンド"));
-		return ret;
-	}
-	List<FundInfoJP> getTaskList(List<FundInfoJP> list) {
-		var ret = new ArrayList<FundInfoJP>();
-		
-		for(var e: list) {
-			// skip if file exists
-			if (StorageNikkei.WebPage.getFile(e.fundCode).canRead()) continue;
-			ret.add(e);
-			logger.info("XX  {}  {}", e.fundCode, e.name);
-		}
-		
-		return ret;
-	}
-	void downloadFile(List<FundInfoJP> list) {
-		var urlFormat = "https://www.nikkei.com/nkd/fund/dividend/?fcode=%s";
-		
-		Collections.shuffle(list); // shuffle
-		
-		int count = 0;
-		for(var fundInfo: list) {
-			if ((count++ % 10) == 0) logger.info("dowonloadFile  {}  /  {}", count, list.size());
-			
-			var fundCode = fundInfo.fundCode;
-			var file = StorageNikkei.WebPage.getFile(fundCode);
-			if (file.canRead()) continue;
-						
-			try {
-				var url = String.format(urlFormat, fundCode);
-				var string = HttpUtil.getInstance().downloadString(url);
-				StorageNikkei.WebPage.save(fundCode, string);
-			} catch (UnexpectedException e) {
-				logger.warn("failed to download  {}  {}", fundInfo.fundCode, fundInfo.name);
-				sleep(Duration.ofSeconds(10));
-			}
-		}
-	}
-	void sleep(Duration duration) {
-		try {
-			Thread.sleep(duration);
-		} catch (InterruptedException e1) {
-			//
-		}
-	}
-	
-	void updateFile(List<FundInfoJP> fundInfoList) {
-		var map = StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		
+	void updateFile() {
+		var set = Arrays.asList(StorageNikkei.Webpage.getDir().list()).stream().filter(o -> o.endsWith(".html")).map(o -> o.replace(".html", "")).collect(Collectors.toSet());
+		logger.info("set           {}", set.size());
+
+		var fundInfoList = StorageJITA.FundInfoJITA.getList();
+		logger.info("fundInfoList  {}", fundInfoList.size());
+		fundInfoList.removeIf(o -> !set.contains(o.fundCode));
+		logger.info("fundInfoList  {}", fundInfoList.size());
+
+		// read existing file
+		var list = new ArrayList<FundDivScore>(set.size());
+
 		int count  = 0;
 		int countA = 0;
 		int countB = 0;
 		int countC = 0;
 		int countD = 0;
-		
+
 		for(var fundInfo: fundInfoList) {
-			if ((count++ % 200) == 0) logger.info("updateFile  {}  /  {}", count, fundInfoList.size());
-			
-			var fundCode = fundInfo.fundCode;
-			var isinCode = fundInfo.isinCode;
-			if (map.containsKey(isinCode)) {
-				countA++;
+			if ((count++ % 1000) == 0) {
+				logger.info("updateFile  {}  /  {}", count, fundInfoList.size());
+			}
+
+			var fundCode  = fundInfo.fundCode;
+			var isinCode  = fundInfo.isinCode;
+			var stockCode = fundInfo.stockCode;
+			var name      = fundInfo.name;
+
+			var page = FileUtil.read().file(StorageNikkei.Webpage.getFile(fundCode));
+
+			var divScoreInfo = DivScoreInfo.getInstance(page);
+			if (divScoreInfo == null) {
+				logger.error("divScoreInfo is null");
+				logger.error("  {}  {}  {}  {}", isinCode, fundCode, stockCode, name);
+				throw new UnexpectedException("divScoreInfo is null");
+			}
+			var divValueInfo = DivValueInfo.getInstance(page);
+			if (divValueInfo == null) {
+				logger.error("divValueInfo is null");
+				logger.error("  {}  {}  {}  {}", isinCode, fundCode, stockCode, name);
+				throw new UnexpectedException("divScoreInfo is null");
+			}
+
+
+			BigDecimal score1Y;
+			BigDecimal score3Y;
+			BigDecimal score5Y;
+			BigDecimal score10Y;
+			if (stockCode.isEmpty()) {
+				// fund
+				score1Y  = fromPercentString(divScoreInfo.score1Y);
+				score3Y  = fromPercentString(divScoreInfo.score3Y);
+				score5Y  = fromPercentString(divScoreInfo.score5Y);
+				score10Y = fromPercentString(divScoreInfo.score10Y);
 			} else {
-				var file = StorageNikkei.WebPage.getFile(fundCode);
-				if (file.canRead()) {
-					var page = FileUtil.read().file(file);
-					var divScoreInfo = DivScoreInfo.getInstance(page);
-					if (divScoreInfo == null) {
-						logger.info("skip  divScoreInfo is null  {}  {}", fundCode, fundInfo.name);
-						countB++;
-						continue;
-					} else {
-						BigDecimal score1Y  = fromPercentString(divScoreInfo.score1Y);
-						BigDecimal score3Y  = fromPercentString(divScoreInfo.score3Y);
-						BigDecimal score5Y  = fromPercentString(divScoreInfo.score5Y);
-						BigDecimal score10Y = fromPercentString(divScoreInfo.score10Y);
-						
-						FundDivScore fundDivScore = new FundDivScore(isinCode, score1Y, score3Y, score5Y, score10Y);
-						map.put(isinCode, fundDivScore);
-						countC++;
-					}
-				} else {
-					countD++;
-				}				
+				// ETF
+				score1Y  = BigDecimal.ONE;
+				score3Y  = BigDecimal.ONE;
+				score5Y  = BigDecimal.ONE;
+				score10Y = BigDecimal.ONE;
+			}
+
+			var divDate  = fromDateString(divValueInfo.divDate);
+			var divValue = fromNumericString(divValueInfo.divValue);
+			var divYield = fromPercentString(divValueInfo.divYield);
+			var divPrice = fromNumericString(divValueInfo.divPrice);
+
+			FundDivScore fundDivScore = new FundDivScore(
+				isinCode, fundCode, stockCode,
+				score1Y, score3Y, score5Y, score10Y,
+				divDate, divValue, divPrice, divYield,
+				name);
+			list.add(fundDivScore);
+
+			if (!FundDivScore.isValid(divDate)) {
+//				countA++;
+			}
+			if (!FundDivScore.isValid(divValue)) {
+				countB++;
+			}
+			if (!FundDivScore.isValid(divPrice)) {
+				countC++;
+			}
+			if (!FundDivScore.isValid(divYield)) {
+				countD++;
+			}
+
+			if (FundDivScore.isValid(divDate) && !FundDivScore.isValid(divYield)) {
+				// not past one year
+				logger.info("XX  {}  {}  {}  {}  {}", isinCode, fundInfo.inceptionDate, divDate, divYield, name);
+				countA++;
 			}
 		}
-		
+
 		logger.info("count   {}", count);
 		logger.info("countA  {}", countA);
 		logger.info("countB  {}", countB);
 		logger.info("countC  {}", countC);
 		logger.info("countD  {}", countD);
-		
-		StorageNikkei.FundDivScore.save(map.values());
+
+		StorageNikkei.FundDivScore.save(list);
 	}
-	private static BigDecimal fromPercentString(String string) {
-		String numericString = string.trim().replace("%", "");
-		return numericString.compareTo("--") == 0 ? FundDivScore.NO_VALUE : new BigDecimal(numericString).movePointLeft(2);
+	private static BigDecimal fromPercentString(String percentString) {
+		String string = percentString.trim().replace("%", "");
+		return string.compareTo("--") == 0 ? FundDivScore.NO_VALUE : new BigDecimal(string).movePointLeft(2);
 	}
-	
-	
+	private static BigDecimal fromNumericString(String numericString) {
+		String string = numericString.replace(",", "");
+		return string.compareTo("--") == 0 ? FundDivScore.NO_VALUE : new BigDecimal(string);
+	}
+	private static LocalDate fromDateString(String dateString) {
+		return dateString.compareTo("--") == 0 ? FundDivScore.NO_DATE : LocalDate.parse(dateString, DATE_FORMAT);
+	}
+	private static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy年M月d日");
+
+
 	public static class DivScoreInfo {
 		/*
 		//<!-- ▼ QP-BUNPAISD：分配金健全度 ▼ -->
@@ -192,7 +182,7 @@ public class UpdateFundDivScore extends UpdateBase {
 		//</div>
 		//<!-- ▲ QP-BUNPAISD：分配金健全度 ▲ -->
 		*/
-				
+
 		public static final String HEADER = "<!-- ▼ QP-BUNPAISD：分配金健全度 ▼ -->";
 		public static final Pattern PAT = Pattern.compile(
 			HEADER + "\\s+" +
@@ -223,7 +213,6 @@ public class UpdateFundDivScore extends UpdateBase {
 			"</div>\\s+" +
 			"</div>\\s+" +
 			"</div>\\s+" +
-
 			""
 		);
 		public static DivScoreInfo getInstance(String page) {
@@ -251,4 +240,104 @@ public class UpdateFundDivScore extends UpdateBase {
 			return ToString.withFieldName(this);
 		}
 	}
+
+	public static class DivValueInfo {
+//		<!-- ▼ QP-YIELD：分配金利回り ▼ -->
+//		<div class="m-articleFrame a-w100p">
+//        <div class="m-headline">
+//            <h2 class="m-headline_text">分配金利回り<a href="//www.nikkei.com/help/contents/markets/fund/#qf12" target="_blank" class="m-iconQ">（解説）</a></h2>
+//        </div>
+//        <div class="m-tableType01 a-mb40">
+//            <div class="m-tableType01_table">
+//                <table class="w668 rsp_table">
+//                    <tbody>
+//                    <tr>
+//                        <th>直近決算日</th>
+//                        <td class="a-taR">2026年7月10日</td>
+//                    </tr>
+//                    <tr class="bgcGray">
+//                        <th>分配金</th>
+//                        <td class="a-taR">794円</td>
+//                    </tr>
+//                    <tr>
+//                        <th>分配金利回り(1年)</th>
+//                        <td class="a-taR">1.81%</td>
+//                    </tr>
+//                    <tr class="bgcGray">
+//                        <th>決算日の基準価格</th>
+//                        <td class="a-taR">42,508円</td>
+//                    </tr>
+//                    </tbody>
+//                </table>
+//            </div>
+//        </div>
+//    </div>
+
+		public static final String HEADER = "<!-- ▼ QP-YIELD：分配金利回り ▼ -->";
+		public static final Pattern PAT = Pattern.compile(
+			HEADER + "\\s+" +
+			"<div .+?>\\s+" +
+			"<div .+?>\\s+" +
+			"<h2 .+?>分配金利回り.+?</h2>\\s+" +
+			"</div>\\s+" +
+			"<div .+?>\\s+" +
+			"<div .+?>\\s+" +
+			"<table .+?>\\s+" +
+			"<tbody>\\s+" +
+
+			"<tr.*?>\\s+" +
+			"<th>直近決算日</th>\\s+" +
+			"<td .+?>(?<divDate>.+?)</td>\\s+" + // <td class="a-taR">2026年7月10日</td>
+			"</tr>\\s+" +
+
+			"<tr.*?>\\s+" +
+			"<th>分配金</th>\\s+" +
+			"<td .+?>(?<divValue>.+?)円</td>\\s+" + // <td class="a-taR">794円</td>
+			"</tr>\\s+" +
+
+			"<tr.*?>\\s+" +
+			"<th>分配金利回り\\(1年\\)</th>\\s+" +
+			"<td .+?>(?<divYield>.+?)%</td>\\s+" + //  <td class="a-taR">1.81%</td>
+			"</tr>\\s+" +
+
+			"<tr.*?>\\s+" +
+			"<th>決算日の基準価格</th>\\s+" +
+			"<td .+?>(?<divPrice>.+?)円</td>\\s+" + //  <td class="a-taR">42,508円</td>
+			"</tr>\\s+" +
+
+			"</tbody>\\s+" +
+			"</table>\\s+" +
+			"</div>\\s+" +
+			"</div>\\s+" +
+			"</div>\\s+" +
+
+			""
+		);
+		public static DivValueInfo getInstance(String page) {
+			return ScrapeUtil.get(DivValueInfo.class, PAT, page);
+		}
+
+		public String  divDate;
+		public String divValue;
+		public String divYield;
+		public String divPrice;
+
+		public DivValueInfo(
+			String divDate,
+			String divValue,
+			String divYield,
+			String divPrice
+		) {
+			this.divDate  = divDate;
+			this.divValue = divValue;
+			this.divYield = divYield;
+			this.divPrice = divPrice;
+		}
+		@Override
+		public String toString() {
+			return ToString.withFieldName(this);
+		}
+
+	}
+
 }
