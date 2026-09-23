@@ -156,9 +156,9 @@ public class UpdateReport extends UpdateBase {
 			report.fundCode  = fundInfo.fundCode;
 			report.stockCode = fundInfo.stockCode;
 
-			report.inception  = fundInfo.inceptionDate.toString();
-			report.redemption = fundInfo.redemptionDate.toString();
-			report.age        = durationInYearMonth(fundInfo.inceptionDate, LAST_DATE_OF_LAST_MONTH);
+			report.inception  = fundInfo.inceptionDate;
+			report.redemption = fundInfo.noRedemptionDate() ? null : fundInfo.redemptionDate;
+			report.age        = new BigDecimal(durationInYearMonth(fundInfo.inceptionDate, LAST_DATE_OF_LAST_MONTH));
 
 			// Use toushin category
 			report.investingAsset = fundInfo.investingAsset;
@@ -300,10 +300,6 @@ public class UpdateReport extends UpdateBase {
 			}
 
 			// special case
-			if (fundInfo.noRedemptionDate()) {
-				report.redemption = "NO REDEMPTION";
-			}
-
 			if (report.div1Y == null || report.div1Y.compareTo(BigDecimal.ZERO) == 0) {
 				report.yield1Y    = null;
 				report.divScore1Y = null;

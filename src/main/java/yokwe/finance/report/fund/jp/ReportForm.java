@@ -1,6 +1,7 @@
 package yokwe.finance.report.fund.jp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import yokwe.util.ToString;
 import yokwe.util.libreoffice.Sheet;
@@ -13,9 +14,9 @@ public class ReportForm extends Sheet implements Comparable<ReportForm> {
 	@Sheet.ColumnName("ファンドコード")  public String fundCode   = "";
 	@Sheet.ColumnName("銘柄コード")      public String stockCode  = "";
 
-	@Sheet.ColumnName("設定日")  public String  inception   = "";
-	@Sheet.ColumnName("償還日")  public String  redemption  = "";
-	@Sheet.ColumnName("年月")    public String  age         = ""; // yy.mm
+	@Sheet.ColumnName("設定日")  public LocalDate  inception   = null;
+	@Sheet.ColumnName("償還日")  public LocalDate  redemption  = null;
+	@Sheet.ColumnName("年月")    public BigDecimal age         = null; // yy.mm
 
 	@Sheet.ColumnName("投資対象")    public String investingAsset = "";
 	@Sheet.ColumnName("投資地域")    public String investingArea  = "";
