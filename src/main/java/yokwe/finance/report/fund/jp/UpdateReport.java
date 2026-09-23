@@ -110,7 +110,8 @@ public class UpdateReport extends UpdateBase {
 			set.addAll(sonyMap.keySet());
 
 			logger.info("fundInfoList  {}", fundInfoList.size());
-			fundInfoList.removeIf(o -> !set.contains(o.isinCode));
+			// remove entry if it is fund and it is not trading fund
+			fundInfoList.removeIf(o -> o.stockCode.isEmpty() && !set.contains(o.isinCode));
 			logger.info("fundInfoList  {}", fundInfoList.size());
 		}
 
