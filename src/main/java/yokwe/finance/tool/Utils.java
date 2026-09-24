@@ -45,7 +45,7 @@ public class Utils {
 		"update", "stock", "info", "fund", "div", "price", "nisa", "etf", "etn", "infra",
 		"kessan", "reit", "code", "name", "detail", "json", "list", "ohlcv", "value", "jreit",
 		"trading", "jp", "us", "company", "all", "fx", "rate", "2", "intra", "day", "report",
-		"score", "quotes", "stats", "trade"
+		"score", "quotes", "stats", "trade", "webpage"
 	};
 
 	public static String toMakeGroup(Makefile makefile) {
