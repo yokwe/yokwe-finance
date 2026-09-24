@@ -19,7 +19,7 @@ public class UpdateWebpage  extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 //		input(StorageJITA.FundInfoJITA).
-		output(StorageNikkei.FundDivScore).
+		output(StorageNikkei.Webpage).
 		build();
 
 	public static void main(String[] args) {
@@ -49,6 +49,8 @@ public class UpdateWebpage  extends UpdateBase {
 
 			ThreadUtil.sleep(SLEEP_BETWEEN_RETRY);
 		}
+
+		StorageNikkei.Webpage.touch();
 	}
 
 	private List<FundInfoJP> getList() {
