@@ -1,15 +1,15 @@
 package yokwe.finance.data.fund.jp;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import yokwe.finance.data.provider.jita.StorageJITA;
-import yokwe.finance.data.provider.moneybu.StockInfoMoneybu;
-import yokwe.finance.data.provider.moneybu.StorageMoneybu;
+import yokwe.finance.data.provider.nikkei.StorageNikkei;
 import yokwe.finance.data.type.DailyValue;
-import yokwe.finance.data.type.FundInfoJP;
+import yokwe.finance.data.type.FundDivInfo;
 import yokwe.util.Makefile;
 import yokwe.util.UnexpectedException;
 import yokwe.util.update.UpdateBase;
@@ -18,7 +18,7 @@ public class UpdateFundDiv extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageFundJP.FundInfo, StorageJITA.FundDiv, StorageMoneybu.StockInfoMoneybu).
+		input(StorageFundJP.FundInfo, StorageJITA.FundDiv, StorageNikkei.FundDivInfo).
 		output(StorageFundJP.FundDiv).
 		build();
 
@@ -28,78 +28,85 @@ public class UpdateFundDiv extends UpdateBase {
 
 	@Override
 	public void update() {
-		var stockInfoMap = StorageMoneybu.StockInfoMoneybu.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+		var fundDivInfoMap = StorageNikkei.FundDivInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+
+		int countA = 0;
+		int countB = 0;
+		int countC = 0;
+		int countD = 0;
+		int countE = 0;
 
 		var fundInfoList = StorageFundJP.FundInfo.getList();
-		for(var fundInfo: fundInfoList) {
-			var isinCode  = fundInfo.isinCode;
-			var divList   = StorageJITA.FundDiv.getList(isinCode);
+		logger.info("fundInfoList  {}", fundInfoList.size());
 
-			var stockCode = fundInfo.stockCode;
-			if (!stockCode.isEmpty()) {
-				var stockInfo = stockInfoMap.get(stockCode);
-				updateDivList(fundInfo, divList, stockInfo);
+		for(var fundInfo: fundInfoList) {
+			var divList     = StorageJITA.FundDiv.getList(fundInfo.isinCode);
+			var fundDivInfo = fundDivInfoMap.get(fundInfo.isinCode);
+
+			if (fundDivInfo == null) {
+				countA++;
+			} else {
+				if (divList.isEmpty()) {
+					countB++;
+				} else if (allZero(divList)) {
+					countC++;
+				} else {
+					var divDate  = fundDivInfo.divDate;
+					var divPrice = fundDivInfo.divPrice;
+
+					if (!FundDivInfo.isValid(divDate)) {
+						logger.error("Unexpected divDate");
+						logger.error("  {}  {}  {}", fundDivInfo.isinCode, fundDivInfo.stockCode, fundDivInfo.name);
+						throw new UnexpectedException("Unexpected divDate");
+					}
+					if (!FundDivInfo.isValid(divPrice)) {
+						logger.error("Unexpected divPrice");
+						logger.error("  {}  {}  {}", fundDivInfo.isinCode, fundDivInfo.stockCode, fundDivInfo.name);
+						throw new UnexpectedException("Unexpected divPrice");
+					}
+
+					var priceList = StorageJITA.FundPrice.getList(fundDivInfo.isinCode);
+					var myPrice   = priceList.stream().filter(o -> o.date.equals(divDate)).map(o -> o.price).findFirst().orElse(null);
+					if (myPrice == null) {
+						logger.error("Unexpected divDate");
+						logger.error("  {}  {}  {}  {}", fundDivInfo.isinCode, fundDivInfo.stockCode, divDate, fundDivInfo.name);
+						throw new UnexpectedException("Unexpected divDate");
+					}
+
+					if (divPrice.compareTo(myPrice) == 0) {
+						countD++;
+					} else {
+						countE++;
+						// modify divList with factor
+						var factor = divPrice.divide(myPrice, 3, RoundingMode.HALF_EVEN);
+						logger.info("XX  {}  {}  {}  {}", fundInfo.isinCode, fundInfo.stockCode, factor.toPlainString(), fundInfo.name);
+						// modify divList with factor
+						for(var e: divList) {
+							e.value = e.value.multiply(factor);
+						}
+					}
+				}
 			}
 
-			StorageFundJP.FundDiv.save(isinCode, divList);
+			StorageFundJP.FundDiv.save(fundInfo.isinCode, divList);
 		}
+
+		logger.info("countA  {}", countA);
+		logger.info("countB  {}", countB);
+		logger.info("countC  {}", countC);
+		logger.info("countD  {}", countD);
+		logger.info("countE  {}", countE);
 
 		StorageFundJP.FundDiv.touch();
 	}
 
-	void updateDivList(FundInfoJP fundInfo, List<DailyValue> divList, StockInfoMoneybu stockInfo) {
-		if (stockInfo == null) {
-			// must be delisted etf
-			logger.warn("Unexpected stockCode  {}  {}  {}", fundInfo.isinCode, fundInfo.stockCode, fundInfo.name);
-			return;
-		}
-
-		// quick check
-		BigDecimal divValue = null;
-		if (divList.isEmpty() || stockInfo.hasZeroDivValue()) {
-			// OK
-		} else {
-			for(var ee: divList) {
-				if (ee.date.isEqual(stockInfo.lastDivDate)) {
-					divValue = ee.value;
-					break;
-				}
+	private boolean allZero(List<DailyValue> list) {
+		for(var e: list) {
+			if (e.value.compareTo(BigDecimal.ZERO) != 0) {
+				return false;
 			}
 		}
-
-		if (divValue != null) {
-			// sanity check of stockOnfo
-			if (!stockInfo.hasValidDivDate()) {
-				logger.error("Unexpected !hasValidDivDate");
-				logger.error("  {}  {}  {}", stockInfo.stockCode, stockInfo.isinCode, stockInfo.name);
-				throw new UnexpectedException("Unexpected !hasValidDivDate");
-			}
-			if (!stockInfo.hasValidDivValue()) {
-				logger.error("Unexpected !hasValidDivValue");
-				logger.error("  {}  {}  {}", stockInfo.stockCode, stockInfo.isinCode, stockInfo.name);
-				throw new UnexpectedException("Unexpected !hasValidDivValue");
-			}
-
-			// adjust divList
-			BigDecimal myValue = null;
-			for(var ee: divList) {
-				if (ee.date.isEqual(stockInfo.lastDivDate)) {
-					myValue = ee.value;
-				}
-			}
-			if (myValue == null) {
-				logger.error("no lastDivDate");
-				logger.error("  {}  {}  {}", stockInfo.stockCode, stockInfo.isinCode, stockInfo.name);
-				logger.error("  {}", stockInfo.lastDivDate);
-				throw new UnexpectedException("no lastDivDate");
-			}
-
-			var factor = stockInfo.lastDivValue.divide(myValue);
-//			logger.info("{}  {}  {}  {}  {}", stockInfo.stockCode, stockInfo.isinCode, factor.toPlainString(), stockInfo.divYield, stockInfo.name);
-			// modify divList with factor
-			for(var ee: divList) {
-				ee.value = ee.value.multiply(factor);
-			}
-		}
+		return true;
 	}
+
 }
