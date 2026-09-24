@@ -20,7 +20,7 @@ import yokwe.finance.data.provider.rakuten.StorageRakuten;
 import yokwe.finance.data.provider.smtb.StorageSMTB;
 import yokwe.finance.data.provider.sony.StorageSony;
 import yokwe.finance.data.type.DailyValue;
-import yokwe.finance.data.type.FundDivScore;
+import yokwe.finance.data.type.FundDivInfo;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.finance.report.stats.online.BigDecimalSMA;
 import yokwe.util.FileUtil;
@@ -47,7 +47,7 @@ public class UpdateReport extends UpdateBase {
 					StorageSMTB.TradingFundJPSMTB,
 					StorageSony.TradingFundJPSony,
 					StorageClick.TradingFundJPClick,
-					StorageNikkei.FundDivScore
+					StorageNikkei.FundDivInfo
 				).
 			output(StorageReportFundJP.ReportODS).
 			build();
@@ -87,7 +87,7 @@ public class UpdateReport extends UpdateBase {
 		var nisaInfoMap  = StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var fundInfoList = StorageFundJP.FundInfo.getList();
 
-		var divScoreMap  = StorageNikkei.FundDivScore.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var fundDivMap   = StorageNikkei.FundDivInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var taxMap       = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 
 		var clickMap     = StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
@@ -97,7 +97,7 @@ public class UpdateReport extends UpdateBase {
 		var sonyMap      = StorageSony.TradingFundJPSony.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 
 		int countNoPrice    = 0;
-		int countNoDivScore = 0;
+		int countNoFundDiv  = 0;
 		int count           = 0;
 
 		// remove not trading fund
@@ -235,21 +235,21 @@ public class UpdateReport extends UpdateBase {
 			}
 
 			{
-				var divScore = divScoreMap.getOrDefault(isinCode, null);
-				if (divScore == null) {
-					countNoDivScore++;
+				var fundDiv = fundDivMap.get(isinCode);
+				if (fundDiv == null) {
+					countNoFundDiv++;
 				} else {
-					if (FundDivScore.isValid(divScore.score1Y)) {
-						report.divScore1Y = divScore.score1Y;
+					if (FundDivInfo.isValid(fundDiv.score1Y)) {
+						report.divScore1Y = fundDiv.score1Y;
 					}
-					if (FundDivScore.isValid(divScore.score3Y)) {
-						report.divScore3Y = divScore.score3Y;
+					if (FundDivInfo.isValid(fundDiv.score3Y)) {
+						report.divScore3Y = fundDiv.score3Y;
 					}
-					if (FundDivScore.isValid(divScore.score5Y)) {
-						report.divScore5Y = divScore.score5Y;
+					if (FundDivInfo.isValid(fundDiv.score5Y)) {
+						report.divScore5Y = fundDiv.score5Y;
 					}
-					if (FundDivScore.isValid(divScore.score10Y)) {
-						report.divScore10Y = divScore.score10Y;
+					if (FundDivInfo.isValid(fundDiv.score10Y)) {
+						report.divScore10Y = fundDiv.score10Y;
 					}
 				}
 			}
@@ -321,9 +321,9 @@ public class UpdateReport extends UpdateBase {
 		}
 
 		logger.info("fundList        {}", fundInfoList.size());
-		logger.info("divScoreMap     {}", divScoreMap.size());
+		logger.info("divScoreMap     {}", fundDivMap.size());
 		logger.info("countNoPrice    {}", countNoPrice);
-		logger.info("countNoDivScore {}", countNoDivScore);
+		logger.info("countNoDivScore {}", countNoFundDiv);
 
 		return list;
 	}

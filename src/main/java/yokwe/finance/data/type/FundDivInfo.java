@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import yokwe.util.ToString;
 
-public class FundDivScore implements Comparable<FundDivScore> {
+public class FundDivInfo implements Comparable<FundDivInfo> {
 	public static final BigDecimal NO_VALUE = BigDecimal.ONE.negate();
 
 	public static boolean isValid(BigDecimal value) {
@@ -32,7 +32,7 @@ public class FundDivScore implements Comparable<FundDivScore> {
 	public BigDecimal divYield;
 	public String     name;
 
-	public FundDivScore(
+	public FundDivInfo(
 		String isinCode, String fundCode, String stockCode,
 		BigDecimal score1Y, BigDecimal socre3Y, BigDecimal socre5Y, BigDecimal score10Y,
 		LocalDate divDate, BigDecimal divValue, BigDecimal divPrice, BigDecimal divYield,
@@ -55,7 +55,7 @@ public class FundDivScore implements Comparable<FundDivScore> {
 	}
 
 	@Override
-	public int compareTo(FundDivScore that) {
+	public int compareTo(FundDivInfo that) {
 		return this.isinCode.compareTo(that.isinCode);
 	}
 

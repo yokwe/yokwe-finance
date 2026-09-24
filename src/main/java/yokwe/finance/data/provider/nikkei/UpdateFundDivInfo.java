@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import yokwe.finance.data.provider.jita.StorageJITA;
-import yokwe.finance.data.type.FundDivScore;
+import yokwe.finance.data.type.FundDivInfo;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.ScrapeUtil;
@@ -17,12 +17,12 @@ import yokwe.util.ToString;
 import yokwe.util.UnexpectedException;
 import yokwe.util.update.UpdateBase;
 
-public class UpdateFundDivScore extends UpdateBase {
+public class UpdateFundDivInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(StorageNikkei.Webpage).
-		output(StorageNikkei.FundDivScore).
+		output(StorageNikkei.FundDivInfo).
 		build();
 
 	public static void main(String[] args) {
@@ -44,7 +44,7 @@ public class UpdateFundDivScore extends UpdateBase {
 		logger.info("fundInfoList  {}", fundInfoList.size());
 
 		// read existing file
-		var list = new ArrayList<FundDivScore>(set.size());
+		var list = new ArrayList<FundDivInfo>(set.size());
 
 		int count  = 0;
 		int countA = 0;
@@ -101,27 +101,27 @@ public class UpdateFundDivScore extends UpdateBase {
 			var divYield = fromPercentString(divValueInfo.divYield);
 			var divPrice = fromNumericString(divValueInfo.divPrice);
 
-			FundDivScore fundDivScore = new FundDivScore(
+			FundDivInfo fundDivScore = new FundDivInfo(
 				isinCode, fundCode, stockCode,
 				score1Y, score3Y, score5Y, score10Y,
 				divDate, divValue, divPrice, divYield,
 				name);
 			list.add(fundDivScore);
 
-			if (!FundDivScore.isValid(divDate)) {
+			if (!FundDivInfo.isValid(divDate)) {
 //				countA++;
 			}
-			if (!FundDivScore.isValid(divValue)) {
+			if (!FundDivInfo.isValid(divValue)) {
 				countB++;
 			}
-			if (!FundDivScore.isValid(divPrice)) {
+			if (!FundDivInfo.isValid(divPrice)) {
 				countC++;
 			}
-			if (!FundDivScore.isValid(divYield)) {
+			if (!FundDivInfo.isValid(divYield)) {
 				countD++;
 			}
 
-			if (FundDivScore.isValid(divDate) && !FundDivScore.isValid(divYield)) {
+			if (FundDivInfo.isValid(divDate) && !FundDivInfo.isValid(divYield)) {
 				// not past one year
 				logger.info("XX  {}  {}  {}  {}  {}", isinCode, fundInfo.inceptionDate, divDate, divYield, name);
 				countA++;
@@ -134,18 +134,18 @@ public class UpdateFundDivScore extends UpdateBase {
 		logger.info("countC  {}", countC);
 		logger.info("countD  {}", countD);
 
-		StorageNikkei.FundDivScore.save(list);
+		StorageNikkei.FundDivInfo.save(list);
 	}
 	private static BigDecimal fromPercentString(String percentString) {
 		String string = percentString.trim().replace("%", "");
-		return string.compareTo("--") == 0 ? FundDivScore.NO_VALUE : new BigDecimal(string).movePointLeft(2);
+		return string.compareTo("--") == 0 ? FundDivInfo.NO_VALUE : new BigDecimal(string).movePointLeft(2);
 	}
 	private static BigDecimal fromNumericString(String numericString) {
 		String string = numericString.replace(",", "");
-		return string.compareTo("--") == 0 ? FundDivScore.NO_VALUE : new BigDecimal(string);
+		return string.compareTo("--") == 0 ? FundDivInfo.NO_VALUE : new BigDecimal(string);
 	}
 	private static LocalDate fromDateString(String dateString) {
-		return dateString.compareTo("--") == 0 ? FundDivScore.NO_DATE : LocalDate.parse(dateString, DATE_FORMAT);
+		return dateString.compareTo("--") == 0 ? FundDivInfo.NO_DATE : LocalDate.parse(dateString, DATE_FORMAT);
 	}
 	private static DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy年M月d日");
 

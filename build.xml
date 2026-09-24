@@ -232,8 +232,15 @@
 	</target>
 	
 	<!-- provider nikkei -->
-	<target name="nikkei-update-fund-div-score">
-		<java module="yokwe.finance/yokwe.finance.data.provider.nikkei.UpdateFundDivScore" fork="true" failonerror="true">
+	<target name="nikkei-update-fund-div-info">
+		<java module="yokwe.finance/yokwe.finance.data.provider.nikkei.UpdateFundDivInfo" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
+	<target name="nikkei-update-webpage">
+		<java module="yokwe.finance/yokwe.finance.data.provider.nikkei.UpdateWebpage" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
