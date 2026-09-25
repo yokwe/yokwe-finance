@@ -20,7 +20,6 @@ import yokwe.finance.data.provider.rakuten.StorageRakuten;
 import yokwe.finance.data.provider.smtb.StorageSMTB;
 import yokwe.finance.data.provider.sony.StorageSony;
 import yokwe.finance.data.type.DailyValue;
-import yokwe.finance.data.type.FundDivInfo;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.finance.report.stats.online.BigDecimalSMA;
 import yokwe.util.FileUtil;
@@ -239,21 +238,21 @@ public class UpdateReport extends UpdateBase {
 				if (fundDiv == null) {
 					countNoFundDiv++;
 				} else {
-					if (FundDivInfo.isValid(fundDiv.score1Y)) {
+					if (fundDiv.hasScore1Y()) {
 						report.divScore1Y = fundDiv.score1Y;
 					}
-					if (FundDivInfo.isValid(fundDiv.score3Y)) {
+					if (fundDiv.hasScore3Y()) {
 						report.divScore3Y = fundDiv.score3Y;
 					}
-					if (FundDivInfo.isValid(fundDiv.score5Y)) {
+					if (fundDiv.hasScore5Y()) {
 						report.divScore5Y = fundDiv.score5Y;
 					}
-					if (FundDivInfo.isValid(fundDiv.score10Y)) {
+					if (fundDiv.hasScore10Y()) {
 						report.divScore10Y = fundDiv.score10Y;
 					}
 
 					// FIXME report significant difference of yield
-					if (FundDivInfo.isValid(fundDiv.divYield) && report.yield1Y != null) {
+					if (fundDiv.hasDivYield() && report.yield1Y != null) {
 						var divYield = fundDiv.divYield.doubleValue() * 100;
 						var yield1Y  = report.yield1Y.doubleValue() * 100;
 						var diff     = Math.abs(yield1Y - divYield) * 100;
