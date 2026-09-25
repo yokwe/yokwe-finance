@@ -120,19 +120,16 @@ public class UpdateStockInfo extends UpdateBase {
 				stockInfo.duration  = duration;
 				stockInfo.divYield  = raw.data.dividendYield == null ? StockInfoMoneybu.UNKNOWN_DIV_YIELD : raw.data.dividendYield.scaleByPowerOfTen(-2);
 
+				stockInfo.divDate  = StockInfoMoneybu.UNKNOWN_DIV_DATE;
+				stockInfo.divValue = 12 < duration ? BigDecimal.ZERO : StockInfoMoneybu.UNKNOWN_DIV_VALUE;
 				if (raw.data.dividendHist != null && raw.data.dividendHist.length != 0) {
-					// try find non zero dividend
+					// locate last non zero dividend
 					for(var ee: raw.data.dividendHist) {
-						stockInfo.lastDivDate  = toLocalDate(ee.date);
-						stockInfo.lastDivValue = ee.dividend;
-
-						if (stockInfo.lastDivValue.signum() != 0) {
-							break;
+						if (ee.dividend.compareTo(BigDecimal.ZERO) != 0) {
+							stockInfo.divDate  = toLocalDate(ee.date);
+							stockInfo.divValue = ee.dividend;
 						}
 					}
-				} else {
-					stockInfo.lastDivDate  = StockInfoMoneybu.UNKNOWN_DIV_DATE;
-					stockInfo.lastDivValue = 12 < duration ? BigDecimal.ZERO : StockInfoMoneybu.UNKNOWN_DIV_VALUE;
 				}
 
 				stockInfoList.add(stockInfo);
