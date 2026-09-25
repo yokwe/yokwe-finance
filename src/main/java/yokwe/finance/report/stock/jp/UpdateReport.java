@@ -31,6 +31,7 @@ public class UpdateReport extends UpdateBase {
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
 					StorageFundJP.NISAInfo,
+					StorageFundJP.FundDiv,
 					StorageStockJP.StockValueJP,
 					StorageStockJP.StockTradeJP,
 					StorageStockJP.StockInfoJP,
@@ -77,7 +78,9 @@ public class UpdateReport extends UpdateBase {
 			for(var stockInfo: StorageStockJP.StockInfoJP.getList()) {
 				var stockCode = stockInfo.stockCode;
 				var priceList = StorageStockJP.StockPriceOHLCV.getList(stockCode);
-				var divList   = StorageStockJP.StockDiv.getList(stockCode);
+
+				var divList   = stockInfo.type.isETF() ? StorageFundJP.FundDiv.getList(stockInfo.isinCode) : StorageStockJP.StockDiv.getList(stockCode);
+
 				var stockValue = stockValueMap.get(stockCode);
 				var stockTrade = stockTradeMap.get(stockCode);
 
