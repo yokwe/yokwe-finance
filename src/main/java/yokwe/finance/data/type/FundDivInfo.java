@@ -54,6 +54,32 @@ public class FundDivInfo implements Comparable<FundDivInfo> {
 		this.name      = name;
 	}
 
+	public boolean hasScore1Y() {
+		return isValid(score1Y);
+	}
+	public boolean hasScore3Y() {
+		return isValid(score3Y);
+	}
+	public boolean hasScore5Y() {
+		return isValid(score5Y);
+	}
+	public boolean hasScore10Y() {
+		return isValid(score10Y);
+	}
+
+	public boolean hasDivDate() {
+		return isValid(divDate);
+	}
+	public boolean hasDivValue() {
+		return isValid(divValue);
+	}
+	public boolean hasDivPrice() {
+		return isValid(divPrice);
+	}
+	public boolean hasDivYield() {
+		return isValid(divYield);
+	}
+
 	@Override
 	public int compareTo(FundDivInfo that) {
 		return this.isinCode.compareTo(that.isinCode);
