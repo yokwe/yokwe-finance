@@ -16,9 +16,8 @@ public class StockInfoMoneybu implements Comparable<StockInfoMoneybu> {
 
 	public int        duration; // listing duration in month
 
-	public LocalDate  lastDivDate;
-	public BigDecimal lastDivValue;
-
+	public LocalDate  divDate;
+	public BigDecimal divValue;
 	public BigDecimal divYield;
 
 	public String     name;
@@ -34,17 +33,17 @@ public class StockInfoMoneybu implements Comparable<StockInfoMoneybu> {
 	    return ToString.withFieldName(this);
 	}
 
-	public boolean hasValidDivDate() {
-		return lastDivDate.compareTo(UNKNOWN_DIV_DATE) != 0;
+	public boolean hasDivDate() {
+		return divDate.compareTo(UNKNOWN_DIV_DATE) != 0;
 	}
-	public boolean hasValidDivValue() {
-		return lastDivValue.compareTo(UNKNOWN_DIV_VALUE) != 0;
+	public boolean hasDivValue() {
+		return divValue.compareTo(UNKNOWN_DIV_VALUE) != 0;
 	}
-	public boolean hasValidDivYield() {
+	public boolean hasDivYield() {
 		return divYield.compareTo(UNKNOWN_DIV_YIELD) != 0;
 	}
 
 	public boolean hasZeroDivValue() {
-		return lastDivValue.signum() == 0;
+		return divValue.signum() == 0;
 	}
 }
