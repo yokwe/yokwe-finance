@@ -20,6 +20,9 @@ public class StockInfoMoneybu implements Comparable<StockInfoMoneybu> {
 	public BigDecimal divValue;
 	public BigDecimal divYield;
 
+	public LocalDate  priceDate;
+	public BigDecimal priceValue;
+
 	public String     name;
 
 
@@ -43,7 +46,10 @@ public class StockInfoMoneybu implements Comparable<StockInfoMoneybu> {
 		return divYield.compareTo(UNKNOWN_DIV_YIELD) != 0;
 	}
 
-	public boolean hasZeroDivValue() {
-		return divValue.signum() == 0;
+	public boolean hasPriceDate() {
+		return priceDate.compareTo(UNKNOWN_DIV_DATE) != 0;
+	}
+	public boolean hasPriceValue() {
+		return priceValue.compareTo(UNKNOWN_DIV_VALUE) != 0;
 	}
 }
