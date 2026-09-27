@@ -1,11 +1,13 @@
 package yokwe.finance.data.provider.moneybu;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,6 +39,7 @@ public class UpdateStockInfo extends UpdateBase {
 
 	@Override
 	public void update() {
+		gracePeriod = Duration.ofHours(20);
 		var list = StorageMoneybu.StockListMoneybu.getList();
 		download(list);
 		update(list);
@@ -124,13 +127,17 @@ public class UpdateStockInfo extends UpdateBase {
 				stockInfo.divValue = 12 < duration ? BigDecimal.ZERO : StockInfoMoneybu.UNKNOWN_DIV_VALUE;
 				if (raw.data.dividendHist != null && raw.data.dividendHist.length != 0) {
 					// locate last non zero dividend
+					var map = new TreeMap<LocalDate, BigDecimal>();
 					for(var ee: raw.data.dividendHist) {
-						if (ee.dividend.compareTo(BigDecimal.ZERO) != 0) {
-							stockInfo.divDate  = toLocalDate(ee.date);
-							stockInfo.divValue = ee.dividend;
-						}
+						map.put(toLocalDate(ee.date), ee.dividend);
 					}
+					var entry = map.lastEntry();
+					stockInfo.divDate  = entry.getKey();
+					stockInfo.divValue = entry.getValue();
 				}
+
+				stockInfo.priceDate  = toLocalDate(raw.data.priceDate);
+				stockInfo.priceValue = raw.data.price;
 
 				stockInfoList.add(stockInfo);
 			} else {
