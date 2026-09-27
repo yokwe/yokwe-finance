@@ -255,7 +255,7 @@ public class UpdateReport extends UpdateBase {
 					if (fundDiv.hasDivYield() && report.yield1Y != null) {
 						var divYield = fundDiv.divYield.doubleValue() * 100;
 						var yield1Y  = report.yield1Y.doubleValue() * 100;
-						var diff     = Math.abs(yield1Y - divYield) * 100;
+						var diff     = Math.abs(yield1Y - divYield);
 						var percent  = diff / yield1Y;
 						if (10 < percent) {
 							logger.info("{}", String.format("XX  %s  %s  %5s %8.4f%%  %8.4f%%  %8.2f%%  %s", fundInfo.isinCode, fundInfo.fundCode, fundInfo.stockCode, yield1Y, divYield, percent, fundInfo.name));
