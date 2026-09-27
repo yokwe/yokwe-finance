@@ -21,7 +21,7 @@ public class StorageFundJP {
 
 	// fund-price
 	public static final Storage.LoadSaveDirectoryList<FundPriceJP>
-		FundPrice = StorageJITA.FundPrice;
+		FundPrice = new Storage.LoadSaveDirectoryList<FundPriceJP>(FundPriceJP.class, storage, "fund-price", o -> o + ".csv");
 
 	// nisa-info
 	public static final Storage.LoadSaveFileList<NISAInfo>
