@@ -7,12 +7,12 @@ import java.time.LocalDate;
 import yokwe.util.ToString;
 
 public class FundPriceJP implements Comparable<FundPriceJP> {
-	public final LocalDate  date;   // 年月日
-	public final BigDecimal nav;    // 純資産総額（円）
-	public final BigDecimal price;  // 基準価額(円)
-	public final BigDecimal units;  // 総口数 = 純資産総額 / 基準価額
+	public LocalDate  date;   // 年月日
+	public BigDecimal nav;    // 純資産総額（円）
+	public BigDecimal price;  // 基準価額(円)
+	public BigDecimal units;  // 総口数 = 純資産総額 / 基準価額
 
-	public FundPriceJP(LocalDate date, BigDecimal nav, BigDecimal price, BigDecimal units) {		
+	public FundPriceJP(LocalDate date, BigDecimal nav, BigDecimal price, BigDecimal units) {
 		this.date  = date;
 		this.nav   = nav;
 		this.price = price;
@@ -21,7 +21,7 @@ public class FundPriceJP implements Comparable<FundPriceJP> {
 	public FundPriceJP(LocalDate date, BigDecimal nav, BigDecimal price) {
 		this(date, nav, price, price.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : nav.divide(price, 0, RoundingMode.HALF_UP));
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToString.withFieldName(this);
