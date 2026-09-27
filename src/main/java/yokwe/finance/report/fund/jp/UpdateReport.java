@@ -145,7 +145,7 @@ public class UpdateReport extends UpdateBase {
 				}
 
 				// Use last element of fundPrice for nav
-				nav = fundPriceList.get(fundPriceList.size() - 1).nav;
+				nav = fundPriceList.getLast().nav;
 
 				monthlyStats = MonthlyStats.getInstance(isinCode, priceList, divList);
 			}
@@ -257,7 +257,7 @@ public class UpdateReport extends UpdateBase {
 						var yield1Y  = report.yield1Y.doubleValue() * 100;
 						var diff     = Math.abs(yield1Y - divYield) * 100;
 						var percent  = diff / yield1Y;
-						if (5 < percent) {
+						if (10 < percent) {
 							logger.info("{}", String.format("XX  %s  %s  %5s %8.4f%%  %8.4f%%  %8.2f%%  %s", fundInfo.isinCode, fundInfo.fundCode, fundInfo.stockCode, yield1Y, divYield, percent, fundInfo.name));
 						}
 					}
