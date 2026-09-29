@@ -73,7 +73,7 @@ public class UpdateReport extends UpdateBase {
 			var nisaMap        = StorageFundJP.NISAInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 			var stockValueMap  = StorageStockJP.StockValueJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
 			var stockTradeMap  = StorageStockJP.StockTradeJP.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
-			var taxMap         = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
+			var taxSet         = StorageAnalysis.TaxAdjustment.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
 
 			for(var stockInfo: StorageStockJP.StockInfoJP.getList()) {
 				var stockCode = stockInfo.stockCode;
@@ -111,7 +111,7 @@ public class UpdateReport extends UpdateBase {
 				report.type      = stockInfo.type.simpleType.toString();
 				report.sector    = stockInfo.sector;
 				report.industry  = stockInfo.industry;
-				report.taxAdjust = taxMap.containsKey(stockCode) ? "1" : "0";
+				report.taxAdjust = taxSet.contains(stockCode) ? "1" : "0";
 				// set sector and industry
 
 				report.name      = stockInfo.name;

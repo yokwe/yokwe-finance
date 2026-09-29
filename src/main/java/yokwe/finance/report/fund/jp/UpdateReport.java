@@ -87,7 +87,7 @@ public class UpdateReport extends UpdateBase {
 		var fundInfoList = StorageFundJP.FundInfo.getList();
 
 		var fundDivMap   = StorageNikkei.FundDivInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var taxMap       = StorageAnalysis.TaxAdjustment.getList().stream().filter(o -> o.hasValue()).collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
+		var taxSet       = StorageAnalysis.TaxAdjustment.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
 
 		var clickMap     = StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var nikkoMap     = StorageNikko.TradingFundJPNikko.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
@@ -162,7 +162,8 @@ public class UpdateReport extends UpdateBase {
 			// Use toushin category
 			report.investingAsset = fundInfo.investingAsset;
 			report.investingArea  = fundInfo.investingArea;
-			report.taxAdjuettment = taxMap.containsKey(fundInfo.isinCode) ? "1" : "0";
+			report.taxAdjuettment = taxSet.contains(fundInfo.stockCode) ? "1" : "0";
+
 			report.indexFundType  = fundInfo.indexFundType.replace("該当なし", "アクティブ型").replace("型", "");
 
 			report.expenseRatio = fundInfo.expenseRatio.multiply(CONSUMPTION_TAX_RATE);
