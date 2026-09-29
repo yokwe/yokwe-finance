@@ -39,8 +39,8 @@
 	</target>
 	
 	<!-- fund jp -->
-	<target name="fund-jp-update-fund-div">
-		<java module="yokwe.finance/yokwe.finance.data.fund.jp.UpdateFundDiv" fork="true" failonerror="true">
+	<target name="fund-jp-update-fund-div-price">
+		<java module="yokwe.finance/yokwe.finance.data.fund.jp.UpdateFundDivPrice" fork="true" failonerror="true">
 			<modulepath refid="build.classpath" />
 			<modulepath refid="target.jar" />
 			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
