@@ -31,6 +31,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 	public void update_mix() {
 		var moneybuMap = StorageMoneybu.StockInfoMoneybu.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 
+		int count  = 0;
 		int countA = 0;
 		int countB = 0;
 		int countC = 0;
@@ -46,6 +47,12 @@ public class UpdateFundDivPrice extends UpdateBase {
 
 			var priceList = StorageJITA.FundPrice.getList(isinCode);
 			var divList   = StorageJITA.FundDiv.getList(isinCode);
+
+			if ((count++ % 500) == 0) {
+				logger.info("{}", count - 1);
+			} else {
+//				logger.info("{}", e.code);
+			}
 
 			if (stockCode.isEmpty()) {
 				// FUND
@@ -69,7 +76,8 @@ public class UpdateFundDivPrice extends UpdateBase {
 					}
 					var myValue = myPrice.price;
 					var factor = getFactor(priceValue, myValue);
-					logger.info("XX  {}  {}  {}  {}  {}  {}  {}", isinCode, stockCode, priceDate, priceValue, myValue, factor, name);
+//					logger.info("XX  {}  {}  {}  {}  {}  {}  {}", isinCode, stockCode, priceDate, priceValue, myValue, factor, name);
+//					logger.info("XX  {}  {}  {}  {}", isinCode, stockCode, factor, name);
 					if (factor.compareTo(BigDecimal.ONE) == 0) {
 						// no need to adjust
 						countC++;
