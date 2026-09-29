@@ -99,7 +99,15 @@ public class UpdateStockPriceOHLCV  extends UpdateBase {
 
 			for(var ohlcvString: data.A_HISTDAYL.split(",?\\\\n")) {
 				String[] valueString = ohlcvString.split(",");
-				if (valueString.length != 6 && valueString.length != 7) {
+
+				switch(valueString.length) {
+				case 6:
+				case 7:
+				case 9:
+				case 11:
+					// expected
+					break;
+				default:
 					logger.error("Unexpected ohlcvString");
 					logger.error("  stockCode    {}", stockCode);
 					logger.error("  valueString  {}", valueString.length);
