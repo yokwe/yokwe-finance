@@ -58,7 +58,7 @@ public class UpdateTradingStockUS extends UpdateBase {
 			var code      = codeName.code;
 			var feeType   = buyFreeSet.contains(code) ? TradingStock.FeeType.BUY_FREE : TradingStock.FeeType.PAID;
 			var tradeType = TradeType.BUY_SELL;
-			var name      = codeName.name.replace(",", "").toUpperCase();
+			var name      = codeName.name.replace(",", "").toUpperCase().replace("&AMP;", "&");
 
 			list.add(new TradingStock(code, feeType, tradeType, name));
 		}
