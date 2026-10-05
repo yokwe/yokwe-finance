@@ -143,6 +143,7 @@ public class UpdateStockCodeName extends UpdateBase {
 		//   Z = BATS Global Markets (BATS)
 		//   V = Investors' Exchange, LLC (IEXG)
 		Map.entry("A", Market.NYSE),
+		Map.entry("F", Market.TXSE),
 		Map.entry("N", Market.NYSE),
 		Map.entry("P", Market.NYSE),
 		Map.entry("Z", Market.BATS),
@@ -154,6 +155,7 @@ public class UpdateStockCodeName extends UpdateBase {
 			return marketMap.get(exchange);
 		}
 		logger.error("Unexpected exchange");
+		logger.error("  {}!", exchange);
 		throw new UnexpectedException("Unexpected exchange");
 	}
 
