@@ -13,7 +13,7 @@ import yokwe.util.ToString;
 open https://www.webull.co.jp/search with firefox and press page down key and reach to bottom of page
 select text in stock list and show menu using right click and select "調査" from menu
 select table element '<table class="wbapp135 wbapp6">' and using right click and select "コピー" and "outerHTML"
-in terminal window, enter following command  pbpaste -Prefer txt >tmp/a" ; tidy -i -utf8 tmp/a >tmp/a.html
+in terminal window, enter following command  pbpaste -Prefer txt >tmp/a" ; tidy -i -utf8 -w 9999 tmp/a >tmp/a.html
 
  */
 public class T001 {
@@ -50,6 +50,7 @@ public class T001 {
 			list.add(new StockInfo(code, name, e.exchange));
 		}
 
+		logger.info("save  {}  {}", list.size(), StorageWebull.StockInfoWebull.getFile());
 		StorageWebull.StockInfoWebull.save(list);
 
 		logger.info("STOP");
