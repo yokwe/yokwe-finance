@@ -119,6 +119,8 @@ public class UpdateReport extends UpdateBase {
 
 			if ((++count % 500) == 1) {
 				logger.info("{} / {}  {}", count, fundInfoList.size(), isinCode);
+			} else {
+//				logger.info("{} / {}  {}", count, fundInfoList.size(), isinCode);
 			}
 
 			MonthlyStats  monthlyStats;
