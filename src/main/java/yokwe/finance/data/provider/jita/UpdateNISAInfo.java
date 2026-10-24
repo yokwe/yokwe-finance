@@ -21,72 +21,77 @@ import yokwe.util.update.UpdateSimpleGeneric;
 
 public class UpdateNISAInfo extends UpdateSimpleGeneric<Void> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static Makefile MAKEFILE = Makefile.builder().
 		input(StorageJPX.StockCodeNameJPX).
 		output(StorageJITA.NISAInfo).
 		build();
-	
+
 	public static void main(String[] args) {
 		callUpdate();
 	}
-	
+
 	@Override
 	protected Void downloadFile() {
 		try {
 			LibreOffice.initialize();
-			
+
 			{
-				var urlString = "https://www.toushin.or.jp/files/static/486/listed_fund_for_investor.xlsx";
+//				var urlString = "https://www.toushin.or.jp/files/static/486/listed_fund_for_investor.xlsx";
+				var urlString = "https://www.imaj.or.jp/find/nisa_growth_productslist/xlsx-cms/listed_fund_for_investor.xlsx";
+
 				var fileXLSX  = LISTED_XLSX;
 				var clazz     = ListedFundForInvestor.class;
-				
-				var list = downloadAndExtact(urlString, fileXLSX, clazz);		
+
+				var list = downloadAndExtact(urlString, fileXLSX, clazz);
 				StorageJITA.ListedFundForInvestor.save(list);
 			}
-			
+
 			{
-				var urlString = "https://www.toushin.or.jp/files/static/486/unlisted_fund_for_investor.xlsx";
+//				var urlString = "https://www.toushin.or.jp/files/static/486/unlisted_fund_for_investor.xlsx";
+				var urlString = "https://www.imaj.or.jp/find/nisa_growth_productslist/xlsx-cms/unlisted_fund_for_investor.xlsx";
 				var fileXLSX  = UNLISTED_XLSX;
 				var clazz     = UnlistedFundForInvestor.class;
-				
+
 				var list = downloadAndExtact(urlString, fileXLSX, clazz);
-				
+
 				// fix null value in redemptionDate
 				for(var data: list) {
-					if (data.redemptionDate == null) data.redemptionDate = "";
+					if (data.redemptionDate == null) {
+						data.redemptionDate = "";
+					}
 				}
 				StorageJITA.UnlistedFundForInvestor.save(list);
 			}
 		} finally {
 			LibreOffice.terminate();
 		}
-				
+
 		return null;
 	}
 	private static File LISTED_XLSX   = StorageJITA.storage.getFile("listed-fund-for-investor.xlsx");
 	private static File UNLISTED_XLSX = StorageJITA.storage.getFile("unlisted-fund-for-investor.xlsx");
 	private <E extends Sheet & Comparable<E>> List<E> downloadAndExtact(String urlString, File fileXLSX, Class<E> clazz) {
 		logger.info("download {}", urlString);
-		
+
 		byte[] rawData = HttpUtil.getInstance().downloadRaw(urlString);
 		logger.info("save  {}  {}", rawData.length, fileXLSX.getPath());
 		FileUtil.rawWrite().file(fileXLSX, rawData);
-		
+
 		try (SpreadSheet spreadSheet = new SpreadSheet(URLUtil.toURL(fileXLSX).toString(), true)) {
 			return Sheet.extractSheet(spreadSheet, clazz);
 		}
 	}
-	
+
 	@Override
 	protected void updateFile(Void dummy) {
 		var list = new ArrayList<NISAInfo>();
-		
+
 		// build list from listed
 		{
 			// stockCode to isinCode
 			var stockInfoMap = StorageJPX.StockCodeNameJPX.getList().stream().collect(Collectors.toMap(o -> o.stockCode, Function.identity()));
-			
+
 			for (var data : StorageJITA.ListedFundForInvestor.getList()) {
 				var stockCode = StockCodeJP.toStockCode5(data.stockCode);
 				if (stockInfoMap.containsKey(stockCode)) {
@@ -110,7 +115,7 @@ public class UpdateNISAInfo extends UpdateSimpleGeneric<Void> {
 		{
 			// fundCode to isinCode
 			var fundInfoMap  = StorageJITA.FundInfoJITA.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
-			
+
 			for (var data : StorageJITA.UnlistedFundForInvestor.getList()) {
 				var fundCode = data.fundCode;
 				if (fundInfoMap.containsKey(fundCode)) {
@@ -129,7 +134,7 @@ public class UpdateNISAInfo extends UpdateSimpleGeneric<Void> {
 				}
 			}
 		}
-		
+
 		checkDuplicateKey(list, o -> o.isinCode);
 		save(list, StorageJITA.NISAInfo);  // use save for make
 	}
