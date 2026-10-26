@@ -16,7 +16,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	protected static Makefile MAKEFILE = Makefile.builder().
-		input(StorageJITA.FundInfoJITA, StorageJITA.FundDiv, StorageJITA.FundPrice, StorageMoneybu.StockInfoMoneybu).
+		input(StorageJITA.FundInfoJITA, StorageJITA.FundDiv, StorageJITA.FundPrice, StorageMoneybu.StockInfoMoneybu, StorageJPX.StockPriceOHLCV).
 		output(StorageFundJP.FundDiv, StorageFundJP.FundPrice).
 		build();
 
