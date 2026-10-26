@@ -71,6 +71,7 @@ public class UpdateStockStats extends UpdateBase {
 			}
 		}
 
+		logger.info("save  {}  {}", list.size(), StorageStockUS.StockStatsUS.getFile());
 		StorageStockUS.StockStatsUS.save(list);
 	}
 
