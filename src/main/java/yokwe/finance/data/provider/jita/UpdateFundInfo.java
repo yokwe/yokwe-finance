@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 
@@ -245,7 +246,48 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 
 		String investingAsset = FundDataSearch.InvestingAsset.getInstance(resultInfo.investAssetKindCd).getName();
 		String indexFundType  = FundDataSearch.IndexFundType.getInstance(resultInfo.supplementKindCd).getName();
-		String settlementDate = resultInfo.setlDate.replace(",", "");
+		String settlementDate;
+
+		{
+			var setlDate = resultInfo.setlDate.replace(",", "");
+
+			if (setlDate.equals("-")) {
+				logger.info("XX  {}  {}  {}  {}", setlDate, listingDate, isinCode, name);
+				settlementDate = "";
+			} else if (setlDate.equals("毎日決算")) {
+				logger.info("XX  {}  {}  {}", setlDate, isinCode, name);
+				settlementDate = "毎日決算";
+			} else {
+				var monthList = new ArrayList<String>();
+				var daySet    = new TreeSet<String>();
+				for(var e: setlDate.split(" ")) {
+					var monthDay = e.split("\\/");
+
+					if (monthDay.length == 2) {
+						var month = monthDay[0];
+						var day   = monthDay[1];
+
+						monthList.add(String.valueOf(Integer.valueOf(month)));
+						daySet.add(String.valueOf(Integer.valueOf(day)));
+					} else {
+						logger.error("Unexpected setlDate");
+						logger.error("XX  {}  {}  {}", setlDate, isinCode, name);
+						throw new UnexpectedException("Unexpected setlDate");
+					}
+				}
+
+				if (daySet.size() != 1) {
+					logger.info("XX  {}  {}  {}", setlDate, isinCode, name);
+					settlementDate = setlDate;
+				} else {
+					if (monthList.size() == 12) { // every month
+						settlementDate = "*/" + daySet.first();
+					} else {
+						settlementDate = String.join(",", monthList).toString() + "/" + daySet.first();
+					}
+				}
+			}
+		}
 
 		FundInfoJP fund = new FundInfoJP(
 				isinCode, fundCode, stockCode, listingDate, redemptionDate, divFreq,
