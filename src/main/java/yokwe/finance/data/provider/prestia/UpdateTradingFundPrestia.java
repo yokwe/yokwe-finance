@@ -5,8 +5,11 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import yokwe.finance.data.provider.jita.StorageJITA;
 import yokwe.finance.data.type.Currency;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.util.Makefile;
@@ -49,27 +52,27 @@ public class UpdateTradingFundPrestia extends UpdateBase {
 		var fundList = JSON.unmarshal(Raw.FundList.class, StoragePrestia.FundListJSON.load());
 
 		for(var e: fundList.fundlist.data) {
-			var fundCode = e.PRSTCode;
+			var prstCode = e.PRSTCode;
 			var fundName = e.FundName;
 
 			{
-				var file = StoragePrestia.FundDetailJSON.getFile(fundCode);
+				var file = StoragePrestia.FundDetailJSON.getFile(prstCode);
 				if (needsUpdate(file)) {
-					var url    = String.format(URL_FUND_DETAIL, fundCode);
+					var url    = String.format(URL_FUND_DETAIL, prstCode);
 					var string = HttpUtil.getInstance().downloadString(url).replace("\r\n", "\n");
-					logger.info("detail  {}  {}  {}", string.length(), fundCode, fundName);
-					StoragePrestia.FundDetailJSON.save(fundCode, string);
+					logger.info("detail  {}  {}  {}", string.length(), prstCode, fundName);
+					StoragePrestia.FundDetailJSON.save(prstCode, string);
 				}
 			}
 
 			{
-				var file = StoragePrestia.FundDataJSON.getFile(fundCode);
+				var file = StoragePrestia.FundDataJSON.getFile(prstCode);
 				if (needsUpdate(file)) {
 					var time   = String.valueOf(System.currentTimeMillis());
-					var url    = String.format(URL_FUND_DATA, fundCode, time);
+					var url    = String.format(URL_FUND_DATA, prstCode, time);
 					var string = HttpUtil.getInstance().downloadString(url).replace("\r\n", "\n");
-					logger.info("data    {}  {}  {}", string.length(), fundCode, fundName);
-					StoragePrestia.FundDataJSON.save(fundCode, string);
+					logger.info("data    {}  {}  {}", string.length(), prstCode, fundName);
+					StoragePrestia.FundDataJSON.save(prstCode, string);
 				}
 			}
 		}
@@ -84,16 +87,33 @@ public class UpdateTradingFundPrestia extends UpdateBase {
 
 		var tradingFundList = new ArrayList<TradingFundPrestia>();
 
+		var unlistedMap = StorageJITA.FundInfoJITA.getList().stream().collect(Collectors.toMap(o -> o.fundCode, Function.identity()));
+
 		for(var e: fundList.fundlist.data) {
-			var fundCode = e.PRSTCode;
+			var prstCode = e.PRSTCode;
 			var fundName = e.FundName;
 
 			{
-				var fundDetail = JSON.unmarshal(Raw.FundDetail.class, StoragePrestia.FundDetailJSON.load(fundCode));
+				var code = e.FundCode;
+				if (unlistedMap.containsKey(code)) {
+//					logger.info("XX  {}  {}", fundCode, fundName);
+				} else {
+					if (code.startsWith("G")) {
+						//
+					} else {
+						logger.info("YY  {}  {}  {}", prstCode, code, fundName);
+					}
+				}
+			}
+
+			{
+				var fundDetail = JSON.unmarshal(Raw.FundDetail.class, StoragePrestia.FundDetailJSON.load(prstCode));
 				var data = fundDetail.fundlist.data[0];
 
 				var tradingFund = new TradingFundPrestia();
-				tradingFund.fundCode     = fundCode;
+				tradingFund.prstCode     = prstCode;
+				tradingFund.fundCode     = data.FundCode;
+				tradingFund.launchDate   = data.LaunchDate;
 				tradingFund.name         = fundName;
 				tradingFund.currency     = Currency.getInstance(e.CurrencyCode);
 				tradingFund.investArea   = data.InvestArea;
@@ -101,6 +121,11 @@ public class UpdateTradingFundPrestia extends UpdateBase {
 
 				tradingFund.buyable      = e.Buyable;
 				tradingFund.buyableOnly  = e.BuyableOnly;
+
+				tradingFund.dividendFrequency = data.DividendFrequency;
+			    tradingFund.dividendDate      = data.DividendDate;
+			    tradingFund.dividendLastDate  = data.DividendLastDate;
+			    tradingFund.dividendAmount    = data.DividendAmount;
 
 				tradingFund.totalNetAsset = new BigDecimal(data.TotalNetAsset.replace(",", "")).movePointRight(6);
 
@@ -179,7 +204,7 @@ public class UpdateTradingFundPrestia extends UpdateBase {
 				tradingFundList.add(tradingFund);
 			}
 			{
-				var string   = StoragePrestia.FundDataJSON.load(fundCode);
+				var string   = StoragePrestia.FundDataJSON.load(prstCode);
 				var fundData = JSON.unmarshal(Raw.FundData.class, string);
 
 				var divList   = new ArrayList<DailyValue>();
@@ -211,8 +236,8 @@ public class UpdateTradingFundPrestia extends UpdateBase {
 				}
 
 
-				StoragePrestia.FundDiv.save(fundCode, divList);
-				StoragePrestia.FundPrice.save(fundCode, priceList);
+				StoragePrestia.FundDiv.save(prstCode, divList);
+				StoragePrestia.FundPrice.save(prstCode, priceList);
 			}
 
 		}

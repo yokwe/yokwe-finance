@@ -6,8 +6,11 @@ import yokwe.finance.data.type.Currency;
 import yokwe.util.ToString;
 
 public class TradingFundPrestia implements Comparable<TradingFundPrestia> {
-	public String fundCode;  // prestia fund code
+	public String prstCode;  // prestia fund code
 
+	public String fundCode;
+
+	public String launchDate;
 	public Currency currency;
 
 	public String investArea;
@@ -23,6 +26,12 @@ public class TradingFundPrestia implements Comparable<TradingFundPrestia> {
     public BigDecimal trustReserve; // 信託財産留保額
     public String     successFee;   // 成功報酬
 
+
+    public String dividendFrequency;
+    public String dividendDate;
+    public String dividendLastDate;
+    public String dividendAmount;
+
 	public String name;
 
 	@Override
@@ -32,7 +41,7 @@ public class TradingFundPrestia implements Comparable<TradingFundPrestia> {
 
 	@Override
 	public int compareTo(TradingFundPrestia that) {
-		return this.fundCode.compareTo(that.fundCode);
+		return this.prstCode.compareTo(that.prstCode);
 	}
 
 }
