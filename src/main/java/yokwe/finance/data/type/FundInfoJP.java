@@ -53,6 +53,10 @@ public class FundInfoJP implements Comparable<FundInfoJP> {
     // 決算日
     public String            settlementDate;
 
+    //
+    public BigDecimal        totalNetAssets;
+    public boolean           foreignTaxAdjusted; // true if foreign tax is adjusted
+
     // LAST
     // "fundNm" : "あおぞら・グローバル・バランス・ファンド（部分為替ヘッジあり）",
     public String            name;
@@ -91,6 +95,7 @@ public class FundInfoJP implements Comparable<FundInfoJP> {
 			String isinCode, String fundCode, String stockCode, LocalDate inceptionDate, LocalDate redemptionDate, int divFreq,
 			BigDecimal expenseRatio, BigDecimal buyFeeMax,
 			String fundType, String investingArea, String investingAsset, String indexFundType, String settlementDate,
+			BigDecimal totalNetAssets, boolean foreignTaxAdjusted,
 			String name
 			) {
 			this.isinCode       = isinCode;
@@ -108,6 +113,9 @@ public class FundInfoJP implements Comparable<FundInfoJP> {
 			this.investingAsset = investingAsset;
 			this.indexFundType  = indexFundType;
 			this.settlementDate = settlementDate;
+
+			this.totalNetAssets     = totalNetAssets;
+			this.foreignTaxAdjusted = foreignTaxAdjusted;
 
 			this.name           = name;
 		}

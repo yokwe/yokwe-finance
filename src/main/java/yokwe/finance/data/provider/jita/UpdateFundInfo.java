@@ -5,10 +5,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 
+import yokwe.finance.data.analysis.StorageAnalysis;
 import yokwe.finance.data.provider.jpx.StockCodeName;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.util.FileUtil;
@@ -27,7 +31,7 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	public static Makefile MAKEFILE = Makefile.builder().
-		input().
+		input(StorageAnalysis.ForeignTaxAdjusted).
 		output(StorageJITA.FundInfoJITA).
 		build();
 
@@ -289,12 +293,30 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 			}
 		}
 
+
+		BigDecimal totalNetAssets;
+		{
+			var string = resultInfo.totalNetAssets;
+			if (string == null) {
+				logger.info("ZZ  {}  {}", isinCode, name);
+				totalNetAssets = BigDecimal.ZERO;
+			} else {
+				totalNetAssets = new BigDecimal(resultInfo.totalNetAssets).movePointRight(6).stripTrailingZeros();
+			}
+		}
+
+		boolean foreginTaxAdjusted = foreignTaxAdjustedSet.contains(stockCode);
+
 		FundInfoJP fund = new FundInfoJP(
 				isinCode, fundCode, stockCode, listingDate, redemptionDate, divFreq,
 				expenseRatio, buyFreeMax,
 				fundType, investingArea, investingAsset, indexFundType, settlementDate,
+				totalNetAssets, foreginTaxAdjusted,
 				name
 				);
 		return fund;
 	}
+
+	private static final Set<String> foreignTaxAdjustedSet = StorageAnalysis.ForeignTaxAdjusted.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
+
 }
