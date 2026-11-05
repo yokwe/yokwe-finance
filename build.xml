@@ -272,6 +272,15 @@
 		</java>
 	</target>
 	
+	<!-- provider prestia -->
+	<target name="prestia-update-trading-fund-prestia">
+		<java module="yokwe.finance/yokwe.finance.data.provider.prestia.UpdateTradingFundPrestia" fork="true" failonerror="true">
+			<modulepath refid="build.classpath" />
+			<modulepath refid="target.jar" />
+			<classpath  refid="libreoffice.lib" /><jvmarg value="--enable-native-access=org.libreoffice.uno"/>
+		</java>
+	</target>
+
 	<!-- provider rakuten -->
 	<target name="rakuten-update-trading-fund-jp">
 		<java module="yokwe.finance/yokwe.finance.data.provider.rakuten.UpdateTradingFundJP" fork="true" failonerror="true">

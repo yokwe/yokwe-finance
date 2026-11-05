@@ -119,7 +119,7 @@ update-report-us:
 	
 
 
-update-data-jp: update-jpx update-jita update-moneybu update-click-jp update-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp
+update-data-jp: update-jpx update-jita update-moneybu update-click-jp update-nikko-jp update-rakuten-jp update-smtb-jp update-sony-jp update-prestia
 	make update-report-jp
 
 update-data-us: update-rakuten-us update-us-exchange update-quotes
@@ -154,6 +154,9 @@ update-click-jp:
 
 update-nikko-jp:
 	ant nikko-update-trading-fund-jp
+
+update-prestia:
+	ant prestia-update-trading-fund-prestia
 
 update-rakuten-jp:
 	ant rakuten-update-trading-fund-jp
