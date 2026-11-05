@@ -78,13 +78,14 @@ public class UpdateFundDivPrice extends UpdateBase {
 						logger.error("  {}  {}  {}  {}", isinCode, stockCode, priceDate, name);
 						throw new UnexpectedException("Unexpected priceDate");
 					}
-					var myValue = myPrice.price;
+					var myValue = myPrice.value;
 					var factor = getFactor(priceValue, myValue);
 
+					// split of ETF
 					if (factor.compareTo(BigDecimal.ZERO) == 0) {
-						logger.error("Unexpected factor");
-						logger.error("   {}  {}  {}  {}  {}  {}", isinCode, stockCode, priceValue, myValue, name);
-						throw new UnexpectedException("Unexpected factor");
+						logger.warn("__  {}  {}  {}", isinCode, stockCode, name);
+						logger.warn("    {}  {}  {}", priceDate, priceValue, myValue);
+						factor = BigDecimal.ONE;
 					}
 
 					if (factor.compareTo(BigDecimal.ONE) == 0) {
@@ -94,7 +95,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 						// need adjust
 						countE++;
 						for(var e: priceList) {
-							e.price = e.price.multiply(factor);
+							e.value = e.value.multiply(factor);
 						}
 						for(var e: divList) {
 							e.value = e.value.multiply(factor);
@@ -105,14 +106,14 @@ public class UpdateFundDivPrice extends UpdateBase {
 				{
 					// Use price of StorageJPX.StockPriceOHLCV if necessary
 					var useStockPrice = false;
-					var lastPrice = priceList.get(0).price;
+					var lastPrice = priceList.get(0).value;
 					for(var e: priceList) {
-						var price = e.price;
+						var price = e.value;
 						var diff = price.subtract(lastPrice).abs();
 						if (0 < diff.compareTo(lastPrice)) {
 							useStockPrice = true;
 							logger.warn("XX  {}  {}  {}", isinCode, stockCode, name);
-							logger.warn("    {}  {}  {}", e.date, e.price, lastPrice);
+							logger.warn("    {}  {}  {}", e.date, e.value, lastPrice);
 							break;
 						}
 
@@ -122,7 +123,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 						var stockMap = StorageJPX.StockPriceOHLCV.getList(stockCode).stream().collect(Collectors.toMap(o -> o.date, Function.identity()));
 						priceList.removeIf(o -> !stockMap.containsKey(o.date));
 						for(var e: priceList) {
-							e.price = stockMap.get(e.date).close;
+							e.value = stockMap.get(e.date).close;
 						}
 					}
 				}

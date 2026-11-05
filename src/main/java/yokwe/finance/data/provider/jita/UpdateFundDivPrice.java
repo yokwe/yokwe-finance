@@ -11,7 +11,6 @@ import java.util.List;
 
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundInfoJP;
-import yokwe.finance.data.type.FundPriceJP;
 import yokwe.util.CSVUtil;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
@@ -108,11 +107,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 		{
 			for(var fundInfo: fundInfoList) {
 				var file = StorageJITA.FundDivPrice.getFile(fundInfo.isinCode);
-				if (file.exists()) {
-					if (needsUpdate(file)) {
-						list.add(fundInfo);
-					}
-				} else {
+				if (needsUpdate(file)) {
 					list.add(fundInfo);
 				}
 			}
@@ -166,7 +161,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 
 			// build divList and priceList
 			var divList   = new ArrayList<DailyValue>();
-			var priceList = new ArrayList<FundPriceJP>();
+			var priceList = new ArrayList<DailyValue>();
 
 			for(var divPrice: divPriceList) {
 				// sanity check
@@ -176,14 +171,14 @@ public class UpdateFundDivPrice extends UpdateBase {
 				}
 				LocalDate  date   = toLocalDate(divPrice.date);
 				BigDecimal price  = new BigDecimal(divPrice.price);
-				BigDecimal nav    = new BigDecimal(divPrice.nav).scaleByPowerOfTen(6); // 純資産総額（百万円）
+//				BigDecimal nav    = new BigDecimal(divPrice.nav).scaleByPowerOfTen(6); // 純資産総額（百万円）
 				String     div    = divPrice.div.trim();
 
 				if (!div.isEmpty()) {
 					divList.add(new DailyValue(date, new BigDecimal(div)));
 				}
 
-				priceList.add(new FundPriceJP(date, nav, price));
+				priceList.add(new DailyValue(date, price));
 			}
 
 			// save divList and priceList

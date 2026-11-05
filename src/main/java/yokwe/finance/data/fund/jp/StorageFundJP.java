@@ -4,7 +4,6 @@ import yokwe.finance.data.fund.StorageFund;
 import yokwe.finance.data.provider.jita.StorageJITA;
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundInfoJP;
-import yokwe.finance.data.type.FundPriceJP;
 import yokwe.finance.data.type.NISAInfo;
 import yokwe.util.Storage;
 
@@ -20,8 +19,8 @@ public class StorageFundJP {
 		FundDiv = new Storage.LoadSaveDirectoryList<DailyValue>(DailyValue.class, storage, "fund-div", o -> o + ".csv");
 
 	// fund-price
-	public static final Storage.LoadSaveDirectoryList<FundPriceJP>
-		FundPrice = new Storage.LoadSaveDirectoryList<FundPriceJP>(FundPriceJP.class, storage, "fund-price", o -> o + ".csv");
+	public static final Storage.LoadSaveDirectoryList<DailyValue>
+		FundPrice = new Storage.LoadSaveDirectoryList<DailyValue>(DailyValue.class, storage, "fund-price", o -> o + ".csv");
 
 	// nisa-info
 	public static final Storage.LoadSaveFileList<NISAInfo>
