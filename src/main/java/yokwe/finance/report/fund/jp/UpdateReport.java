@@ -19,7 +19,6 @@ import yokwe.finance.data.provider.nikko.StorageNikko;
 import yokwe.finance.data.provider.rakuten.StorageRakuten;
 import yokwe.finance.data.provider.smtb.StorageSMTB;
 import yokwe.finance.data.provider.sony.StorageSony;
-import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.report.stats.MonthlyStats;
 import yokwe.finance.report.stats.online.BigDecimalSMA;
 import yokwe.util.FileUtil;
@@ -36,7 +35,7 @@ public class UpdateReport extends UpdateBase {
 
 	public static Makefile MAKEFILE = Makefile.builder().
 			input(
-					StorageAnalysis.TaxAdjustment,
+					StorageAnalysis.ForeignTaxAdjusted,
 					StorageFundJP.FundInfo,
 					StorageFundJP.FundDiv,
 					StorageFundJP.FundPrice,
@@ -87,7 +86,7 @@ public class UpdateReport extends UpdateBase {
 		var fundInfoList = StorageFundJP.FundInfo.getList();
 
 		var fundDivMap   = StorageNikkei.FundDivInfo.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
-		var taxSet       = StorageAnalysis.TaxAdjustment.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
+		var taxSet       = StorageAnalysis.ForeignTaxAdjusted.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
 
 		var clickMap     = StorageClick.TradingFundJPClick.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
 		var nikkoMap     = StorageNikko.TradingFundJPNikko.getList().stream().collect(Collectors.toMap(o -> o.isinCode, Function.identity()));
@@ -124,15 +123,13 @@ public class UpdateReport extends UpdateBase {
 			}
 
 			MonthlyStats  monthlyStats;
-			BigDecimal    nav;
 			{
-				var fundPriceList = StorageFundJP.FundPrice.getList(isinCode);
-				if (fundPriceList.isEmpty()) {
+				var priceList = StorageFundJP.FundPrice.getList(isinCode);
+				if (priceList.isEmpty()) {
 					countNoPrice++;
 					continue;
 				}
 
-				var priceList = fundPriceList.stream().map(o -> new DailyValue(o.date, o.price)).collect(Collectors.toList());
 				var divList   = MonthlyStats.getDivList(priceList, StorageFundJP.FundDiv.getList(isinCode));
 
 				// Modify priceList to set moving average of priceList
@@ -146,11 +143,10 @@ public class UpdateReport extends UpdateBase {
 					}
 				}
 
-				// Use last element of fundPrice for nav
-				nav = fundPriceList.getLast().nav;
-
 				monthlyStats = MonthlyStats.getInstance(isinCode, priceList, divList);
 			}
+
+			BigDecimal    nav = fundInfo.totalNetAssets;
 
 			ReportForm report = new ReportForm();
 			report.isinCode  = fundInfo.isinCode;
