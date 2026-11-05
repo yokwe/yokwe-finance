@@ -219,6 +219,7 @@ public final class FundDataSearch {
         public String trustReward;               // "trustReward": "0.525",
         public String renzokuCancelCreateValFlg; // "renzokuCancelCreateValFlg": "1",
         public String stdCostPointFrmDayBfr;     // "stdCostPointFrmDayBfr": "38.0",
+        // 純資産総額
         public String totalNetAssets;            // "totalNetAssets": "11507.0",
         public String rankSharpRa20y;            // "rankSharpRa20y": "-/-",
         public String investArea3kindCd;         // "investArea3kindCd": "3",
