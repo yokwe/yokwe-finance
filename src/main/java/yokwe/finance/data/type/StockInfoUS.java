@@ -19,6 +19,7 @@ public final class StockInfoUS implements Comparable<StockInfoUS> {
 		NASDAQ,
 		NYSE,
 		IEXG,
+		TXSE,
 	}
 
 	public enum SimpleType {
