@@ -2,7 +2,7 @@ package yokwe.finance.data.type;
 
 import yokwe.util.ToString;
 
-public class TaxAdjustment implements Comparable<TaxAdjustment> {
+public class ForeignTaxAdjusted implements Comparable<ForeignTaxAdjusted> {
 	// 投資信託等の二重課税調整制度の対象となる可能性の高いETF・REIT
 	// https://www.jpx.co.jp/equities/related/tax/tvdivq00000170tw-att/20260903_ETF_REIT.pdf
 
@@ -16,7 +16,7 @@ public class TaxAdjustment implements Comparable<TaxAdjustment> {
 	public String divDateList;
 
 	@Override
-	public int compareTo(TaxAdjustment that) {
+	public int compareTo(ForeignTaxAdjusted that) {
 		return this.stockCode.compareTo(that.stockCode);
 	}
 

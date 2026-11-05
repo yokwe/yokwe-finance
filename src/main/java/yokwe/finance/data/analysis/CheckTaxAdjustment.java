@@ -13,7 +13,7 @@ public class CheckTaxAdjustment {
 		var stockSet = StorageJPX.StockListJPX.getList().stream().map(o -> o.code).collect(Collectors.toSet());
 		logger.info("stockSet  {}", stockSet.size());
 
-		var taxList = StorageAnalysis.TaxAdjustment.getList();
+		var taxList = StorageAnalysis.ForeignTaxAdjusted.getList();
 		logger.info("taxList  {}", taxList.size());
 
 		for(var e: taxList) {
