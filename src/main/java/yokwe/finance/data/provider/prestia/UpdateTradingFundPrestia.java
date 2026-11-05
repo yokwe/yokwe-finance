@@ -235,15 +235,15 @@ public class UpdateTradingFundPrestia extends UpdateBase {
 					}
 				}
 
-
 				StoragePrestia.FundDiv.save(prstCode, divList);
 				StoragePrestia.FundPrice.save(prstCode, priceList);
 			}
-
 		}
 
-		logger.info("save  {}  {}", tradingFundList.size(), StoragePrestia.TradingFundPrestia.getFile());
-		StoragePrestia.TradingFundPrestia.save(tradingFundList);
+		StoragePrestia.FundDiv.touch();
+		StoragePrestia.FundPrice.touch();
+
+		save(tradingFundList, StoragePrestia.TradingFundPrestia); // use save for make
 	}
 
 	public static class Raw {
