@@ -9,7 +9,7 @@ import yokwe.util.UnexpectedException;
 //
 public final class EMA implements OnlineDoubleUnaryOperator {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	// calculation of alpha
 	public static final double SMOOTHING = 2.0;
 	public static double getAlpha(int days) {
@@ -18,16 +18,25 @@ public final class EMA implements OnlineDoubleUnaryOperator {
 	public static double getAlphaFromDecayFactor(double decayFactor) {
 		return 1.0 - decayFactor;
 	}
-	
+
+	public static EMA fromDays(int days) {
+		var alpha = getAlpha(days);
+		return new EMA(alpha);
+	}
+	public static EMA fromAlpha(double alpha) {
+		return new EMA(alpha);
+	}
+
+
 	private final double alpha;
-	
+
 	private boolean firstTime = true;
 	private double  average   = Double.NaN;
-	
-	public EMA(double alpha) {
+
+	private EMA(double alpha) {
 		this.alpha = alpha;
 	}
-	
+
 	// DoubleConsumer
 	@Override
 	public void accept(double value) {
@@ -37,12 +46,12 @@ public final class EMA implements OnlineDoubleUnaryOperator {
 			logger.error("  value {}", Double.toString(value));
 			throw new UnexpectedException("value is infinite");
 		}
-		
+
 		if (firstTime) {
 			firstTime = false;
 			average   = value;
 		}
-		
+
 		// average = value * alpha + average * (1 - alpha)
 		//         = average * (1 - alpha) + value * alpha
 		//         = average - average * alpha + value * alpha
@@ -50,19 +59,19 @@ public final class EMA implements OnlineDoubleUnaryOperator {
 		// number of multiply is reduced
 		average += alpha * (value - average);
 	}
-	
+
 	// DoubleSupplier
 	@Override
 	public double getAsDouble() {
 		return average;
 	}
-	
+
 	private static void testTable53() {
 		// See Table 5.3 of page 82
 		//   https://www.msci.com/documents/10199/5915b101-4206-4ba0-aee2-3449d5c7e95a
 		//   https://elischolar.library.yale.edu/cgi/viewcontent.cgi?article=1546&context=ypfs-documents
-		double alpha = 0.06; // 1 - 0.94 
-		
+		double alpha = 0.06; // 1 - 0.94
+
 		double[] data = {
 			0.633,
 			0.115,
@@ -85,7 +94,7 @@ public final class EMA implements OnlineDoubleUnaryOperator {
 			-0.105,
 			-0.257,
 		};
-		
+
 		double[] var_r = Arrays.stream(data).map(o -> o * o).map(new EMA(alpha)).toArray();
 		logger.info("");
 		for(int i = 0; i < var_r.length; i++) {
@@ -93,7 +102,7 @@ public final class EMA implements OnlineDoubleUnaryOperator {
 		}
 		logger.info("last line should be -0.257     0.224");
 	}
-	
+
 	public static void main(String[] args) {
 		logger.info("START");
 		testTable53();

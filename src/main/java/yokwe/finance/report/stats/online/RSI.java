@@ -6,32 +6,32 @@ import yokwe.util.UnexpectedException;
 //   See https://school.stockcharts.com/doku.php?id=technical_indicators:relative_strength_index_rsi
 public final class RSI implements OnlineDoubleUnaryOperator {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
-	
+
 	public static final int    DEFAULT_SIZE = 14;
 	public static final double UNKNOWN_RSI  = -1;
-	
+
 	private final   int    size;
 	private final   double alpha;
 	private final   EMA    emaGain;
 	private final   EMA    emaLoss;
-	
+
 	private int    count     = 0;
 	private double lastValue = 0;
 	private double sumGain   = 0;
 	private double sumLoss   = 0;
 	private double rsi       = Double.NaN;
-	
+
 	public RSI() {
 		this(DEFAULT_SIZE);
 	}
 	public RSI(int size_) {
 		size  = size_;
 		alpha = 1.0 / size;
-		
-		emaGain = new EMA(alpha);
-		emaLoss = new EMA(alpha);
+
+		emaGain = EMA.fromAlpha(alpha);
+		emaLoss = EMA.fromAlpha(alpha);
 	}
-	
+
 	@Override
 	public void accept(double value) {
 		// sanity check
@@ -49,12 +49,12 @@ public final class RSI implements OnlineDoubleUnaryOperator {
 			changeGain = (0 < change) ? change : 0;
 			changeLoss = (change < 0) ? -change : 0;
 		}
-		
-		
+
+
 		final double avgGain;
 		final double avgLoss;
 		{
-			if (count < size) {				
+			if (count < size) {
 				sumGain += changeGain;
 				sumLoss += changeLoss;
 
@@ -77,7 +77,7 @@ public final class RSI implements OnlineDoubleUnaryOperator {
 				avgLoss = emaLoss.applyAsDouble(changeLoss);
 			}
 		}
-		
+
 		if (count < size) {
 			rsi = UNKNOWN_RSI;
 		} else {
@@ -86,17 +86,17 @@ public final class RSI implements OnlineDoubleUnaryOperator {
 			// avoid divide by zero
 			rsi = (b == 0) ? UNKNOWN_RSI : a / b;
 		}
-				
+
 		// update for next iteration
 		lastValue = value;
 		count++;
 	}
-	
+
 	@Override
 	public double getAsDouble() {
 		return rsi;
 	}
-	
+
 	private static void testA() {
 		// See http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:relative_strength_index_rsi
 		double data[] = {
@@ -134,7 +134,7 @@ public final class RSI implements OnlineDoubleUnaryOperator {
 			42.6628,
 			43.1314,
 		};
-		
+
 		var op = new RSI(14);
 		for(int i = 0; i < data.length; i++) {
 			var rsi = op.applyAsDouble(data[i]);
@@ -142,12 +142,12 @@ public final class RSI implements OnlineDoubleUnaryOperator {
 		}
 		logger.info("last line should be 43.13  37.77");
 	}
-	
+
 	public static void main(String[] args) {
 		logger.info("START");
-		
+
 		testA();
-		
+
 		logger.info("STOP");
 	}
 }
