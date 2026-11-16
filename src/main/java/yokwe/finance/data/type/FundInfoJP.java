@@ -125,16 +125,13 @@ public class FundInfoJP implements Comparable<FundInfoJP> {
 		return ToString.withFieldName(this);
 	}
 
-	public String getKey() {
-		return this.isinCode;
-	}
 	@Override
 	public int compareTo(FundInfoJP that) {
-		return this.getKey().compareTo(that.getKey());
+		return this.isinCode.compareTo(that.isinCode);
 	}
 	@Override
 	public int hashCode() {
-		return this.getKey().hashCode();
+		return isinCode.hashCode();
 	}
 
 	@Override
