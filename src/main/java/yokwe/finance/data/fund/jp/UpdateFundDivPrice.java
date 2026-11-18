@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import yokwe.finance.data.provider.jita.StorageJITA;
 import yokwe.finance.data.provider.jpx.StorageJPX;
 import yokwe.finance.data.provider.moneybu.StorageMoneybu;
+import yokwe.finance.data.type.DailyValue;
 import yokwe.util.Makefile;
 import yokwe.util.UnexpectedException;
 import yokwe.util.update.UpdateBase;
@@ -53,7 +54,7 @@ public class UpdateFundDivPrice extends UpdateBase {
 			var stockCode = fundInfo.stockCode;
 			var name      = fundInfo.name;
 
-			var priceList = StorageJITA.FundPrice.getList(isinCode);
+			var priceList = StorageJITA.FundPrice.getList(isinCode).stream().map(o -> new DailyValue(o.date, o.price)).collect(Collectors.toList());
 			var divList   = StorageJITA.FundDiv.getList(isinCode);
 
 			if (stockCode.isEmpty()) {
