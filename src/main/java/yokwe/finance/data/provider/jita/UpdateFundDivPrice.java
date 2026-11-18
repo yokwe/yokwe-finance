@@ -1,20 +1,25 @@
 package yokwe.finance.data.provider.jita;
 
-import java.io.File;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
+
+import org.apache.hc.core5.http.HttpStatus;
 
 import yokwe.finance.data.type.DailyValue;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.util.CSVUtil;
-import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
 import yokwe.util.Storage;
+import yokwe.util.ThreadUtil;
+import yokwe.util.ToString;
 import yokwe.util.UnexpectedException;
 import yokwe.util.http.HttpUtil;
 import yokwe.util.update.UpdateBase;
@@ -40,83 +45,32 @@ public class UpdateFundDivPrice extends UpdateBase {
 
 		var fundInfoList = StorageJITA.FundInfoJITA.getList();
 
-		// delist unknown
-		delistUnknownFile(fundInfoList);
-
-		for(int take = 1; take < 9; take++) {
-			logger.info("start take {}", take);
-			int countMod = updateFile(fundInfoList);
-			if (countMod == 0) {
+		for(int take = 0; take < 10; take++) {
+			logger.info("retry  {}", take);
+			var updateCount = updateFile(fundInfoList);
+			if (updateCount == 0) {
 				// touch file
 				StorageJITA.FundDiv.touch();
 				StorageJITA.FundPrice.touch();
 				break;
 			}
-			sleep(SLEEP_BETWEEN_UPDATE);
-		}
-	}
-	private static final Duration SLEEP_BETWEEN_UPDATE   = Duration.ofMillis(2000);
-	private static final Duration SLEEP_BETWEEN_DOWNLOAD = Duration.ofMillis(100);
-
-
-	private void sleep(Duration duration) {
-		try {
-			Thread.sleep(duration);
-		} catch (InterruptedException e) {
-			//
+			ThreadUtil.sleep(SLEEP_BETWEEN_UPDATE);
 		}
 	}
 
-	private void delistUnknownFile(List<FundInfoJP> fundInfoList) {
-		var validNameList = fundInfoList.stream().map(o -> o.isinCode).toList();
-
-		StorageJITA.FundDivPrice.delistUnknownFile(validNameList);
-		StorageJITA.FundDiv.delistUnknownFile(validNameList);
-		StorageJITA.FundPrice.delistUnknownFile(validNameList);
-
-		// remove incomplete file
-		for(var fundInfo: fundInfoList) {
-			var file = StorageJITA.FundDivPrice.getFile(fundInfo.isinCode);
-			removeInvalidFile(file);
-		}
-	}
-
-	private void removeInvalidFile(File file) {
-		if (file.exists()) {
-			var string = FileUtil.read().file(file);
-			if (!string.startsWith(CSV_HEADER)) {
-				file.delete();
-			}
-		}
-	}
-	private static final String CSV_HEADER = "年月日,基準価額(円),純資産総額（百万円）,分配金,決算期";
-
-
-	private static final Charset CHARSET = Charset.forName("SHIFT_JIS");
-
-	private static String URL_FORMAT = "https://toushin-lib.fwg.ne.jp/FdsWeb/FDST030000/csv-file-download?isinCd=%s&associFundCd=%s";
-	private String getURL(FundInfoJP fundInfo) {
-		return String.format(URL_FORMAT, fundInfo.isinCode, fundInfo.fundCode);
-	}
-
-	protected int updateFile(List<FundInfoJP> fundInfoList) {
-		logger.info("fundInfoList  {}", fundInfoList.size());
-
-		// build list
-		var list = new ArrayList<FundInfoJP>();
-		{
-			for(var fundInfo: fundInfoList) {
-				var file = StorageJITA.FundDivPrice.getFile(fundInfo.isinCode);
-				if (needsUpdate(file)) {
-					list.add(fundInfo);
-				}
-			}
-		}
-		logger.info("list          {}", list.size());
-
-		Collections.shuffle(list);
+	private int updateFile(List<FundInfoJP> fundInfoList) {
+		var today = LocalDate.now();
 
 		var http = HttpUtil.getInstance();
+
+		var list = new ArrayList<FundInfoJP>(fundInfoList);
+		logger.info("list  {}", list.size());
+		list.removeIf(o -> !needsUpdate(StorageJITA.FundDiv.getFile(o.isinCode)));
+		logger.info("list  {}", list.size());
+		list.removeIf(o -> today.isBefore(o.inceptionDate));
+		logger.info("list  {}", list.size());
+
+		Collections.shuffle(list);
 
 		int count = 0;
 		int countMod = 0;
@@ -126,83 +80,95 @@ public class UpdateFundDivPrice extends UpdateBase {
 			if ((++count % 100) == 1) {
 				logger.info("{}  /  {}  {}", count, list.size(), isinCode);
 			} else {
-//				logger.info("{}  /  {}  {}", count, list.size(), isinCode);
+//				logger.info("{}  /  {}  {}", count, fundInfoList.size(), isinCode);
 			}
 
 			var referer = String.format("https://toushin-lib.fwg.ne.jp/FdsWeb/FDST030000?isinCd=%s", isinCode);
 			http.withReferer(referer);
 
-			var file = StorageJITA.FundDivPrice.getFile(isinCode);
+			// get rawData because http request returns bogus character set.
+			var result = http.withRawData(true).downloadOrNull(getURL(fundInfo));
+			if (result != null && result.code == HttpStatus.SC_OK && result.rawData.length != 0) {
+				var string = new String(result.rawData, CHARSET);
+				var reader = new StringReader(string);
 
-			var rawData = http.downloadRawOrNull(getURL(fundInfo));
-			if (rawData == null) {
-				logger.warn("download failed  {}  {}", fundInfo.isinCode, fundInfo.name);
-				continue;
-			}
-			sleep(SLEEP_BETWEEN_DOWNLOAD);
-			var string = new String(rawData, CHARSET);
-			if (string.startsWith(CSV_HEADER)) {
-				FileUtil.write().file(file, string);
+				// save for debug
+				StorageJITA.FundDivPrice.save(isinCode, string);
+
+				var priceDivList = CSVUtil.read(CSV.class).file(reader);
+
+				var priceList = new ArrayList<FundPrice>(list.size());
+				var divList   = new ArrayList<DailyValue>();
+
+				for(var e: priceDivList) {
+					var date  = toLocalDate(e.date);
+					var price = new BigDecimal(e.price);
+					var nav   = new BigDecimal(e.nav).movePointRight(6); // convert million to number
+
+					priceList.add(new FundPrice(date, price, nav));
+
+					if (!e.div.isEmpty()) {
+						var value = new BigDecimal(e.div);
+						divList.add(new DailyValue(date, value));
+					}
+				}
+
+				StorageJITA.FundPrice.save(isinCode, priceList);
+				StorageJITA.FundDiv.save(isinCode, divList);
+				countMod++;
 			} else {
-				// unexpected result
-				logger.warn("{}  /  {}  {}  UNEXPECTED RESULT", count, list.size(), isinCode);
-				return -1;
+				logger.warn("download failed  {}  {}", fundInfo.isinCode, fundInfo.name);
 			}
-
-			List<FundDivPrice> divPriceList;
-			{
-				divPriceList = CSVUtil.read(FundDivPrice.class).file(file);
-				if (divPriceList == null) {
-					logger.error("Unexpected null");
-					logger.error("  file  {}", file.getPath());
-					throw new UnexpectedException("Unexpected null");
-				}
-			}
-
-			// build divList and priceList
-			var divList   = new ArrayList<DailyValue>();
-			var priceList = new ArrayList<DailyValue>();
-
-			for(var divPrice: divPriceList) {
-				// sanity check
-				if (divPrice.price.isEmpty() || divPrice.nav.isEmpty()) {
-					logger.warn("Skip unexpected divPrice  {}  {}", isinCode, divPrice);
-					continue;
-				}
-				LocalDate  date   = toLocalDate(divPrice.date);
-				BigDecimal price  = new BigDecimal(divPrice.price);
-//				BigDecimal nav    = new BigDecimal(divPrice.nav).scaleByPowerOfTen(6); // 純資産総額（百万円）
-				String     div    = divPrice.div.trim();
-
-				if (!div.isEmpty()) {
-					divList.add(new DailyValue(date, new BigDecimal(div)));
-				}
-
-				priceList.add(new DailyValue(date, price));
-			}
-
-			// save divList and priceList
-			StorageJITA.FundDiv.save(isinCode, divList);
-			StorageJITA.FundPrice.save(isinCode, priceList);
-
-			countMod++;
+			ThreadUtil.sleep(SLEEP_BETWEEN_DOWNLOAD);
 		}
 
+		logger.info("countMod  {}", countMod);
 		return countMod;
 	}
+	private static final Charset CHARSET = Charset.forName("SHIFT_JIS");
+	private static String URL_FORMAT = "https://toushin-lib.fwg.ne.jp/FdsWeb/FDST030000/csv-file-download?isinCd=%s&associFundCd=%s";
+	private String getURL(FundInfoJP fundInfo) {
+		return String.format(URL_FORMAT, fundInfo.isinCode, fundInfo.fundCode);
+	}
+	private static final Duration SLEEP_BETWEEN_UPDATE   = Duration.ofMillis(2000);
+	private static final Duration SLEEP_BETWEEN_DOWNLOAD = Duration.ofMillis(100);
 
-	private LocalDate toLocalDate(String dateString) {
-		// 2000年01月01日
-		// 01234 567 890
-		if (dateString.length() == 11 && dateString.charAt(4) == '年' && dateString.charAt(7) == '月' && dateString.charAt(10) == '日') {
-			int yyyy = Integer.parseInt(dateString.substring(0, 4));
-			int mm   = Integer.parseInt(dateString.substring(5, 7));
-			int dd   = Integer.parseInt(dateString.substring(8, 10));
-			return LocalDate.of(yyyy, mm, dd);
-		} else {
-			logger.error("Unexpected date");
-			logger.error("  dateString {}  !{}!", dateString.length(), dateString);
-			throw new UnexpectedException("Unexpected date");
+
+	public static class CSV implements Comparable<CSV> {
+		// 年月日	        基準価額(円)	純資産総額（百万円）	分配金	決算期
+		// 2022年04月25日	19239	        1178200	                0       4
+		// 2022年04月26日	19167	        1174580
+		@CSVUtil.ColumnName("年月日")
+		public String date;
+		@CSVUtil.ColumnName("基準価額(円)")
+		public String price;
+		@CSVUtil.ColumnName("純資産総額（百万円）")
+		public String nav;
+		@CSVUtil.ColumnName("分配金")
+		public String div;
+		@CSVUtil.ColumnName("決算期")
+		public String period;
+
+		@Override
+		public int compareTo(CSV that) {
+			return this.date.compareTo(that.date);
+		}
+		@Override
+		public String toString() {
+			return ToString.withFieldName(this);
 		}
 	}
+	private static LocalDate toLocalDate(String string) {
+		if (DATE_PAT.matcher(string).matches()) {
+			return LocalDate.parse(string, DATE_FORMAT);
+		}
+
+		logger.error("Unexpeced string");
+		logger.error("  string  {}!", string);
+		throw new UnexpectedException("Unexpeced string");
+	}
+	private static final Pattern           DATE_PAT    = Pattern.compile("2[0-9]{3}年[0-9]{1,2}月[0-9]{1,2}日");
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy年M月d日");
+
 }
+

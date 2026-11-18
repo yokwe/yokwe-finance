@@ -10,23 +10,23 @@ public class StorageJITA {
 	public static final Storage storage = StorageProvider.storage.getStorage("jita");
 
 	// fund-info
+	public static final Storage.LoadSaveDirectoryString
+		FundInfoPage = new Storage.LoadSaveDirectoryString(storage, "fund-info-page", o -> o + ".json");
+
 	public static final Storage.LoadSaveFileList<FundInfoJP>
 		FundInfoJITA = new Storage.LoadSaveFileList<FundInfoJP>(FundInfoJP.class, storage, "fund-info-jita.csv");
 
-	public static final Storage.LoadSaveDirectoryString
-		FundInfoJSON = new Storage.LoadSaveDirectoryString(storage, "fund-info-json", o -> o + ".json");
-
 	// fund-div-price
-	public static final Storage.LoadSaveDirectoryList<FundDivPrice>
-		FundDivPrice = new Storage.LoadSaveDirectoryList<FundDivPrice>(FundDivPrice.class, storage, "fund-div-price", o -> o + ".csv");
+	public static final Storage.LoadSaveDirectoryString
+		FundDivPrice = new Storage.LoadSaveDirectoryString(storage, "fund-div-price", o -> o + ".csv");
 
 	// fund-div
 	public static final Storage.LoadSaveDirectoryList<DailyValue>
 		FundDiv = new Storage.LoadSaveDirectoryList<DailyValue>(DailyValue.class, storage, "fund-div", o -> o + ".csv");
 
 	// fund-price
-	public static final Storage.LoadSaveDirectoryList<DailyValue>
-		FundPrice = new Storage.LoadSaveDirectoryList<DailyValue>(DailyValue.class, storage, "fund-price", o -> o + ".csv");
+	public static final Storage.LoadSaveDirectoryList<FundPrice>
+		FundPrice = new Storage.LoadSaveDirectoryList<FundPrice>(FundPrice.class, storage, "fund-price", o -> o + ".csv");
 
 	// nisa-info
 	public static final Storage.LoadSaveFileList<NISAInfo>

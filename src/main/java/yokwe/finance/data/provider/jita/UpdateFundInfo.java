@@ -1,33 +1,28 @@
 package yokwe.finance.data.provider.jita;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import org.apache.hc.core5.http2.HttpVersionPolicy;
 
 import yokwe.finance.data.analysis.StorageAnalysis;
 import yokwe.finance.data.provider.jpx.StockCodeName;
 import yokwe.finance.data.type.FundInfoJP;
 import yokwe.util.FileUtil;
 import yokwe.util.Makefile;
+import yokwe.util.ThreadUtil;
 import yokwe.util.UnexpectedException;
-import yokwe.util.http.Download;
-import yokwe.util.http.DownloadSync;
 import yokwe.util.http.HttpUtil;
-import yokwe.util.http.RequesterBuilder;
-import yokwe.util.http.StringTask;
-import yokwe.util.http.Task;
 import yokwe.util.json.JSON;
-import yokwe.util.update.UpdateComplexTask;
+import yokwe.util.update.UpdateBase;
 
-public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
+public class UpdateFundInfo extends UpdateBase {
 	private static final org.slf4j.Logger logger = yokwe.util.LoggerUtil.getLogger();
 
 	public static Makefile MAKEFILE = Makefile.builder().
@@ -36,154 +31,114 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 		build();
 
 	public static void main(String[] args) {
+		logger.info("START");
+
 		callUpdate();
+
+		logger.info("STOP");
 	}
 
-	private MyConsumer consumer = new MyConsumer();
+	@Override
+	public void update() {
+		this.gracePeriod = Duration.ofHours(20);
 
-	private static class MyConsumer implements Consumer<String> {
-		public List<FundInfoJP> fundList  = new ArrayList<>();
-		public int              allPageNo = -1;
-		public int              pageSize  = -1;
+		downloadFile();
+		updateFile();
+	}
 
-		@Override
-		public void accept(String string) {
+	private void downloadFile() {
+		if (!needsUpdate(StorageJITA.FundInfoPage.getFile(getName(0)))) {
+			return;
+		}
+
+		// delete old json file
+		FileUtil.deleteFile(StorageJITA.FundInfoPage.getDir(), o -> o.getName().endsWith(".json"));
+
+		int pageNo    = 0;
+		int startNo   = 0;
+		for(;;) {
+			var string = HttpUtil.getInstance().withPost(getBody(startNo), CONTENT_TYPE).downloadString(URL);
+			StorageJITA.FundInfoPage.save(getName(pageNo), string);
+
+			// sanity check
 			var data = JSON.unmarshal(FundDataSearch.class, string);
 			if (data == null) {
 				logger.error("JSON unmarshal failed");
 				logger.error("  string {}", string);
 				throw new UnexpectedException("JSON unmarshal failed");
+			}
+
+			var allPageNo = Integer.valueOf(data.searchResultInfo.allPageNo);
+			var pageSize  = Integer.valueOf(data.searchResultInfo.pageSize);
+
+			if ((pageNo % 10) == 0) {
+				logger.info("{}  /  {}", pageNo, allPageNo);
 			} else {
-				allPageNo = Integer.valueOf(data.searchResultInfo.allPageNo);
-				pageSize  = Integer.valueOf(data.searchResultInfo.pageSize);
-
-				for(var e: data.searchResultInfo.resultInfoMapList) {
-					fundList.add(toFund(e));
-				}
+//				logger.info("{}  /  {}", pageNo, allPageNo);
 			}
+
+			// update for next iteration
+			pageNo  += 1;
+			startNo += pageSize;
+			if (allPageNo <= pageNo) {
+				break;
+			}
+
+			// speed bump
+			ThreadUtil.sleep(Duration.ofMillis(500));
 		}
-	}
-
-
-	@Override
-	protected List<FundInfoJP> getList() {
-		return new ArrayList<FundInfoJP>();
-	}
-	@Override
-	protected void delistUnknownFile(List<FundInfoJP> dummy) {
-		// do nothing
-	}
-
-	@Override
-	protected List<Task> getTaskList(List<FundInfoJP> dummy) {
-		var list = new ArrayList<Task>();
-
-		// build list only first time
-		if (consumer.allPageNo == -1) {
-			// startNo = 0
-			{
-				var string = HttpUtil.getInstance().withPost(getBody(0), CONTENT_TYPE).downloadString(URL);
-				consumer.accept(string);
-			}
-
-			int pageNo  = 0;
-			int startNo = 0;
-			for(;;) {
-				pageNo  += 1;
-				startNo += consumer.pageSize;
-				if (consumer.allPageNo <= pageNo) {
-					break;
-				}
-
-				String content = getBody(startNo);
-				list.add(StringTask.post(URL, consumer, content, CONTENT_TYPE));
-			}
-		}
-
-		return list;
 	}
 	private static final String URL          = "https://toushin-lib.fwg.ne.jp/FdsWeb/FDST999900/fundDataSearch";
-
 	private static final String CONTENT_TYPE = "application/json";
-	private static String getBody(int startNo) {
+	private String getName(int pageNo) {
+		return String.format("%03d", pageNo);
+	}
+	private String getBody(int startNo) {
 		return String.format(
 			"""
 			{"s_kensakuKbn":"1","s_supplementKindCd":"1","f_etfKBun":"1","s_standardPriceCond1":"0","s_standardPriceCond2":"0","s_riskCond1":"0","s_riskCond2":"0","s_sharpCond1":"0","s_sharpCond2":"0","s_buyFee":"1","s_trustReward":"1","s_monthlyCancelCreateVal":"1","s_nisaGrowthCd":"1","s_investAssetKindCd":[],"s_investArea3kindCd":[],"s_instCd":[],"s_fdsInstCd":[],"s_dcFundCD":[],"t_investArea10kindCd":[],"t_investAssetKindCd":[],"t_instCd":[],"t_fdsInstCd":[],"s_investArea10kindCd":[],"s_setlFqcy":[],"s_dividend1y":[],"s_totalNetAssets":[],"s_nowToRedemptionDate":[],"s_establishedDateToNow":[],"s_isinCd":[],"startNo":%d,"draw":2,"searchBtnClickFlg":true}"""
 			, startNo);
 	}
 
-	@Override
-	protected void downloadFile(List<Task> taskList) {
-		if (taskList.isEmpty()) {
-			return;
-		}
 
-		Download download = new DownloadSync();
-		initialize(download);
+	private void updateFile() {
+		updateJSONFile();
 
-		for(var task: taskList) {
-			download.addTask(task);
-		}
 
-		logger.info("BEFORE RUN");
-		download.startAndWait();
-		logger.info("AFTER  RUN");
-	}
-	private static void initialize(Download download) {
-		int threadCount       = 10;
-		int maxPerRoute       = 50;
-		int maxTotal          = 100;
-		int soTimeout         = 30;
-		int connectionTimeout = 30;
-		int progressInterval  = 30;
-		logger.info("threadCount       {}", threadCount);
-		logger.info("maxPerRoute       {}", maxPerRoute);
-		logger.info("maxTotal          {}", maxTotal);
-		logger.info("soTimeout         {}", soTimeout);
-		logger.info("connectionTimeout {}", connectionTimeout);
-		logger.info("progressInterval  {}", progressInterval);
-
-		RequesterBuilder requesterBuilder = RequesterBuilder.custom()
-				.setVersionPolicy(HttpVersionPolicy.NEGOTIATE)
-				.setSoTimeout(soTimeout)
-				.setMaxTotal(maxTotal)
-				.setDefaultMaxPerRoute(maxPerRoute);
-
-		download.setRequesterBuilder(requesterBuilder);
-
-		// Configure custom header
-		download.setUserAgent(HttpUtil.DEFAULT_USER_AGENT);
-
-		// Configure thread count
-		download.setThreadCount(threadCount);
-
-		// connection timeout in second
-		download.setConnectionTimeout(connectionTimeout);
-
-		// progress interval
-		download.setProgressInterval(progressInterval);
 	}
 
-	@Override
-	protected void updateFile(List<FundInfoJP> dummy) {
-		checkDuplicateKey(consumer.fundList, o -> o.isinCode);
+	private void updateJSONFile() {
+		var fileArray = StorageJITA.FundInfoPage.getDir().listFiles(o -> o.getName().endsWith(".json"));
+		Arrays.sort(fileArray);
+		logger.info("updateFile  {}", fileArray.length);
 
-		// remove json file
-		FileUtil.deleteFile(StorageJITA.FundInfoJSON.getDir(), o -> o.getName().endsWith(".json"));
-		// save json file
-		for(var e: consumer.fundList) {
-			var string = JSON.marshal(e);
-			StorageJITA.FundInfoJSON.save(e.isinCode, string);
+		var list = new ArrayList<FundInfoJP>(fileArray.length);
+
+		int count = 0;
+		for(var file: fileArray) {
+			if ((count++ % 100) == 0) {
+				logger.info("{}  /  {}", count, fileArray.length);
+			} else {
+//				logger.info("{}  /  {}", count, fileArray.length);
+			}
+			var string = FileUtil.read().file(file);
+			var data = JSON.unmarshal(FundDataSearch.class, string);
+			if (data == null) {
+				logger.error("JSON unmarshal failed");
+				logger.error("  string {}", string);
+				throw new UnexpectedException("JSON unmarshal failed");
+			}
+
+			for(var e: data.searchResultInfo.resultInfoMapList) {
+				list.add(toFundInfo(e));
+			}
 		}
 
-		save(consumer.fundList, StorageJITA.FundInfoJITA); // to force update use save
+		logger.info("save  {}  {}", list.size(), StorageJITA.FundInfoJITA.getFile());
+		StorageJITA.FundInfoJITA.save(list);
 	}
 
-
-	private static DateTimeFormatter ESTABLISHED_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-M-d 00:00:00");
-	private static DateTimeFormatter REDEMPTION_DATE_FORMAT  = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-	private static FundInfoJP toFund(FundDataSearch.ResultInfo resultInfo) {
+	private FundInfoJP toFundInfo(FundDataSearch.ResultInfo resultInfo) {
 		String    isinCode       = resultInfo.isinCd;
 		String    fundCode       = resultInfo.associFundCd;
 		String    stockCode      = StockCodeName.getStockCode(isinCode, "");
@@ -308,15 +263,16 @@ public class UpdateFundInfo extends UpdateComplexTask<FundInfoJP> {
 		boolean foreginTaxAdjusted = foreignTaxAdjustedSet.contains(stockCode);
 
 		FundInfoJP fund = new FundInfoJP(
-				isinCode, fundCode, stockCode, listingDate, redemptionDate, divFreq,
-				expenseRatio, buyFreeMax,
-				fundType, investingArea, investingAsset, indexFundType, settlementDate,
-				totalNetAssets, foreginTaxAdjusted,
-				name
-				);
+			isinCode, fundCode, stockCode, listingDate, redemptionDate, divFreq,
+			expenseRatio, buyFreeMax,
+			fundType, investingArea, investingAsset, indexFundType, settlementDate,
+			totalNetAssets, foreginTaxAdjusted,
+			name
+			);
 		return fund;
 	}
-
+	private static DateTimeFormatter ESTABLISHED_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-M-d 00:00:00");
+	private static DateTimeFormatter REDEMPTION_DATE_FORMAT  = DateTimeFormatter.ofPattern("yyyyMMdd");
 	private static final Set<String> foreignTaxAdjustedSet = StorageAnalysis.ForeignTaxAdjusted.getList().stream().map(o -> o.stockCode).collect(Collectors.toSet());
 
 }
